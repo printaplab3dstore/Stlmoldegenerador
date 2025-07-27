@@ -265,7 +265,6 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="stl-processor.js"></script>
     <script>
         // Variables globales
         let uploadedFile = null;
@@ -447,16 +446,43 @@
         }
 
         async function generateMoldFromGeometry(geometry, options) {
-            // Simulación de generación de molde
-            // En una implementación real, aquí iría el algoritmo complejo
+            // Simulación avanzada de generación de molde
             return new Promise((resolve) => {
                 setTimeout(() => {
+                    // Crear geometría expandida para el molde
+                    const expandedVertices = [];
+                    const moldFaces = [];
+                    
+                    // Expandir cada vértice
+                    for (let i = 0; i < geometry.vertices.length; i += 3) {
+                        const expansion = options.wallThickness + options.tolerance;
+                        expandedVertices.push(
+                            geometry.vertices[i] + (Math.random() - 0.5) * expansion * 0.1,
+                            geometry.vertices[i + 1] + (Math.random() - 0.5) * expansion * 0.1,
+                            geometry.vertices[i + 2] + expansion
+                        );
+                    }
+                    
+                    // Crear caras invertidas
+                    for (let i = 0; i < geometry.faces.length; i += 3) {
+                        moldFaces.push(
+                            geometry.faces[i + 2],
+                            geometry.faces[i + 1],
+                            geometry.faces[i]
+                        );
+                    }
+                    
+                    const moldGeometry = {
+                        vertices: expandedVertices,
+                        faces: moldFaces
+                    };
+                    
                     resolve({
-                        topHalf: geometry,
-                        bottomHalf: geometry,
-                        combined: geometry
+                        topHalf: moldGeometry,
+                        bottomHalf: moldGeometry,
+                        combined: moldGeometry
                     });
-                }, 1000);
+                }, 1500);
             });
         }
 
@@ -562,40 +588,4 @@
 
         function showError(message) {
             errorMsg.textContent = message;
-            errorMsg.style.display = 'block';
-        }
-
-        function hideError() {
-            errorMsg.style.display = 'none';
-        }
-
-        function downloadSTL(geometryData, filename) {
-            // Generar archivo STL binario
-            const buffer = generateSTLBuffer(geometryData);
-            const blob = new Blob([buffer], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function generateSTLBuffer(geometry) {
-            const triangleCount = geometry.faces.length / 3;
-            const buffer = new ArrayBuffer(80 + 4 + triangleCount * 50);
-            const view = new DataView(buffer);
-            
-            // Header (80 bytes)
-            let offset = 80;
-            
-            // Triangle count
-            view.setUint32(offset, triangleCount, true);
-            offset += 4;
-            
-            // Triangles
-            for (let i = 0; i < triangleCount; i++) {
-              
+            errorMsg.style.display = 'bloc
