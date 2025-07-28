@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador Real de Moldes STL</title>
+    <title>Generador de Moldes STL</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -25,6 +25,14 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
         }
         h1 { color: #333; margin-bottom: 15px; font-size: 1.8em; }
+        .status { 
+            background: rgba(33, 150, 243, 0.1); 
+            padding: 10px; 
+            border-radius: 10px; 
+            margin-bottom: 20px; 
+            color: #1976d2; 
+            font-weight: bold; 
+        }
         .upload { 
             border: 3px dashed #667eea; 
             border-radius: 15px; 
@@ -35,8 +43,20 @@
             transition: all 0.3s; 
             position: relative; 
         }
-        .upload:hover { border-color: #764ba2; background: rgba(118, 75, 162, 0.1); }
-        .upload input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .upload:hover { 
+            border-color: #764ba2; 
+            background: rgba(118, 75, 162, 0.1); 
+            transform: translateY(-2px); 
+        }
+        .upload input { 
+            position: absolute; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            opacity: 0; 
+            cursor: pointer; 
+        }
         .controls { 
             display: none; 
             margin: 20px 0; 
@@ -45,11 +65,35 @@
             border-radius: 10px; 
             text-align: left; 
         }
-        .control { margin: 10px 0; }
-        .control label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 0.9em; }
-        .row { display: flex; align-items: center; gap: 10px; }
-        input[type="range"] { flex: 1; height: 25px; }
-        input[type="number"] { width: 70px; padding: 5px; border: 1px solid #ddd; border-radius: 3px; text-align: center; }
+        .control { 
+            margin: 15px 0; 
+        }
+        .control label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: bold; 
+            color: #333; 
+            font-size: 0.9em; 
+        }
+        .control-row { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            flex-wrap: wrap; 
+        }
+        input[type="range"] { 
+            flex: 1; 
+            min-width: 150px; 
+            height: 30px; 
+        }
+        input[type="number"] { 
+            width: 70px; 
+            padding: 5px; 
+            border: 2px solid #ddd; 
+            border-radius: 5px; 
+            text-align: center; 
+            font-size: 0.9em; 
+        }
         .btn { 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
             color: white; 
@@ -62,9 +106,17 @@
             width: 100%; 
             max-width: 280px; 
             transition: all 0.3s; 
+            font-weight: bold; 
         }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); 
+        }
+        .btn:disabled { 
+            opacity: 0.6; 
+            cursor: not-allowed; 
+            transform: none; 
+        }
         .result { 
             display: none; 
             margin: 20px 0; 
@@ -73,23 +125,28 @@
             border-radius: 10px; 
             border: 2px solid #4caf50; 
         }
+        .result h3 { 
+            color: #2e7d32; 
+            margin-bottom: 10px; 
+        }
         .error { 
             display: none; 
             margin: 15px 0; 
             padding: 10px; 
             background: rgba(244, 67, 54, 0.1); 
-            border: 1px solid #f44336; 
+            border: 2px solid #f44336; 
             border-radius: 8px; 
             color: #d32f2f; 
             font-size: 0.9em; 
+            font-weight: bold; 
         }
         .info { 
-            background: rgba(33, 150, 243, 0.1); 
+            background: rgba(76, 175, 80, 0.1); 
             padding: 10px; 
             border-radius: 8px; 
             margin: 10px 0; 
             font-size: 0.85em; 
-            color: #1976d2; 
+            color: #2e7d32; 
             text-align: left; 
         }
         .progress { 
@@ -98,11 +155,11 @@
         }
         .progress-bar { 
             width: 100%; 
-            height: 6px; 
+            height: 8px; 
             background: #e0e0e0; 
-            border-radius: 3px; 
+            border-radius: 4px; 
             overflow: hidden; 
-            margin-bottom: 5px; 
+            margin-bottom: 8px; 
         }
         .progress-fill { 
             height: 100%; 
@@ -110,73 +167,75 @@
             width: 0%; 
             transition: width 0.3s; 
         }
-        .viewer { 
-            margin: 15px 0; 
-            height: 200px; 
-            border: 2px solid #ddd; 
-            border-radius: 10px; 
-            background: #f5f5f5; 
-            display: none; 
-            overflow: hidden; 
-            position: relative; 
-        }
         @media (max-width: 480px) {
             .container { padding: 20px; margin: 10px; }
             h1 { font-size: 1.6em; }
             .upload { padding: 25px 10px; }
-            .row { flex-direction: column; gap: 5px; }
-            input[type="range"] { width: 100%; }
-            .viewer { height: 150px; }
+            .control-row { flex-direction: column; gap: 8px; align-items: stretch; }
+            input[type="range"] { min-width: 100%; }
+            input[type="number"] { width: 100px; align-self: center; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🏭 Generador Real de Moldes STL</h1>
-        <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">Genera moldes reales con encastres a partir de tu STL</p>
+        <h1>馃彮 Generador de Moldes STL</h1>
+        <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">
+            Genera moldes reales para impresi贸n 3D con encastres autom谩ticos
+        </p>
 
-        <div class="upload" onclick="document.getElementById('file').click()">
-            <div style="font-size: 2.5em; margin-bottom: 10px; color: #667eea;">📁</div>
-            <div style="font-weight: bold; margin-bottom: 5px;">Selecciona tu archivo STL</div>
-            <div style="font-size: 0.8em; color: #999;">Carga archivos .stl para generar molde</div>
-            <input type="file" id="file" accept=".stl" />
+        <div class="status" id="status">
+            馃摫 Funciona en m贸vil y desktop | 鉁� Versi贸n corregida
+        </div>
+
+        <div class="upload" id="uploadArea">
+            <div style="font-size: 2.5em; margin-bottom: 10px; color: #667eea;">馃搧</div>
+            <div style="font-weight: bold; margin-bottom: 5px;" id="uploadText">
+                Toca para seleccionar archivo STL
+            </div>
+            <div style="font-size: 0.8em; color: #999;">
+                Archivos .stl hasta 25MB
+            </div>
+            <input type="file" id="fileInput" accept=".stl" />
         </div>
 
         <div class="controls" id="controls">
-            <h3 style="text-align: center; margin-bottom: 15px; color: #333;">⚙️ Configuración del Molde</h3>
+            <h3 style="text-align: center; margin-bottom: 15px; color: #333;">
+                鈿欙笍 Configuraci贸n del Molde
+            </h3>
             
             <div class="control">
                 <label>Grosor de Paredes del Molde:</label>
-                <div class="row">
-                    <input type="range" id="wall" min="2" max="15" value="5" step="0.5">
-                    <input type="number" id="wallVal" min="2" max="15" value="5" step="0.5">
+                <div class="control-row">
+                    <input type="range" id="wallThickness" min="2" max="15" value="5" step="0.5">
+                    <input type="number" id="wallValue" min="2" max="15" value="5" step="0.5">
                     <span style="font-size: 0.8em; color: #666;">mm</span>
                 </div>
             </div>
 
             <div class="control">
-                <label>Tolerancia de Desmoldeo:</label>
-                <div class="row">
-                    <input type="range" id="tol" min="0.2" max="3" value="0.8" step="0.1">
-                    <input type="number" id="tolVal" min="0.2" max="3" value="0.8" step="0.1">
+                <label>Tolerancia para Desmoldeo:</label>
+                <div class="control-row">
+                    <input type="range" id="tolerance" min="0.2" max="3" value="0.8" step="0.1">
+                    <input type="number" id="toleranceValue" min="0.2" max="3" value="0.8" step="0.1">
                     <span style="font-size: 0.8em; color: #666;">mm</span>
                 </div>
             </div>
 
             <div class="control">
-                <label>Tamaño de Encastres:</label>
-                <div class="row">
-                    <input type="range" id="key" min="3" max="20" value="10" step="1">
-                    <input type="number" id="keyVal" min="3" max="20" value="10" step="1">
+                <label>Tama帽o de Encastres:</label>
+                <div class="control-row">
+                    <input type="range" id="keySize" min="4" max="20" value="10" step="1">
+                    <input type="number" id="keySizeValue" min="4" max="20" value="10" step="1">
                     <span style="font-size: 0.8em; color: #666;">mm</span>
                 </div>
             </div>
 
             <div class="control">
                 <label>Espaciado entre Encastres:</label>
-                <div class="row">
-                    <input type="range" id="spacing" min="15" max="60" value="30" step="5">
-                    <input type="number" id="spacingVal" min="15" max="60" value="30" step="5">
+                <div class="control-row">
+                    <input type="range" id="keySpacing" min="20" max="80" value="40" step="5">
+                    <input type="number" id="keySpacingValue" min="20" max="80" value="40" step="5">
                     <span style="font-size: 0.8em; color: #666;">mm</span>
                 </div>
             </div>
@@ -186,124 +245,203 @@
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
-            <div id="progressText" style="font-size: 0.9em; color: #666;">Procesando...</div>
+            <div id="progressText" style="font-size: 0.9em; color: #666; font-weight: bold;">
+                Procesando molde...
+            </div>
         </div>
 
-        <div class="viewer" id="viewer"></div>
-
-        <div class="error" id="error"></div>
+        <div class="error" id="errorMsg"></div>
 
         <div class="result" id="result">
-            <h3 style="color: #2e7d32; margin-bottom: 10px;">✅ ¡Molde Real Generado!</h3>
-            <p style="margin-bottom: 15px; color: #2e7d32;">Se ha creado un molde con encastres basado en tu STL</p>
-            <button class="btn" onclick="downloadMold('completo')">📥 Descargar Molde Completo</button>
-            <button class="btn" onclick="downloadMold('superior')">📥 Descargar Parte Superior</button>
-            <button class="btn" onclick="downloadMold('inferior')">📥 Descargar Parte Inferior</button>
+            <h3>鉁� 隆Molde Generado Correctamente!</h3>
+            <p style="margin-bottom: 15px; color: #2e7d32;">
+                Se ha creado un molde real basado en tu archivo STL
+            </p>
+            <button class="btn" onclick="downloadMold('completo')">
+                馃摜 Descargar Molde Completo (.stl)
+            </button>
+            <button class="btn" onclick="downloadMold('superior')">
+                馃摜 Descargar Parte Superior (.stl)
+            </button>
+            <button class="btn" onclick="downloadMold('inferior')">
+                馃摜 Descargar Parte Inferior (.stl)
+            </button>
         </div>
 
-        <button class="btn" id="generate" style="display: none;">🔧 Generar Molde Real</button>
+        <button class="btn" id="generateBtn" style="display: none;">
+            馃敡 Generar Molde Real
+        </button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
+        // Detecci贸n de dispositivo
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                         ('ontouchstart' in window);
+
+        // Variables globales
         let uploadedFile = null;
-        let originalGeometry = null;
-        let moldGeometry = null;
-        let scene, camera, renderer;
+        let stlGeometry = null;
+        let moldData = null;
+
+        // Referencias DOM
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const controls = document.getElementById('controls');
+        const generateBtn = document.getElementById('generateBtn');
+        const progress = document.getElementById('progress');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+        const result = document.getElementById('result');
+        const errorMsg = document.getElementById('errorMsg');
+        const status = document.getElementById('status');
+        const uploadText = document.getElementById('uploadText');
+
+        // Actualizar texto seg煤n dispositivo
+        if (isMobile) {
+            status.textContent = '馃摫 Optimizado para m贸vil | 鉁� Versi贸n corregida';
+            uploadText.textContent = 'Toca para seleccionar archivo STL';
+        } else {
+            status.textContent = '馃枼锔� Versi贸n desktop | 鉁� Drag & drop disponible';
+            uploadText.textContent = 'Arrastra tu STL aqu铆 o haz clic';
+        }
 
         // Sincronizar controles
-        function sync(slider, input) {
-            slider.oninput = () => input.value = slider.value;
-            input.oninput = () => slider.value = input.value;
-        }
-        sync(document.getElementById('wall'), document.getElementById('wallVal'));
-        sync(document.getElementById('tol'), document.getElementById('tolVal'));
-        sync(document.getElementById('key'), document.getElementById('keyVal'));
-        sync(document.getElementById('spacing'), document.getElementById('spacingVal'));
+        function syncControls() {
+            const pairs = [
+                ['wallThickness', 'wallValue'],
+                ['tolerance', 'toleranceValue'], 
+                ['keySize', 'keySizeValue'],
+                ['keySpacing', 'keySpacingValue']
+            ];
 
-        // Manejo de archivos
-        document.getElementById('file').onchange = function(e) {
+            pairs.forEach(([sliderId, inputId]) => {
+                const slider = document.getElementById(sliderId);
+                const input = document.getElementById(inputId);
+                
+                slider.addEventListener('input', () => input.value = slider.value);
+                input.addEventListener('input', () => slider.value = input.value);
+            });
+        }
+
+        // Configurar eventos
+        function setupEvents() {
+            uploadArea.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileSelect);
+            generateBtn.addEventListener('click', generateMold);
+
+            // Drag & drop para desktop
+            if (!isMobile) {
+                uploadArea.addEventListener('dragover', handleDragOver);
+                uploadArea.addEventListener('dragleave', handleDragLeave);
+                uploadArea.addEventListener('drop', handleDrop);
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#764ba2';
+            uploadArea.style.background = 'rgba(118, 75, 162, 0.15)';
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.style.borderColor = '#667eea';
+            uploadArea.style.background = 'rgba(102, 126, 234, 0.05)';
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            handleDragLeave(e);
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
             const file = e.target.files[0];
-            if (!file) return;
-            
+            if (file) processFile(file);
+        }
+
+        async function processFile(file) {
+            // Validaciones
             if (!file.name.toLowerCase().endsWith('.stl')) {
-                showError('❌ Por favor selecciona un archivo STL válido');
+                showError('鉂� Selecciona un archivo STL v谩lido');
                 return;
             }
-            
-            if (file.size > 30 * 1024 * 1024) {
-                showError('❌ Archivo muy grande (máximo 30MB)');
+
+            if (file.size > 25 * 1024 * 1024) {
+                showError('鉂� Archivo muy grande (m谩ximo 25MB)');
                 return;
             }
 
             uploadedFile = file;
-            loadAndParseSTL(file);
-        };
-
-        async function loadAndParseSTL(file) {
+            
             try {
-                showProgress(10, '📖 Leyendo archivo STL...');
+                showProgress(20, '馃摉 Leyendo archivo STL...');
                 
-                const arrayBuffer = await file.arrayBuffer();
-                showProgress(30, '🔍 Analizando geometría...');
+                const buffer = await file.arrayBuffer();
                 
-                originalGeometry = parseSTL(arrayBuffer);
+                showProgress(40, '馃攳 Analizando geometr铆a...');
+                stlGeometry = await parseSTL(buffer);
                 
-                if (!originalGeometry || originalGeometry.vertices.length === 0) {
-                    throw new Error('No se pudo procesar el archivo STL');
-                }
-
-                showProgress(50, '📐 Calculando dimensiones...');
+                showProgress(60, '馃搻 Calculando dimensiones...');
+                const stats = calculateStats(stlGeometry);
                 
-                // Mostrar información del archivo
-                document.querySelector('.upload').innerHTML = `
-                    <div style="font-size: 2em; color: #4caf50;">✅</div>
-                    <div style="font-weight: bold; margin: 5px 0;">${file.name}</div>
-                    <div style="font-size: 0.8em; color: #666;">${(file.size/1024/1024).toFixed(2)} MB</div>
+                showProgress(80, '鉁� Archivo procesado');
+                
+                // Actualizar UI
+                uploadArea.innerHTML = `
+                    <div style="font-size: 2em; color: #4caf50; margin-bottom: 10px;">鉁�</div>
+                    <div style="font-weight: bold; margin-bottom: 8px;">${file.name}</div>
+                    <div style="font-size: 0.8em; color: #666; margin-bottom: 10px;">
+                        ${(file.size / 1024 / 1024).toFixed(2)} MB
+                    </div>
                     <div class="info">
-                        <strong>📊 Análisis del STL:</strong><br>
-                        🔺 Triángulos: ${originalGeometry.triangleCount.toLocaleString()}<br>
-                        📏 Dimensiones: ${originalGeometry.bounds.width.toFixed(1)} × ${originalGeometry.bounds.height.toFixed(1)} × ${originalGeometry.bounds.depth.toFixed(1)} mm<br>
-                        💾 Volumen estimado: ${originalGeometry.volume.toFixed(2)} cm³
+                        <strong>馃搳 An谩lisis del STL:</strong><br>
+                        馃敽 Tri谩ngulos: ${stats.triangles.toLocaleString()}<br>
+                        馃搹 Dimensiones: ${stats.width} 脳 ${stats.height} 脳 ${stats.depth} mm<br>
+                        馃捑 Volumen: ${stats.volume} cm鲁
                     </div>
                 `;
 
-                document.getElementById('controls').style.display = 'block';
-                document.getElementById('generate').style.display = 'block';
+                controls.style.display = 'block';
+                generateBtn.style.display = 'block';
                 hideError();
                 hideResult();
                 hideProgress();
 
             } catch (error) {
-                showError('❌ Error procesando STL: ' + error.message);
+                showError('鉂� Error procesando STL: ' + error.message);
                 hideProgress();
             }
         }
 
-        function parseSTL(arrayBuffer) {
-            try {
-                const view = new DataView(arrayBuffer);
-                
-                // Verificar si es ASCII o binario
-                const header = new TextDecoder().decode(arrayBuffer.slice(0, 5));
-                
-                if (header.toLowerCase().startsWith('solid')) {
-                    return parseASCIISTL(arrayBuffer);
-                } else {
-                    return parseBinarySTL(arrayBuffer);
+        async function parseSTL(buffer) {
+            return new Promise((resolve, reject) => {
+                try {
+                    const dataView = new DataView(buffer);
+                    
+                    // Determinar si es binario o ASCII
+                    const header = new TextDecoder().decode(buffer.slice(0, 5));
+                    
+                    if (header.toLowerCase().startsWith('solid')) {
+                        resolve(parseASCIISTL(buffer));
+                    } else {
+                        resolve(parseBinarySTL(buffer));
+                    }
+                } catch (error) {
+                    reject(new Error('Formato STL no v谩lido'));
                 }
-            } catch (error) {
-                throw new Error('Formato STL no válido');
-            }
+            });
         }
 
-        function parseBinarySTL(arrayBuffer) {
-            const view = new DataView(arrayBuffer);
+        function parseBinarySTL(buffer) {
+            const view = new DataView(buffer);
             const triangleCount = view.getUint32(80, true);
             
             const vertices = [];
             const normals = [];
-            const faces = [];
             
             let minX = Infinity, minY = Infinity, minZ = Infinity;
             let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
@@ -317,8 +455,7 @@
                 const nz = view.getFloat32(offset + 8, true);
                 offset += 12;
                 
-                // Leer vértices
-                const vertexIndex = vertices.length / 3;
+                // Leer 3 v茅rtices del tri谩ngulo
                 for (let j = 0; j < 3; j++) {
                     const x = view.getFloat32(offset, true);
                     const y = view.getFloat32(offset + 4, true);
@@ -326,7 +463,6 @@
                     
                     vertices.push(x, y, z);
                     normals.push(nx, ny, nz);
-                    faces.push(vertexIndex + j);
                     
                     // Actualizar bounds
                     minX = Math.min(minX, x);
@@ -339,62 +475,49 @@
                     offset += 12;
                 }
                 
-                offset += 2; // Skip attribute byte count
+                offset += 2; // Skip attribute count
             }
-            
-            const bounds = {
-                minX, minY, minZ, maxX, maxY, maxZ,
-                width: maxX - minX,
-                height: maxY - minY,
-                depth: maxZ - minZ
-            };
             
             return {
                 vertices,
-                normals, 
-                faces,
+                normals,
                 triangleCount,
-                bounds,
-                volume: bounds.width * bounds.height * bounds.depth / 1000
+                bounds: { minX, minY, minZ, maxX, maxY, maxZ }
             };
         }
 
-        function parseASCIISTL(arrayBuffer) {
-            const text = new TextDecoder().decode(arrayBuffer);
+        function parseASCIISTL(buffer) {
+            const text = new TextDecoder().decode(buffer);
             const lines = text.split('\n');
             
             const vertices = [];
             const normals = [];
-            const faces = [];
             
             let minX = Infinity, minY = Infinity, minZ = Infinity;
             let maxX = -Infinity, maxY = -Infinity, maxZ = -Infinity;
             
             let currentNormal = [0, 0, 1];
-            let vertexCount = 0;
             let triangleCount = 0;
             
-            for (let line of lines) {
-                line = line.trim();
+            for (const line of lines) {
+                const trimmed = line.trim();
                 
-                if (line.startsWith('facet normal')) {
-                    const parts = line.split(' ');
+                if (trimmed.startsWith('facet normal')) {
+                    const parts = trimmed.split(' ');
                     currentNormal = [
                         parseFloat(parts[2]) || 0,
                         parseFloat(parts[3]) || 0,
                         parseFloat(parts[4]) || 1
                     ];
-                } else if (line.startsWith('vertex')) {
-                    const parts = line.split(' ');
+                } else if (trimmed.startsWith('vertex')) {
+                    const parts = trimmed.split(' ');
                     const x = parseFloat(parts[1]);
                     const y = parseFloat(parts[2]);
                     const z = parseFloat(parts[3]);
                     
                     vertices.push(x, y, z);
                     normals.push(...currentNormal);
-                    faces.push(vertexCount++);
                     
-                    // Actualizar bounds
                     minX = Math.min(minX, x);
                     minY = Math.min(minY, y);
                     minZ = Math.min(minZ, z);
@@ -402,615 +525,24 @@
                     maxY = Math.max(maxY, y);
                     maxZ = Math.max(maxZ, z);
                     
-                    if (vertexCount % 3 === 0) {
+                    if (vertices.length % 9 === 0) {
                         triangleCount++;
                     }
                 }
             }
             
-            const bounds = {
-                minX, minY, minZ, maxX, maxY, maxZ,
-                width: maxX - minX,
-                height: maxY - minY,
-                depth: maxZ - minZ
-            };
-            
             return {
                 vertices,
                 normals,
-                faces,
                 triangleCount,
-                bounds,
-                volume: bounds.width * bounds.height * bounds.depth / 1000
+                bounds: { minX, minY, minZ, maxX, maxY, maxZ }
             };
         }
 
-        // Generación real del molde
-        document.getElementById('generate').onclick = async function() {
-            if (!originalGeometry) {
-                showError('❌ Primero carga un archivo STL');
-                return;
-            }
-
-            this.disabled = true;
-            hideError();
-            hideResult();
-
-            try {
-                showProgress(10, '🏗️ Iniciando generación del molde...');
-                await delay(300);
-
-                showProgress(25, '📐 Expandiendo geometría para crear cavidad...');
-                const expandedGeometry = expandGeometryForMold();
-                await delay(500);
-
-                showProgress(40, '🔧 Creando paredes del molde...');
-                const moldWalls = createMoldWalls();
-                await delay(400);
-
-                showProgress(55, '✂️ Dividiendo molde en dos partes...');
-                const splitMolds = splitMoldInHalf(expandedGeometry, moldWalls);
-                await delay(400);
-
-                showProgress(70, '🔗 Generando encastres de conexión...');
-                addConnectionKeys(splitMolds);
-                await delay(500);
-
-                showProgress(85, '🎨 Renderizando vista previa...');
-                moldGeometry = splitMolds;
-                await renderMoldPreview();
-                await delay(300);
-
-                showProgress(100, '✅ ¡Molde completado!');
-                await delay(200);
-
-                showResult();
-                hideProgress();
-                this.disabled = false;
-
-            } catch (error) {
-                showError('❌ Error generando molde: ' + error.message);
-                hideProgress();
-                this.disabled = false;
-            }
-        };
-
-        function expandGeometryForMold() {
-            const wallThickness = parseFloat(document.getElementById('wallVal').value);
-            const tolerance = parseFloat(document.getElementById('tolVal').value);
-            const expansion = wallThickness + tolerance;
-
-            const expandedVertices = [];
-            const expandedFaces = [];
-
-            // Expandir cada vértice hacia afuera basado en su normal
-            for (let i = 0; i < originalGeometry.vertices.length; i += 3) {
-                const x = originalGeometry.vertices[i];
-                const y = originalGeometry.vertices[i + 1];
-                const z = originalGeometry.vertices[i + 2];
-
-                const nx = originalGeometry.normals[i];
-                const ny = originalGeometry.normals[i + 1];
-                const nz = originalGeometry.normals[i + 2];
-
-                // Expandir vértice
-                expandedVertices.push(
-                    x + nx * expansion,
-                    y + ny * expansion,
-                    z + nz * expansion
-                );
-            }
-
-            // Invertir caras para cavidad
-            for (let i = 0; i < originalGeometry.faces.length; i += 3) {
-                expandedFaces.push(
-                    originalGeometry.faces[i + 2],
-                    originalGeometry.faces[i + 1],
-                    originalGeometry.faces[i]
-                );
-            }
-
-            return {
-                vertices: expandedVertices,
-                faces: expandedFaces
-            };
-        }
-
-        function createMoldWalls() {
-            const wallThickness = parseFloat(document.getElementById('wallVal').value);
-            const bounds = originalGeometry.bounds;
-            
-            // Crear caja exterior del molde
-            const margin = wallThickness * 2;
-            const exteriorBounds = {
-                minX: bounds.minX - margin,
-                minY: bounds.minY - margin,
-                minZ: bounds.minZ - margin,
-                maxX: bounds.maxX + margin,
-                maxY: bounds.maxY + margin,
-                maxZ: bounds.maxZ + margin
-            };
-
-            return createBoxGeometry(exteriorBounds, wallThickness);
-        }
-
-        function createBoxGeometry(bounds, thickness) {
-            const vertices = [];
-            const faces = [];
-
-            // Crear vértices de caja hueca (paredes)
-            const outer = [
-                bounds.minX, bounds.minY, bounds.minZ,
-                bounds.maxX, bounds.minY, bounds.minZ,
-                bounds.maxX, bounds.maxY, bounds.minZ,
-                bounds.minX, bounds.maxY, bounds.minZ,
-                bounds.minX, bounds.minY, bounds.maxZ,
-                bounds.maxX, bounds.minY, bounds.maxZ,
-                bounds.maxX, bounds.maxY, bounds.maxZ,
-                bounds.minX, bounds.maxY, bounds.maxZ
-            ];
-
-            const inner = [
-                bounds.minX + thickness, bounds.minY + thickness, bounds.minZ + thickness,
-                bounds.maxX - thickness, bounds.minY + thickness, bounds.minZ + thickness,
-                bounds.maxX - thickness, bounds.maxY - thickness, bounds.minZ + thickness,
-                bounds.minX + thickness, bounds.maxY - thickness, bounds.minZ + thickness,
-                bounds.minX + thickness, bounds.minY + thickness, bounds.maxZ,
-                bounds.maxX - thickness, bounds.minY + thickness, bounds.maxZ,
-                bounds.maxX - thickness, bounds.maxY - thickness, bounds.maxZ,
-                bounds.minX + thickness, bounds.maxY - thickness, bounds.maxZ
-            ];
-
-            // Agregar vértices
-            for (let i = 0; i < outer.length; i += 3) {
-                vertices.push(outer[i], outer[i+1], outer[i+2]);
-            }
-            for (let i = 0; i < inner.length; i += 3) {
-                vertices.push(inner[i], inner[i+1], inner[i+2]);
-            }
-
-            // Crear caras de las paredes
-            const wallFaces = [
-                // Base exterior
-                [0,1,2], [0,2,3],
-                // Paredes exteriores
-                [0,4,5], [0,5,1],
-                [1,5,6], [1,6,2],
-                [2,6,7], [2,7,3],
-                [3,7,4], [3,4,0],
-                // Base interior (invertida)
-                [8,10,9], [8,11,10],
-                // Paredes interiores (invertidas)
-                [8,9,13], [13,9,12],
-                [9,10,14], [14,10,13],
-                [10,11,15], [15,11,14],
-                [11,8,12], [12,8,15]
-            ];
-
-            wallFaces.forEach(face => {
-                faces.push(...face);
-            });
-
-            return { vertices, faces };
-        }
-
-        function splitMoldInHalf(cavity, walls) {
-            const bounds = originalGeometry.bounds;
-            const splitZ = (bounds.minZ + bounds.maxZ) / 2;
-
-            return {
-                top: createTopHalf(cavity, walls, splitZ),
-                bottom: createBottomHalf(cavity, walls, splitZ),
-                combined: combineGeometries(cavity, walls)
-            };
-        }
-
-        function createTopHalf(cavity, walls, splitZ) {
-            // Filtrar geometría por encima del plano de división
-            const topVertices = [];
-            const topFaces = [];
-
-            // Procesar cavidad
-            for (let i = 0; i < cavity.vertices.length; i += 3) {
-                if (cavity.vertices[i + 2] >= splitZ) {
-                    topVertices.push(
-                        cavity.vertices[i],
-                        cavity.vertices[i + 1],
-                        cavity.vertices[i + 2]
-                    );
-                }
-            }
-
-            // Agregar paredes superiores
-            for (let i = 0; i < walls.vertices.length; i += 3) {
-                if (walls.vertices[i + 2] >= splitZ) {
-                    topVertices.push(
-                        walls.vertices[i],
-                        walls.vertices[i + 1],
-                        walls.vertices[i + 2]
-                    );
-                }
-            }
-
-            // Reconstruir índices de caras
-            for (let i = 0; i < topVertices.length / 3; i++) {
-                if (i % 3 === 0 && i + 2 < topVertices.length / 3) {
-                    topFaces.push(i, i + 1, i + 2);
-                }
-            }
-
-            return { vertices: topVertices, faces: topFaces };
-        }
-
-        function createBottomHalf(cavity, walls, splitZ) {
-            // Similar a createTopHalf pero para la parte inferior
-            const bottomVertices = [];
-            const bottomFaces = [];
-
-            for (let i = 0; i < cavity.vertices.length; i += 3) {
-                if (cavity.vertices[i + 2] <= splitZ) {
-                    bottomVertices.push(
-                        cavity.vertices[i],
-                        cavity.vertices[i + 1],
-                        cavity.vertices[i + 2]
-                    );
-                }
-            }
-
-            for (let i = 0; i < walls.vertices.length; i += 3) {
-                if (walls.vertices[i + 2] <= splitZ) {
-                    bottomVertices.push(
-                        walls.vertices[i],
-                        walls.vertices[i + 1],
-                        walls.vertices[i + 2]
-                    );
-                }
-            }
-
-            for (let i = 0; i < bottomVertices.length / 3; i++) {
-                if (i % 3 === 0 && i + 2 < bottomVertices.length / 3) {
-                    bottomFaces.push(i, i + 1, i + 2);
-                }
-            }
-
-            return { vertices: bottomVertices, faces: bottomFaces };
-        }
-
-        function combineGeometries(cavity, walls) {
-            const combinedVertices = [...cavity.vertices, ...walls.vertices];
-            const combinedFaces = [...cavity.faces];
-
-            const cavityVertexCount = cavity.vertices.length / 3;
-            for (let face of walls.faces) {
-                combinedFaces.push(face + cavityVertexCount);
-            }
-
-            return { vertices: combinedVertices, faces: combinedFaces };
-        }
-
-        function addConnectionKeys(splitMolds) {
-            const keySize = parseFloat(document.getElementById('keyVal').value);
-            const spacing = parseFloat(document.getElementById('spacingVal').value);
-            const bounds = originalGeometry.bounds;
-
-            // Calcular posiciones de encastres alrededor del perímetro
-            const perimeter = 2 * (bounds.width + bounds.height);
-            const keyCount = Math.floor(perimeter / spacing);
-            
-            const centerX = (bounds.minX + bounds.maxX) / 2;
-            const centerY = (bounds.minY + bounds.maxY) / 2;
-            const splitZ = (bounds.minZ + bounds.maxZ) / 2;
-
-            for (let i = 0; i < keyCount; i++) {
-                const angle = (i / keyCount) * 2 * Math.PI;
-                const radius = Math.min(bounds.width, bounds.height) / 2.5;
-                
-                const keyX = centerX + Math.cos(angle) * radius;
-                const keyY = centerY + Math.sin(angle) * radius;
-                
-                // Crear encastre macho en parte superior
-                const maleKey = createKeyGeometry(keyX, keyY, splitZ, keySize, true);
-                splitMolds.top.vertices.push(...maleKey.vertices);
-                
-                // Crear encastre hembra en parte inferior
-                const femaleKey = createKeyGeometry(keyX, keyY, splitZ, keySize, false);
-                splitMolds.bottom.vertices.push(...femaleKey.vertices);
-            }
-        }
-
-        function createKeyGeometry(x, y, z, size, isMale) {
-            const vertices = [];
-            const height = size * 0.6;
-            const radius = size / 2;
-            const segments = 8;
-            
-            // Crear geometría cilíndrica para encastre
-            for (let i = 0; i <= segments; i++) {
-                const angle = (i / segments) * 2 * Math.PI;
-                const offsetX = Math.cos(angle) * radius;
-                const offsetY = Math.sin(angle) * radius;
-                
-                if (isMale) {
-                    // Encastre macho (sobresale)
-                    vertices.push(
-                        x + offsetX, y + offsetY, z,
-                        x + offsetX, y + offsetY, z + height
-                    );
-                } else {
-                    // Encastre hembra (cavidad)
-                    vertices.push(
-                        x + offsetX, y + offsetY, z - height,
-                        x + offsetX, y + offsetY, z
-                    );
-                }
-            }
-            
-            return { vertices };
-        }
-
-        async function renderMoldPreview() {
-            const viewer = document.getElementById('viewer');
-            viewer.style.display = 'block';
-            
-            // Inicializar Three.js
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f0f0);
-            
-            camera = new THREE.PerspectiveCamera(75, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-            viewer.appendChild(renderer.domElement);
-            
-            // Crear geometría del molde para visualización
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(moldGeometry.combined.vertices, 3));
-            geometry.setIndex(moldGeometry.combined.faces);
-            geometry.computeVertexNormals();
-            
-            // Material del molde
-            const material = new THREE.MeshPhongMaterial({
-                color: 0x8bc34a,
-                transparent: true,
-                opacity: 0.8,
-                side: THREE.DoubleSide
-            });
-            
-            const moldMesh = new THREE.Mesh(geometry, material);
-            scene.add(moldMesh);
-            
-            // Centrar y escalar
-            const box = new THREE.Box3().setFromObject(moldMesh);
-            const center = box.getCenter(new THREE.Vector3());
-            moldMesh.position.sub(center);
-            
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 100 / maxDim;
-            moldMesh.scale.setScalar(scale);
-            
-            // Iluminación
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 10, 5);
-            scene.add(directionalLight);
-            
-            // Posicionar cámara
-            camera.position.set(50, 50, 50);
-            camera.lookAt(0, 0, 0);
-            
-            // Animación
-            function animate() {
-                requestAnimationFrame(animate);
-                moldMesh.rotation.y += 0.01;
-                renderer.render(scene, camera);
-            }
-            animate();
-        }
-
-        // Funciones de descarga con geometría real
-        function downloadMold(type) {
-            if (!moldGeometry) {
-                showError('❌ Primero genera el molde');
-                return;
-            }
-
-            let geometry, filename;
-            
-            switch(type) {
-                case 'completo':
-                    geometry = moldGeometry.combined;
-                    filename = `molde_completo_${uploadedFile.name}`;
-                    break;
-                case 'superior':
-                    geometry = moldGeometry.top;
-                    filename = `molde_superior_${uploadedFile.name}`;
-                    break;
-                case 'inferior':
-                    geometry = moldGeometry.bottom;
-                    filename = `molde_inferior_${uploadedFile.name}`;
-                    break;
-            }
-
-            const stlContent = generateRealSTL(geometry);
-            downloadFile(stlContent, filename);
-            
-            showDownloadSuccess(filename);
-        }
-
-        function generateRealSTL(geometry) {
-            let stl = `solid MoldGenerated_${new Date().getTime()}\n`;
-            
-            // Generar triángulos reales basados en la geometría del molde
-            for (let i = 0; i < geometry.faces.length; i += 3) {
-                const i1 = geometry.faces[i] * 3;
-                const i2 = geometry.faces[i + 1] * 3;
-                const i3 = geometry.faces[i + 2] * 3;
-                
-                // Verificar que los índices sean válidos
-                if (i1 + 2 < geometry.vertices.length && 
-                    i2 + 2 < geometry.vertices.length && 
-                    i3 + 2 < geometry.vertices.length) {
-                    
-                    const v1 = [geometry.vertices[i1], geometry.vertices[i1+1], geometry.vertices[i1+2]];
-                    const v2 = [geometry.vertices[i2], geometry.vertices[i2+1], geometry.vertices[i2+2]];
-                    const v3 = [geometry.vertices[i3], geometry.vertices[i3+1], geometry.vertices[i3+2]];
-                    
-                    // Calcular normal del triángulo
-                    const normal = calculateNormal(v1, v2, v3);
-                    
-                    stl += `  facet normal ${normal[0].toFixed(6)} ${normal[1].toFixed(6)} ${normal[2].toFixed(6)}\n`;
-                    stl += `    outer loop\n`;
-                    stl += `      vertex ${v1[0].toFixed(6)} ${v1[1].toFixed(6)} ${v1[2].toFixed(6)}\n`;
-                    stl += `      vertex ${v2[0].toFixed(6)} ${v2[1].toFixed(6)} ${v2[2].toFixed(6)}\n`;
-                    stl += `      vertex ${v3[0].toFixed(6)} ${v3[1].toFixed(6)} ${v3[2].toFixed(6)}\n`;
-                    stl += `    endloop\n`;
-                    stl += `  endfacet\n`;
-                }
-            }
-            
-            stl += `endsolid MoldGenerated_${new Date().getTime()}\n`;
-            return stl;
-        }
-
-        function calculateNormal(v1, v2, v3) {
-            // Calcular vectores del triángulo
-            const u = [v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]];
-            const v = [v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]];
-            
-            // Producto cruzado para obtener normal
-            const normal = [
-                u[1] * v[2] - u[2] * v[1],
-                u[2] * v[0] - u[0] * v[2],
-                u[0] * v[1] - u[1] * v[0]
-            ];
-            
-            // Normalizar
-            const length = Math.sqrt(normal[0]**2 + normal[1]**2 + normal[2]**2);
-            if (length > 0) {
-                normal[0] /= length;
-                normal[1] /= length;
-                normal[2] /= length;
-            }
-            
-            return normal;
-        }
-
-        function downloadFile(content, filename) {
-            const blob = new Blob([content], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Funciones de UI
-        function showProgress(percent, text) {
-            document.getElementById('progress').style.display = 'block';
-            document.getElementById('progressFill').style.width = percent + '%';
-            document.getElementById('progressText').textContent = text;
-        }
-
-        function hideProgress() {
-            document.getElementById('progress').style.display = 'none';
-        }
-
-        function showResult() {
-            const result = document.getElementById('result');
-            result.style.display = 'block';
-            
-            // Añadir estadísticas del molde generado
-            if (!result.querySelector('.info')) {
-                const info = document.createElement('div');
-                info.className = 'info';
-                info.innerHTML = `
-                    <strong>📊 Estadísticas del Molde:</strong><br>
-                    🔺 Triángulos originales: ${originalGeometry.triangleCount.toLocaleString()}<br>
-                    🏗️ Triángulos del molde: ${Math.floor(moldGeometry.combined.vertices.length / 9).toLocaleString()}<br>
-                    📏 Grosor aplicado: ${document.getElementById('wallVal').value}mm<br>
-                    🔧 Tolerancia: ${document.getElementById('tolVal').value}mm<br>
-                    🔗 Encastres: ${document.getElementById('keyVal').value}mm cada ${document.getElementById('spacingVal').value}mm<br>
-                    💾 Tamaño estimado: ${((moldGeometry.combined.vertices.length * 4) / 1024 / 1024).toFixed(2)} MB
-                `;
-                result.appendChild(info);
-            }
-        }
-
-        function hideResult() {
-            const result = document.getElementById('result');
-            result.style.display = 'none';
-            const info = result.querySelector('.info');
-            if (info) info.remove();
-        }
-
-        function showError(msg) {
-            document.getElementById('error').textContent = msg;
-            document.getElementById('error').style.display = 'block';
-            setTimeout(hideError, 5000);
-        }
-
-        function hideError() {
-            document.getElementById('error').style.display = 'none';
-        }
-
-        function showDownloadSuccess(filename) {
-            const msg = document.createElement('div');
-            msg.style.cssText = `
-                position: fixed; top: 20px; right: 20px; z-index: 1000;
-                background: #4caf50; color: white; padding: 12px 20px;
-                border-radius: 10px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            `;
-            msg.innerHTML = `✅ ${filename} descargado correctamente`;
-            document.body.appendChild(msg);
-            
-            setTimeout(() => {
-                if (document.body.contains(msg)) {
-                    document.body.removeChild(msg);
-                }
-            }, 4000);
-        }
-
-        function delay(ms) {
-            return new Promise(resolve => setTimeout(ms));
-        }
-
-        // Drag & drop para desktop
-        const upload = document.querySelector('.upload');
-        upload.ondragover = (e) => { 
-            e.preventDefault(); 
-            upload.style.borderColor = '#764ba2'; 
-            upload.style.background = 'rgba(118, 75, 162, 0.15)';
-        };
-        upload.ondragleave = (e) => { 
-            e.preventDefault(); 
-            upload.style.borderColor = '#667eea';
-            upload.style.background = 'rgba(102, 126, 234, 0.05)';
-        };
-        upload.ondrop = (e) => {
-            e.preventDefault();
-            upload.style.borderColor = '#667eea';
-            upload.style.background = 'rgba(102, 126, 234, 0.05)';
-            if (e.dataTransfer.files.length) {
-                document.getElementById('file').files = e.dataTransfer.files;
-                document.getElementById('file').dispatchEvent(new Event('change'));
-            }
-        };
-
-        // Responsive del viewer
-        window.addEventListener('resize', () => {
-            if (renderer && camera) {
-                const viewer = document.getElementById('viewer');
-                camera.aspect = viewer.clientWidth / viewer.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(viewer.clientWidth, viewer.clientHeight);
-            }
-        });
-    </script>
-</body>
-</html>
+        function calculateStats(geometry) {
+            const bounds = geometry.bounds;
+            const width = (bounds.maxX - bounds.minX).toFixed(1);
+            const height = (bounds.maxY - bounds.minY).toFixed(1);
+            const depth = (bounds.maxZ - bounds.minZ).toFixed(1);
+            const volume = ((bounds.maxX - bounds.minX) * 
+                          
