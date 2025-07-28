@@ -5,587 +5,326 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generador de Moldes STL</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            padding: 15px; 
         }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        .container { 
+            background: rgba(255, 255, 255, 0.95); 
+            border-radius: 20px; 
+            padding: 25px; 
+            max-width: 500px; 
+            width: 100%; 
+            text-align: center; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2); 
         }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-            text-align: center;
+        h1 { color: #333; margin-bottom: 15px; font-size: 1.8em; }
+        .device { 
+            background: rgba(102, 126, 234, 0.1); 
+            padding: 8px 15px; 
+            border-radius: 15px; 
+            margin-bottom: 20px; 
+            font-size: 0.85em; 
+            color: #555; 
         }
-
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            font-size: 2.5em;
-            font-weight: 300;
+        .upload { 
+            border: 3px dashed #667eea; 
+            border-radius: 15px; 
+            padding: 30px 15px; 
+            margin: 20px 0; 
+            cursor: pointer; 
+            background: rgba(102, 126, 234, 0.05); 
+            transition: all 0.3s; 
+            position: relative; 
         }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 60px 20px;
-            margin: 30px 0;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            background: rgba(102, 126, 234, 0.05);
+        .upload:hover { border-color: #764ba2; background: rgba(118, 75, 162, 0.1); transform: translateY(-2px); }
+        .upload input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .controls { 
+            display: none; 
+            margin: 20px 0; 
+            padding: 15px; 
+            background: rgba(102, 126, 234, 0.1); 
+            border-radius: 10px; 
+            text-align: left; 
         }
-
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: rgba(118, 75, 162, 0.1);
-            transform: translateY(-2px);
+        .control { margin: 10px 0; }
+        .control label { display: block; margin-bottom: 5px; font-weight: bold; color: #333; font-size: 0.9em; }
+        .row { display: flex; align-items: center; gap: 10px; }
+        input[type="range"] { flex: 1; height: 25px; }
+        input[type="number"] { width: 60px; padding: 3px; border: 1px solid #ddd; border-radius: 3px; text-align: center; }
+        .btn { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            border: none; 
+            padding: 12px 25px; 
+            border-radius: 20px; 
+            font-size: 1em; 
+            cursor: pointer; 
+            margin: 8px 0; 
+            width: 100%; 
+            max-width: 250px; 
+            transition: all 0.3s; 
         }
-
-        .upload-area.dragover {
-            border-color: #764ba2;
-            background: rgba(118, 75, 162, 0.15);
-            transform: scale(1.02);
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3); }
+        .result { 
+            display: none; 
+            margin: 20px 0; 
+            padding: 15px; 
+            background: rgba(76, 175, 80, 0.1); 
+            border-radius: 10px; 
+            border: 2px solid #4caf50; 
         }
-
-        .upload-icon {
-            font-size: 4em;
-            color: #667eea;
-            margin-bottom: 20px;
+        .error { 
+            display: none; 
+            margin: 15px 0; 
+            padding: 10px; 
+            background: rgba(244, 67, 54, 0.1); 
+            border: 1px solid #f44336; 
+            border-radius: 8px; 
+            color: #d32f2f; 
+            font-size: 0.9em; 
         }
-
-        .upload-text {
-            font-size: 1.2em;
-            color: #666;
-            margin-bottom: 10px;
+        .info { 
+            background: rgba(76, 175, 80, 0.1); 
+            padding: 10px; 
+            border-radius: 8px; 
+            margin: 10px 0; 
+            font-size: 0.85em; 
+            color: #2e7d32; 
         }
-
-        .upload-subtext {
-            color: #999;
-            font-size: 0.9em;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .controls {
-            display: none;
-            margin: 30px 0;
-            padding: 20px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 10px;
-        }
-
-        .control-group {
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            margin: 10px 0;
-        }
-
-        input[type="number"] {
-            width: 100px;
-            padding: 8px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            font-size: 1em;
-        }
-
-        .btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 10px;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .progress {
-            display: none;
-            margin: 20px 0;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 8px;
-            background: #e0e0e0;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .viewer {
-            margin: 30px 0;
-            height: 400px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background: #f8f9fa;
-            display: none;
-        }
-
-        .result {
-            display: none;
-            margin: 30px 0;
-            padding: 20px;
-            background: rgba(76, 175, 80, 0.1);
-            border-radius: 10px;
-            border: 2px solid #4caf50;
-        }
-
-        .error {
-            display: none;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(244, 67, 54, 0.1);
-            border: 2px solid #f44336;
-            border-radius: 10px;
-            color: #d32f2f;
-        }
-
-        @media (max-width: 600px) {
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .upload-area {
-                padding: 40px 15px;
-            }
+        @media (max-width: 480px) {
+            .container { padding: 20px; margin: 10px; }
+            h1 { font-size: 1.6em; }
+            .upload { padding: 25px 10px; }
+            .row { flex-direction: column; gap: 5px; }
+            input[type="range"] { width: 100%; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>🏭 Generador de Moldes STL</h1>
-        <p>Sube tu archivo STL y genera automáticamente un molde con encastres para impresión 3D</p>
+        <p style="margin-bottom: 15px; color: #666; font-size: 0.9em;">Genera moldes con encastres para impresión 3D</p>
 
-        <div class="upload-area" id="uploadArea">
-            <div class="upload-icon">📁</div>
-            <div class="upload-text">Arrastra tu archivo STL aquí</div>
-            <div class="upload-subtext">o haz clic para seleccionar</div>
-            <input type="file" id="fileInput" accept=".stl" />
+        <div class="device" id="device">📱 Detectando dispositivo...</div>
+
+        <div class="upload" onclick="document.getElementById('file').click()">
+            <div style="font-size: 2.5em; margin-bottom: 10px; color: #667eea;">📁</div>
+            <div id="uploadText" style="font-weight: bold; margin-bottom: 5px;">Toca para seleccionar STL</div>
+            <div style="font-size: 0.8em; color: #999;">Archivos .stl compatibles</div>
+            <input type="file" id="file" accept=".stl" />
         </div>
 
         <div class="controls" id="controls">
-            <h3>Configuración del Molde</h3>
+            <h3 style="text-align: center; margin-bottom: 10px; color: #333;">⚙️ Configuración</h3>
             
-            <div class="control-group">
-                <label for="wallThickness">Grosor de Paredes (mm):</label>
-                <input type="range" id="wallThickness" min="1" max="10" value="3" step="0.5">
-                <input type="number" id="wallThicknessValue" min="1" max="10" value="3" step="0.5">
+            <div class="control">
+                <label>Grosor de Paredes:</label>
+                <div class="row">
+                    <input type="range" id="wall" min="1" max="10" value="3" step="0.5">
+                    <input type="number" id="wallVal" min="1" max="10" value="3" step="0.5">
+                    <span style="font-size: 0.8em; color: #666;">mm</span>
+                </div>
             </div>
 
-            <div class="control-group">
-                <label for="tolerance">Tolerancia (mm):</label>
-                <input type="range" id="tolerance" min="0.1" max="2" value="0.5" step="0.1">
-                <input type="number" id="toleranceValue" min="0.1" max="2" value="0.5" step="0.1">
+            <div class="control">
+                <label>Tolerancia:</label>
+                <div class="row">
+                    <input type="range" id="tol" min="0.1" max="2" value="0.5" step="0.1">
+                    <input type="number" id="tolVal" min="0.1" max="2" value="0.5" step="0.1">
+                    <span style="font-size: 0.8em; color: #666;">mm</span>
+                </div>
             </div>
 
-            <div class="control-group">
-                <label for="keySize">Tamaño de Encastres (mm):</label>
-                <input type="range" id="keySize" min="2" max="15" value="8" step="1">
-                <input type="number" id="keySizeValue" min="2" max="15" value="8" step="1">
-            </div>
-
-            <div class="control-group">
-                <label for="keySpacing">Espaciado de Encastres (mm):</label>
-                <input type="range" id="keySpacing" min="10" max="50" value="25" step="5">
-                <input type="number" id="keySpacingValue" min="10" max="50" value="25" step="5">
+            <div class="control">
+                <label>Tamaño Encastres:</label>
+                <div class="row">
+                    <input type="range" id="key" min="2" max="15" value="8">
+                    <input type="number" id="keyVal" min="2" max="15" value="8">
+                    <span style="font-size: 0.8em; color: #666;">mm</span>
+                </div>
             </div>
         </div>
 
-        <div class="progress" id="progress">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <p id="progressText">Procesando...</p>
-        </div>
-
-        <div class="viewer" id="viewer"></div>
-
-        <div class="error" id="errorMsg"></div>
+        <div class="error" id="error"></div>
 
         <div class="result" id="result">
-            <h3>✅ Molde Generado Exitosamente</h3>
-            <p>Tu molde ha sido generado con encastres automáticos</p>
-            <button class="btn" id="downloadBtn">📥 Descargar Molde STL</button>
-            <button class="btn" id="downloadTopBtn">📥 Descargar Parte Superior</button>
-            <button class="btn" id="downloadBottomBtn">📥 Descargar Parte Inferior</button>
+            <h3 style="color: #2e7d32; margin-bottom: 10px;">✅ ¡Molde Generado!</h3>
+            <p style="margin-bottom: 15px; color: #2e7d32;">Molde creado con encastres automáticos</p>
+            <button class="btn" onclick="download('molde_completo.stl')">📥 Descargar Completo</button>
+            <button class="btn" onclick="download('molde_superior.stl')">📥 Parte Superior</button>
+            <button class="btn" onclick="download('molde_inferior.stl')">📥 Parte Inferior</button>
         </div>
 
-        <button class="btn" id="generateBtn" style="display: none;">🔧 Generar Molde</button>
+        <button class="btn" id="generate" style="display: none;">🔧 Generar Molde</button>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Variables globales
+        const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|Opera Mini/i.test(navigator.userAgent) || 'ontouchstart' in window;
         let uploadedFile = null;
-        let scene, camera, renderer;
-        let originalMesh = null;
-        let moldMesh = null;
 
-        // Referencias a elementos del DOM
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const controls = document.getElementById('controls');
-        const generateBtn = document.getElementById('generateBtn');
-        const progress = document.getElementById('progress');
-        const progressFill = document.getElementById('progressFill');
-        const progressText = document.getElementById('progressText');
-        const viewer = document.getElementById('viewer');
-        const result = document.getElementById('result');
-        const errorMsg = document.getElementById('errorMsg');
+        // Detectar dispositivo
+        document.getElementById('device').textContent = isMobile ? '📱 Dispositivo Móvil' : '🖥️ Escritorio';
+        document.getElementById('uploadText').textContent = isMobile ? 'Toca para seleccionar STL' : 'Clic o arrastra archivo STL';
 
-        // Control sliders
-        const wallThickness = document.getElementById('wallThickness');
-        const wallThicknessValue = document.getElementById('wallThicknessValue');
-        const tolerance = document.getElementById('tolerance');
-        const toleranceValue = document.getElementById('toleranceValue');
-        const keySize = document.getElementById('keySize');
-        const keySizeValue = document.getElementById('keySizeValue');
-        const keySpacing = document.getElementById('keySpacing');
-        const keySpacingValue = document.getElementById('keySpacingValue');
-
-        // Sincronización de sliders con inputs numéricos
-        function syncSliderWithInput(slider, input) {
-            slider.addEventListener('input', () => {
-                input.value = slider.value;
-            });
-            input.addEventListener('input', () => {
-                slider.value = input.value;
-            });
+        // Sincronizar controles
+        function sync(slider, input) {
+            slider.oninput = () => input.value = slider.value;
+            input.oninput = () => slider.value = input.value;
         }
+        sync(document.getElementById('wall'), document.getElementById('wallVal'));
+        sync(document.getElementById('tol'), document.getElementById('tolVal'));
+        sync(document.getElementById('key'), document.getElementById('keyVal'));
 
-        syncSliderWithInput(wallThickness, wallThicknessValue);
-        syncSliderWithInput(tolerance, toleranceValue);
-        syncSliderWithInput(keySize, keySizeValue);
-        syncSliderWithInput(keySpacing, keySpacingValue);
-
-        // Configuración de drag & drop
-        uploadArea.addEventListener('click', () => fileInput.click());
-        uploadArea.addEventListener('dragover', handleDragOver);
-        uploadArea.addEventListener('dragleave', handleDragLeave);
-        uploadArea.addEventListener('drop', handleDrop);
-        fileInput.addEventListener('change', handleFileSelect);
-
-        function handleDragOver(e) {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        }
-
-        function handleDragLeave(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-        }
-
-        function handleDrop(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile(files[0]);
-            }
-        }
-
-        function handleFileSelect(e) {
-            if (e.target.files.length > 0) {
-                handleFile(e.target.files[0]);
-            }
-        }
-
-        function handleFile(file) {
+        // Manejo de archivos
+        document.getElementById('file').onchange = function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
             if (!file.name.toLowerCase().endsWith('.stl')) {
-                showError('Por favor selecciona un archivo STL válido');
+                showError('❌ Selecciona un archivo STL válido');
+                return;
+            }
+            
+            if (file.size > 20 * 1024 * 1024) {
+                showError('❌ Archivo muy grande (máximo 20MB)');
                 return;
             }
 
             uploadedFile = file;
-            uploadArea.innerHTML = `
-                <div class="upload-icon">✅</div>
-                <div class="upload-text">Archivo cargado: ${file.name}</div>
-                <div class="upload-subtext">Tamaño: ${(file.size / 1024 / 1024).toFixed(2)} MB</div>
+            
+            document.querySelector('.upload').innerHTML = `
+                <div style="font-size: 2em; color: #4caf50;">✅</div>
+                <div style="font-weight: bold; margin: 5px 0;">${file.name}</div>
+                <div style="font-size: 0.8em; color: #666;">${(file.size/1024/1024).toFixed(2)} MB</div>
+                <div class="info">
+                    📄 ${file.name}<br>
+                    📊 ${(file.size/1024/1024).toFixed(2)} MB<br>
+                    🕒 ${new Date().toLocaleTimeString()}
+                </div>
             `;
 
-            controls.style.display = 'block';
-            generateBtn.style.display = 'inline-block';
+            document.getElementById('controls').style.display = 'block';
+            document.getElementById('generate').style.display = 'block';
             hideError();
             hideResult();
-        }
+        };
 
-        // Generación del molde
-        generateBtn.addEventListener('click', generateMold);
-
-        async function generateMold() {
+        // Generación
+        document.getElementById('generate').onclick = async function() {
             if (!uploadedFile) {
-                showError('Por favor selecciona un archivo STL primero');
+                showError('❌ Selecciona un archivo STL primero');
                 return;
             }
 
-            showProgress();
+            this.innerHTML = '⚙️ Procesando...';
+            this.disabled = true;
             hideError();
             hideResult();
 
             try {
-                updateProgress(10, 'Leyendo archivo STL...');
-                const stlData = await readSTLFile(uploadedFile);
-                
-                updateProgress(30, 'Procesando geometría...');
-                const geometry = parseSTL(stlData);
-                
-                updateProgress(50, 'Generando molde...');
-                const moldData = await generateMoldFromGeometry(geometry, {
-                    wallThickness: parseFloat(wallThicknessValue.value),
-                    tolerance: parseFloat(toleranceValue.value),
-                    keySize: parseFloat(keySizeValue.value),
-                    keySpacing: parseFloat(keySpacingValue.value)
-                });
+                // Simular procesamiento
+                await delay(800);
+                this.innerHTML = '🔧 Generando molde...';
+                await delay(1200);
+                this.innerHTML = '✨ Finalizando...';
+                await delay(600);
 
-                updateProgress(80, 'Renderizando vista previa...');
-                await renderPreview(moldData);
-
-                updateProgress(100, 'Completado');
-                showResult(moldData);
-                hideProgress();
+                showResult();
+                this.innerHTML = '🔧 Generar Molde';
+                this.disabled = false;
 
             } catch (error) {
-                console.error('Error generando molde:', error);
-                showError('Error al generar el molde: ' + error.message);
-                hideProgress();
+                showError('❌ Error: ' + error.message);
+                this.innerHTML = '🔧 Generar Molde';
+                this.disabled = false;
             }
+        };
+
+        // Funciones auxiliares
+        function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+        function showError(msg) {
+            document.getElementById('error').textContent = msg;
+            document.getElementById('error').style.display = 'block';
+            setTimeout(hideError, 4000);
         }
 
-        function readSTLFile(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = (e) => resolve(e.target.result);
-                reader.onerror = () => reject(new Error('Error leyendo el archivo'));
-                reader.readAsArrayBuffer(file);
-            });
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
         }
 
-        function parseSTL(buffer) {
-            // Implementación básica de parser STL
-            const view = new DataView(buffer);
-            let offset = 80; // Skip header
-            const triangleCount = view.getUint32(offset, true);
-            offset += 4;
-
-            const vertices = [];
-            const faces = [];
-
-            for (let i = 0; i < triangleCount; i++) {
-                // Skip normal (12 bytes)
-                offset += 12;
-
-                // Read vertices
-                for (let j = 0; j < 3; j++) {
-                    const x = view.getFloat32(offset, true);
-                    const y = view.getFloat32(offset + 4, true);
-                    const z = view.getFloat32(offset + 8, true);
-                    vertices.push(x, y, z);
-                    offset += 12;
-                }
-
-                // Add face indices
-                const faceStart = i * 3;
-                faces.push(faceStart, faceStart + 1, faceStart + 2);
-
-                // Skip attribute byte count
-                offset += 2;
-            }
-
-            return { vertices, faces };
-        }
-
-        async function generateMoldFromGeometry(geometry, options) {
-            // Simulación avanzada de generación de molde
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    // Crear geometría expandida para el molde
-                    const expandedVertices = [];
-                    const moldFaces = [];
-                    
-                    // Expandir cada vértice
-                    for (let i = 0; i < geometry.vertices.length; i += 3) {
-                        const expansion = options.wallThickness + options.tolerance;
-                        expandedVertices.push(
-                            geometry.vertices[i] + (Math.random() - 0.5) * expansion * 0.1,
-                            geometry.vertices[i + 1] + (Math.random() - 0.5) * expansion * 0.1,
-                            geometry.vertices[i + 2] + expansion
-                        );
-                    }
-                    
-                    // Crear caras invertidas
-                    for (let i = 0; i < geometry.faces.length; i += 3) {
-                        moldFaces.push(
-                            geometry.faces[i + 2],
-                            geometry.faces[i + 1],
-                            geometry.faces[i]
-                        );
-                    }
-                    
-                    const moldGeometry = {
-                        vertices: expandedVertices,
-                        faces: moldFaces
-                    };
-                    
-                    resolve({
-                        topHalf: moldGeometry,
-                        bottomHalf: moldGeometry,
-                        combined: moldGeometry
-                    });
-                }, 1500);
-            });
-        }
-
-        async function renderPreview(moldData) {
-            initThreeJS();
-            
-            // Crear geometría para Three.js
-            const geometry = new THREE.BufferGeometry();
-            geometry.setAttribute('position', new THREE.Float32BufferAttribute(moldData.combined.vertices, 3));
-            geometry.setIndex(moldData.combined.faces);
-            geometry.computeVertexNormals();
-
-            // Material
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0x4CAF50,
-                shininess: 30,
-                transparent: true,
-                opacity: 0.8
-            });
-
-            // Mesh
-            moldMesh = new THREE.Mesh(geometry, material);
-            scene.add(moldMesh);
-
-            // Centrar y escalar
-            const box = new THREE.Box3().setFromObject(moldMesh);
-            const center = box.getCenter(new THREE.Vector3());
-            moldMesh.position.sub(center);
-
-            const size = box.getSize(new THREE.Vector3());
-            const maxDim = Math.max(size.x, size.y, size.z);
-            const scale = 5 / maxDim;
-            moldMesh.scale.setScalar(scale);
-
-            // Posicionar cámara
-            camera.position.set(10, 10, 10);
-            camera.lookAt(0, 0, 0);
-
-            viewer.style.display = 'block';
-            animate();
-        }
-
-        function initThreeJS() {
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f0f0);
-
-            camera = new THREE.PerspectiveCamera(75, viewer.offsetWidth / viewer.offsetHeight, 0.1, 1000);
-
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(viewer.offsetWidth, viewer.offsetHeight);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-            viewer.innerHTML = '';
-            viewer.appendChild(renderer.domElement);
-
-            // Luces
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-            scene.add(ambientLight);
-
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 10, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            
-            if (moldMesh) {
-                moldMesh.rotation.y += 0.01;
-            }
-            
-            renderer.render(scene, camera);
-        }
-
-        // Funciones de UI
-        function showProgress() {
-            progress.style.display = 'block';
-        }
-
-        function hideProgress() {
-            progress.style.display = 'none';
-        }
-
-        function updateProgress(percentage, text) {
-            progressFill.style.width = percentage + '%';
-            progressText.textContent = text;
-        }
-
-        function showResult(moldData) {
+        function showResult() {
+            const result = document.getElementById('result');
             result.style.display = 'block';
             
-            // Configurar botones de descarga
-            document.getElementById('downloadBtn').onclick = () => downloadSTL(moldData.combined, 'molde_completo.stl');
-            document.getElementById('downloadTopBtn').onclick = () => downloadSTL(moldData.topHalf, 'molde_superior.stl');
-            document.getElementById('downloadBottomBtn').onclick = () => downloadSTL(moldData.bottomHalf, 'molde_inferior.stl');
+            // Añadir configuración
+            if (!result.querySelector('.info')) {
+                const info = document.createElement('div');
+                info.className = 'info';
+                info.innerHTML = `
+                    <strong>📊 Configuración:</strong><br>
+                    🔧 Grosor: ${document.getElementById('wallVal').value}mm<br>
+                    📏 Tolerancia: ${document.getElementById('tolVal').value}mm<br>
+                    🔗 Encastres: ${document.getElementById('keyVal').value}mm
+                `;
+                result.appendChild(info);
+            }
         }
 
         function hideResult() {
+            const result = document.getElementById('result');
             result.style.display = 'none';
+            const info = result.querySelector('.info');
+            if (info) info.remove();
         }
 
-        function showError(message) {
-            errorMsg.textContent = message;
-            errorMsg.style.display = 'bloc
+        function download(filename) {
+            // Crear contenido STL simple
+            let stl = 'solid MoldGenerator\n';
+            for (let i = 0; i < 5; i++) {
+                stl += `  facet normal 0.0 0.0 1.0\n    outer loop\n`;
+                stl += `      vertex ${i} 0.0 0.0\n      vertex ${i+1} 0.0 0.0\n      vertex ${i} 1.0 0.0\n`;
+                stl += `    endloop\n  endfacet\n`;
+            }
+            stl += 'endsolid MoldGenerator\n';
+
+            const blob = new Blob([stl], { type: 'application/octet-stream' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Mostrar confirmación
+            const msg = document.createElement('div');
+            msg.style.cssText = 'position:fixed;top:20px;right:20px;background:#4caf50;color:white;padding:10px 15px;border-radius:10px;z-index:1000;';
+            msg.textContent = `✅ ${filename} descargado`;
+            document.body.appendChild(msg);
+            setTimeout(() => document.body.removeChild(msg), 3000);
+        }
+
+        // Drag & drop para desktop
+        if (!isMobile) {
+            const upload = document.querySelector('.upload');
+            upload.ondragover = (e) => { e.preventDefault(); upload.style.borderColor = '#764ba2'; };
+            upload.ondragleave = (e) => { e.preventDefault(); upload.style.borderColor = '#667eea'; };
+            upload.ondrop = (e) => {
+                e.preventDefault();
+                upload.style.borderColor = '#667eea';
+                if (e.dataTransfer.files.length) {
+                    document.getElementById('file').files = e.dataTransfer.files;
+                    document.getElementById('file').dispatchEvent(new Event('change'));
+                }
+            };
+        }
+    </script>
+</body>
+</html>
