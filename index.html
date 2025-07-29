@@ -153,9 +153,59 @@
             background: rgba(0, 201, 255, 0.1);
         }
 
-        .upload-area.dragover {
-            border-color: var(--success);
-            background: rgba(0, 184, 148, 0.1);
+        .file-input-mobile {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+        
+        .file-label {
+            position: relative;
+            z-index: 5;
+            pointer-events: none;
+        }
+        
+        /* En m車viles, hacer que el input sea m芍s accesible */
+        @media (max-width: 768px) {
+            .file-input-mobile {
+                position: static;
+                opacity: 1;
+                width: auto;
+                height: auto;
+                margin: 10px auto;
+                display: block;
+                background: var(--secondary);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                border: none;
+                font-size: 1rem;
+                cursor: pointer;
+            }
+            
+            .file-label {
+                display: none;
+            }
+            
+            .upload-area h3 {
+                margin-bottom: 20px;
+            }
+            
+            .file-input-mobile::file-selector-button {
+                background: var(--secondary);
+                color: white;
+                border: none;
+                padding: 12px 24px;
+                border-radius: 25px;
+                font-size: 1rem;
+                cursor: pointer;
+                margin-right: 10px;
+            }
         }
 
         .upload-area i {
@@ -471,10 +521,12 @@
                 <h2 class="card-title"><i class="fas fa-cloud-upload-alt"></i> Cargar Modelo</h2>
                 <div class="upload-area" id="uploadArea">
                     <i class="fas fa-file-upload"></i>
-                    <h3>Arrastra tu archivo STL aqu赤</h3>
-                    <p>o haz clic para seleccionar un archivo</p>
-                    <button class="btn"><i class="fas fa-folder-open"></i> Seleccionar Archivo</button>
-                    <input type="file" id="fileInput" accept=".stl" style="display: none;">
+                    <h3>Selecciona tu archivo STL</h3>
+                    <p>Toca el bot車n para elegir un archivo</p>
+                    <input type="file" id="fileInput" accept=".stl" class="file-input-mobile">
+                    <label for="fileInput" class="btn file-label">
+                        <i class="fas fa-folder-open"></i> Seleccionar Archivo STL
+                    </label>
                 </div>
                 
                 <div class="file-info" id="fileInfo">
@@ -720,58 +772,38 @@
 
         // Configurar event listeners
         function setupEventListeners() {
-            // Manejo de archivos
+            // Manejo de archivos - enfoque simplificado
             fileInput.addEventListener('change', handleFileSelect);
             
-            // Evento para el 芍rea de carga y el bot車n
-            uploadArea.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            });
-            
-            // Tambi谷n agregar evento espec赤fico al bot車n interno
-            const uploadButton = uploadArea.querySelector('.btn');
-            if (uploadButton) {
-                uploadButton.addEventListener('click', function(e) {
+            // Para escritorio - drag and drop
+            if (window.innerWidth > 768) {
+                uploadArea.addEventListener('dragover', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    fileInput.click();
+                    uploadArea.classList.add('dragover');
                 });
                 
-                // Para dispositivos t芍ctiles
-                uploadButton.addEventListener('touchend', function(e) {
+                uploadArea.addEventListener('dragleave', function() {
+                    uploadArea.classList.remove('dragover');
+                });
+                
+                uploadArea.addEventListener('drop', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    fileInput.click();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFile(files[0]);
+                    }
+                });
+                
+                // Solo en escritorio, hacer que el 芍rea sea clickeable
+                uploadArea.addEventListener('click', function(e) {
+                    if (e.target === uploadArea || e.target.closest('.upload-area') === uploadArea) {
+                        if (!e.target.closest('input[type="file"]')) {
+                            fileInput.click();
+                        }
+                    }
                 });
             }
-            
-            // Para dispositivos t芍ctiles en el 芍rea completa
-            uploadArea.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                fileInput.click();
-            });
-            
-            // Drag and drop (principalmente para escritorio)
-            uploadArea.addEventListener('dragover', function(e) {
-                e.preventDefault();
-                uploadArea.classList.add('dragover');
-            });
-            
-            uploadArea.addEventListener('dragleave', function() {
-                uploadArea.classList.remove('dragover');
-            });
-            
-            uploadArea.addEventListener('drop', function(e) {
-                e.preventDefault();
-                uploadArea.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length > 0) {
-                    handleFile(files[0]);
-                }
-            });
             
             // Botones de acci車n
             generateBtn.addEventListener('click', generateMold);
