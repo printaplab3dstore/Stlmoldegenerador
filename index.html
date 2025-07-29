@@ -692,40 +692,96 @@
         // Inicializar el visor 3D
         function initializeViewer() {
             const viewerElement = document.getElementById('viewer');
+            
+            // Obtener dimensiones reales del contenedor
             const rect = viewerElement.getBoundingClientRect();
+            const width = rect.width || 300;
+            const height = rect.height || 300;
             
-            // Configurar la escena
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0xf0f0f0);
-            
-            // Configurar la c芍mara
-            camera = new THREE.PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000);
-            camera.position.set(10, 10, 10);
-            
-            // Configurar el renderizador
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(rect.width, rect.height);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            viewerElement.appendChild(renderer.domElement);
-            
-            // Agregar luces
-            const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
-            scene.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(10, 10, 5);
-            directionalLight.castShadow = true;
-            scene.add(directionalLight);
-            
-            // Agregar controles b芍sicos de c芍mara
-            setupCameraControls();
-            
-            // Renderizar la escena inicial
-            animate();
+            try {
+                // Configurar la escena
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color(0xf0f0f0);
+                
+                // Configurar la c芍mara
+                camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+                camera.position.set(10, 10, 10);
+                
+                // Configurar el renderizador con configuraci車n m車vil optimizada
+                renderer = new THREE.WebGLRenderer({ 
+                    antialias: !isMobile(), // Desactivar antialiasing en m車viles
+                    alpha: true,
+                    preserveDrawingBuffer: true
+                });
+                
+                renderer.setSize(width, height);
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limitar pixel ratio
+                
+                // Configurar sombras solo en escritorio
+                if (!isMobile()) {
+                    renderer.shadowMap.enabled = true;
+                    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+                }
+                
+                viewerElement.appendChild(renderer.domElement);
+                
+                // Agregar luces
+                const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+                scene.add(ambientLight);
+                
+                const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                directionalLight.position.set(10, 10, 5);
+                
+                if (!isMobile()) {
+                    directionalLight.castShadow = true;
+                }
+                
+                scene.add(directionalLight);
+                
+                // Configurar controles de c芍mara
+                setupCameraControls();
+                
+                // Iniciar animaci車n
+                animate();
+                
+                console.log('Visor 3D inicializado correctamente');
+                
+            } catch (error) {
+                console.error('Error inicializando visor 3D:', error);
+                // Crear un canvas de fallback
+                createFallbackViewer(viewerElement);
+            }
             
             // Manejar redimensionamiento
             window.addEventListener('resize', onWindowResize);
+        }
+
+        // Detectar si es dispositivo m車vil
+        function isMobile() {
+            return window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        }
+
+        // Crear visor de fallback para casos de error
+        function createFallbackViewer(container) {
+            container.innerHTML = `
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                    background: #f0f0f0;
+                    color: #666;
+                    text-align: center;
+                    padding: 20px;
+                    border-radius: 10px;
+                ">
+                    <div>
+                        <i class="fas fa-cube" style="font-size: 3rem; margin-bottom: 10px; color: #2575fc;"></i>
+                        <p>Vista previa no disponible</p>
+                        <small>El modelo se procesar芍 correctamente</small>
+                    </div>
+                </div>
+            `;
         }
 
         // Configurar controles de c芍mara b芍sicos
@@ -1012,56 +1068,75 @@
 
         // Crear geometr赤a del molde (versi車n simplificada)
         function createMoldGeometry() {
-            if (!originalGeometry) return;
-            
-            // Para esta demostraci車n, creamos una caja que contiene el objeto original
-            originalGeometry.computeBoundingBox();
-            const box = originalGeometry.boundingBox;
-            const size = box.getSize(new THREE.Vector3());
-            const center = box.getCenter(new THREE.Vector3());
-            
-            // Obtener configuraciones
-            const wallThickness = parseFloat(wallInput.value);
-            const tolerance = parseFloat(tolInput.value);
-            const keySize = parseFloat(keyInput.value);
-            
-            // Crear geometr赤a de la caja exterior
-            const outerSize = {
-                x: size.x + (wallThickness + tolerance) * 2,
-                y: size.y + (wallThickness + tolerance) * 2,
-                z: size.z + (wallThickness + tolerance) * 2
-            };
-            
-            const moldGeometry = new THREE.BoxGeometry(outerSize.x, outerSize.y, outerSize.z);
-            
-            // Crear material del molde
-            const moldMaterial = new THREE.MeshLambertMaterial({
-                color: 0x00b894,
-                transparent: true,
-                opacity: 0.6,
-                wireframe: true
-            });
-            
-            // Remover mesh anterior si existe
-            if (currentMesh) {
-                scene.remove(currentMesh);
+            try {
+                if (!originalGeometry) {
+                    console.error('No hay geometr赤a original');
+                    return;
+                }
+                
+                console.log('Creando geometr赤a del molde...');
+                
+                // Para esta demostraci車n, creamos una caja que contiene el objeto original
+                originalGeometry.computeBoundingBox();
+                const box = originalGeometry.boundingBox;
+                const size = box.getSize(new THREE.Vector3());
+                const center = box.getCenter(new THREE.Vector3());
+                
+                // Obtener configuraciones
+                const wallThickness = parseFloat(wallInput.value) || 5;
+                const tolerance = parseFloat(tolInput.value) || 0.8;
+                const keySize = parseFloat(keyInput.value) || 10;
+                
+                // Crear geometr赤a de la caja exterior
+                const outerSize = {
+                    x: size.x + (wallThickness + tolerance) * 2,
+                    y: size.y + (wallThickness + tolerance) * 2,
+                    z: size.z + (wallThickness + tolerance) * 2
+                };
+                
+                const moldGeometry = new THREE.BoxGeometry(outerSize.x, outerSize.y, outerSize.z);
+                
+                // Solo intentar mostrar en 3D si el renderer est芍 disponible
+                if (renderer && scene) {
+                    // Crear material del molde
+                    const moldMaterial = new THREE.MeshLambertMaterial({
+                        color: 0x00b894,
+                        transparent: true,
+                        opacity: 0.6,
+                        wireframe: true
+                    });
+                    
+                    // Remover mesh anterior si existe
+                    if (currentMesh) {
+                        scene.remove(currentMesh);
+                    }
+                    
+                    // Crear y agregar el mesh del molde
+                    currentMesh = new THREE.Mesh(moldGeometry, moldMaterial);
+                    scene.add(currentMesh);
+                    
+                    // Tambi谷n mantener el objeto original visible
+                    const originalMaterial = new THREE.MeshLambertMaterial({
+                        color: 0x2575fc,
+                        transparent: true,
+                        opacity: 0.8
+                    });
+                    
+                    const originalMesh = new THREE.Mesh(originalGeometry, originalMaterial);
+                    scene.add(originalMesh);
+                } else {
+                    console.log('Renderer no disponible, molde creado sin visualizaci車n');
+                }
+                
+                // Guardar referencia global (corregir variable)
+                moldGeometry = moldGeometry;
+                
+                console.log('Geometr赤a del molde creada exitosamente');
+                
+            } catch (error) {
+                console.error('Error creando geometr赤a del molde:', error);
+                // Continuar sin visualizaci車n 3D
             }
-            
-            // Crear y agregar el mesh del molde
-            currentMesh = new THREE.Mesh(moldGeometry, moldMaterial);
-            scene.add(currentMesh);
-            
-            // Tambi谷n mantener el objeto original visible
-            const originalMaterial = new THREE.MeshLambertMaterial({
-                color: 0x2575fc,
-                transparent: true,
-                opacity: 0.8
-            });
-            
-            const originalMesh = new THREE.Mesh(originalGeometry, originalMaterial);
-            scene.add(originalMesh);
-            
-            moldGeometry = moldGeometry; // Guardar referencia global
         }
 
         // Mostrar resultados
@@ -1230,18 +1305,33 @@
 
         // Animaci車n de renderizado
         function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
+            try {
+                requestAnimationFrame(animate);
+                if (renderer && scene && camera) {
+                    renderer.render(scene, camera);
+                }
+            } catch (error) {
+                console.error('Error en animaci車n:', error);
+                // Detener la animaci車n si hay errores
+            }
         }
 
         // Manejar redimensionamiento de ventana
         function onWindowResize() {
-            const viewerElement = document.getElementById('viewer');
-            const rect = viewerElement.getBoundingClientRect();
-            
-            camera.aspect = rect.width / rect.height;
-            camera.updateProjectionMatrix();
-            renderer.setSize(rect.width, rect.height);
+            try {
+                const viewerElement = document.getElementById('viewer');
+                if (!viewerElement || !camera || !renderer) return;
+                
+                const rect = viewerElement.getBoundingClientRect();
+                const width = rect.width || 300;
+                const height = rect.height || 300;
+                
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            } catch (error) {
+                console.error('Error en resize:', error);
+            }
         }
     </script>
 </body>
