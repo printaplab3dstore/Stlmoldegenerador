@@ -2,10 +2,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Molde STL Bipartido</title>
+  <title>Generador de Molde STL Bipartido Vertical</title>
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/STLLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/exporters/STLExporter.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/manthrax/THREE-CSGMesh/three-csg.js"></script>
   <style>
     body {
       background: #111;
@@ -28,7 +29,7 @@
     .controls {
       margin-top: 20px;
     }
-    button, input[type="file"] {
+    button, input[type="file"], input[type="number"] {
       margin: 5px;
       padding: 10px 15px;
       border: none;
@@ -40,11 +41,18 @@
     button:hover {
       background: #555;
     }
+    label {
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
-  <h1>🧱 Generador de Molde STL Bipartido</h1>
+  <h1>🧱 Generador de Molde STL Vertical con Encastres</h1>
   <input type="file" id="stlInput" accept=".stl" />
+  <div>
+    <label>📏 Diámetro del pin (mm):</label>
+    <input type="number" id="pinSize" value="5" min="1" step="1" />
+  </div>
   <div class="controls">
     <button id="btnGenerar" onclick="generateMold()" disabled>Generar Molde</button>
     <button onclick="downloadSTL(partA, 'parteA.stl')">Descargar Parte A</button>
@@ -94,22 +102,51 @@
     function generateMold() {
       if (!modeloListo || !model) return alert("Subí un archivo STL primero");
 
-      const boxSize = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
-      const moldWidth = boxSize.x * 1.5;
-      const moldHeight = boxSize.y * 1.5;
-      const moldDepth = boxSize.z * 1.5;
+      const pinDiameter = parseFloat(document.getElementById("pinSize").value);
+      const pinRadius = pinDiameter / 2;
 
-      const moldGeo = new THREE.BoxGeometry(moldWidth, moldHeight, moldDepth);
-      const moldMat = new THREE.MeshStandardMaterial({ color: 0xffffff, opacity: 0.4, transparent: true });
+      const bbox = new THREE.Box3().setFromObject(model);
+      const size = bbox.getSize(new THREE.Vector3());
+      const moldPadding = 10;
+      const width = size.x + moldPadding;
+      const height = size.y + moldPadding;
+      const depth = size.z + moldPadding;
 
-      const blockA = new THREE.Mesh(moldGeo.clone(), moldMat.clone());
-      const blockB = new THREE.Mesh(moldGeo.clone(), moldMat.clone());
+      // Crear caja completa del molde
+      const boxGeo = new THREE.BoxGeometry(width, height, depth);
+      const boxMesh = new THREE.Mesh(boxGeo);
+      const moldBSP = CSG.fromMesh(boxMesh);
+      const modelBSP = CSG.fromMesh(model);
+      const resultBSP = moldBSP.subtract(modelBSP);
 
-      blockA.position.set(0, 0, -moldDepth / 4);
-      blockB.position.set(0, 0, moldDepth / 4);
+      // Cortar verticalmente (mitad en X)
+      const cutterGeo = new THREE.BoxGeometry(width / 2, height * 2, depth * 2);
+      const leftBox = new THREE.Mesh(cutterGeo);
+      leftBox.position.x = -width / 4;
 
-      partA = blockA;
-      partB = blockB;
+      const rightBox = new THREE.Mesh(cutterGeo);
+      rightBox.position.x = width / 4;
+
+      const cutterLeft = CSG.fromMesh(leftBox);
+      const cutterRight = CSG.fromMesh(rightBox);
+
+      const moldFull = CSG.toMesh(resultBSP, boxMesh.matrix);
+
+      partA = CSG.toMesh(CSG.fromMesh(moldFull).intersect(cutterLeft), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0x9999ff }));
+      partB = CSG.toMesh(CSG.fromMesh(moldFull).intersect(cutterRight), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0xff9999 }));
+
+      // Agregar encastres cilíndricos (parte A = macho, parte B = hembra)
+      const pinGeo = new THREE.CylinderGeometry(pinRadius, pinRadius, 10, 32);
+      const pin = new THREE.Mesh(pinGeo);
+      pin.rotation.z = Math.PI / 2;
+      pin.position.set(0, -height / 4, 0);
+
+      const pinBSP = CSG.fromMesh(pin);
+      const partABSP = CSG.fromMesh(partA);
+      const partBBSP = CSG.fromMesh(partB);
+
+      partA = CSG.toMesh(partABSP.union(pinBSP), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0x9999ff }));
+      partB = CSG.toMesh(partBBSP.subtract(pinBSP), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0xff9999 }));
 
       scene.clear();
       scene.add(partA);
