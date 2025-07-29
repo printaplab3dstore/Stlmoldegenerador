@@ -46,13 +46,15 @@
   <h1>🧱 Generador de Molde STL Bipartido</h1>
   <input type="file" id="stlInput" accept=".stl" />
   <div class="controls">
-    <button onclick="generateMold()">Generar Molde</button>
+    <button id="btnGenerar" onclick="generateMold()" disabled>Generar Molde</button>
     <button onclick="downloadSTL(partA, 'parteA.stl')">Descargar Parte A</button>
     <button onclick="downloadSTL(partB, 'parteB.stl')">Descargar Parte B</button>
   </div>
   <div id="viewer"></div>  <script>
     let scene, camera, renderer, model, partA, partB;
+    let modeloListo = false;
     const viewer = document.getElementById("viewer");
+    const btnGenerar = document.getElementById("btnGenerar");
 
     // Init escena
     scene = new THREE.Scene();
@@ -83,14 +85,15 @@
         scene.clear();
         scene.add(model);
         scene.add(light);
+        modeloListo = true;
+        btnGenerar.disabled = false;
       };
       reader.readAsArrayBuffer(file);
     });
 
     function generateMold() {
-      if (!model) return alert("Subí un archivo STL primero");
+      if (!modeloListo || !model) return alert("Subí un archivo STL primero");
 
-      // Crear bloque contenedor para el molde (por ejemplo 1.5x tamaño)
       const boxSize = new THREE.Box3().setFromObject(model).getSize(new THREE.Vector3());
       const moldWidth = boxSize.x * 1.5;
       const moldHeight = boxSize.y * 1.5;
