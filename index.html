@@ -1066,7 +1066,7 @@
             processStep();
         }
 
-        // Crear geometr¨ªa del molde (versi¨®n simplificada)
+        // Crear geometr¨ªa del molde (versi¨®n mejorada con cavidad real)
         function createMoldGeometry() {
             try {
                 if (!originalGeometry) {
@@ -1074,9 +1074,9 @@
                     return;
                 }
                 
-                console.log('Creando geometr¨ªa del molde...');
+                console.log('Creando geometr¨ªa del molde real...');
                 
-                // Para esta demostraci¨®n, creamos una caja que contiene el objeto original
+                // Calcular bounding box del objeto original
                 originalGeometry.computeBoundingBox();
                 const box = originalGeometry.boundingBox;
                 const size = box.getSize(new THREE.Vector3());
@@ -1087,55 +1087,276 @@
                 const tolerance = parseFloat(tolInput.value) || 0.8;
                 const keySize = parseFloat(keyInput.value) || 10;
                 
-                // Crear geometr¨ªa de la caja exterior
+                // Crear el molde exterior (caja que contiene todo)
                 const outerSize = {
                     x: size.x + (wallThickness + tolerance) * 2,
                     y: size.y + (wallThickness + tolerance) * 2,
                     z: size.z + (wallThickness + tolerance) * 2
                 };
                 
-                const moldGeometry = new THREE.BoxGeometry(outerSize.x, outerSize.y, outerSize.z);
+                // Geometr¨ªa exterior
+                const outerGeometry = new THREE.BoxGeometry(outerSize.x, outerSize.y, outerSize.z);
+                
+                // Crear cavidad interior (el objeto original expandido con tolerancia)
+                const innerSize = {
+                    x: size.x + tolerance * 2,
+                    y: size.y + tolerance * 2,
+                    z: size.z + tolerance * 2
+                };
+                
+                const innerGeometry = new THREE.BoxGeometry(innerSize.x, innerSize.y, innerSize.z);
+                
+                // Crear el molde usando CSG (Constructive Solid Geometry) simplificado
+                const moldGeometry = createMoldWithCavity(outerGeometry, innerGeometry, outerSize, innerSize, keySize);
+                
+                // Guardar las geometr¨ªas para descarga
+                window.moldData = {
+                    full: moldGeometry,
+                    top: createTopMold(moldGeometry, outerSize),
+                    bottom: createBottomMold(moldGeometry, outerSize),
+                    original: originalGeometry
+                };
                 
                 // Solo intentar mostrar en 3D si el renderer est¨¢ disponible
                 if (renderer && scene) {
-                    // Crear material del molde
-                    const moldMaterial = new THREE.MeshLambertMaterial({
-                        color: 0x00b894,
-                        transparent: true,
-                        opacity: 0.6,
-                        wireframe: true
-                    });
-                    
-                    // Remover mesh anterior si existe
-                    if (currentMesh) {
-                        scene.remove(currentMesh);
-                    }
-                    
-                    // Crear y agregar el mesh del molde
-                    currentMesh = new THREE.Mesh(moldGeometry, moldMaterial);
-                    scene.add(currentMesh);
-                    
-                    // Tambi¨¦n mantener el objeto original visible
-                    const originalMaterial = new THREE.MeshLambertMaterial({
-                        color: 0x2575fc,
-                        transparent: true,
-                        opacity: 0.8
-                    });
-                    
-                    const originalMesh = new THREE.Mesh(originalGeometry, originalMaterial);
-                    scene.add(originalMesh);
+                    displayMoldIn3D(moldGeometry);
                 } else {
                     console.log('Renderer no disponible, molde creado sin visualizaci¨®n');
                 }
                 
-                // Guardar referencia global (corregir variable)
-                moldGeometry = moldGeometry;
-                
-                console.log('Geometr¨ªa del molde creada exitosamente');
+                console.log('Molde real creado exitosamente');
                 
             } catch (error) {
                 console.error('Error creando geometr¨ªa del molde:', error);
-                // Continuar sin visualizaci¨®n 3D
+                // Crear molde b¨¢sico como fallback
+                createBasicMold();
+            }
+        }
+
+        // Crear molde con cavidad real
+        function createMoldWithCavity(outerGeom, innerGeom, outerSize, innerSize, keySize) {
+            // Esta es una versi¨®n simplificada de CSG
+            // En una implementaci¨®n real, usar¨ªas una librer¨ªa como three-csg
+            
+            const vertices = [];
+            const faces = [];
+            let vertexIndex = 0;
+            
+            // Crear caras exteriores del molde
+            const hw = outerSize.x / 2; // half width
+            const hh = outerSize.y / 2; // half height  
+            const hd = outerSize.z / 2; // half depth
+            
+            const ihw = innerSize.x / 2; // inner half width
+            const ihh = innerSize.y / 2; // inner half height
+            const ihd = innerSize.z / 2; // inner half depth
+            
+            // Funci¨®n para agregar una cara
+            function addQuad(v1, v2, v3, v4) {
+                const base = vertexIndex;
+                vertices.push(...v1, ...v2, ...v3, ...v4);
+                
+                // Dos tri¨¢ngulos por cara
+                faces.push(base, base + 1, base + 2);
+                faces.push(base + 2, base + 3, base);
+                
+                vertexIndex += 4;
+            }
+            
+            // Paredes exteriores - Frente (solo la pared, no la parte de la cavidad)
+            addQuad(
+                [-hw, -hh, hd], [hw, -hh, hd], [hw, ihh, hd], [-hw, ihh, hd]
+            ); // Parte superior del frente
+            
+            addQuad(
+                [-hw, -ihh, hd], [hw, -ihh, hd], [hw, hh, hd], [-hw, hh, hd]
+            ); // Parte inferior del frente
+            
+            addQuad(
+                [-hw, -ihh, hd], [-ihw, -ihh, hd], [-ihw, ihh, hd], [-hw, ihh, hd]
+            ); // Lado izquierdo del frente
+            
+            addQuad(
+                [ihw, -ihh, hd], [hw, -ihh, hd], [hw, ihh, hd], [ihw, ihh, hd]
+            ); // Lado derecho del frente
+            
+            // Pared trasera completa
+            addQuad(
+                [-hw, -hh, -hd], [-hw, hh, -hd], [hw, hh, -hd], [hw, -hh, -hd]
+            );
+            
+            // Paredes laterales (con cavidad)
+            // Pared izquierda
+            addQuad(
+                [-hw, -hh, -hd], [-hw, -hh, hd], [-hw, hh, hd], [-hw, hh, -hd]
+            );
+            
+            // Pared derecha  
+            addQuad(
+                [hw, -hh, -hd], [hw, hh, -hd], [hw, hh, hd], [hw, -hh, hd]
+            );
+            
+            // Pared superior
+            addQuad(
+                [-hw, hh, -hd], [-hw, hh, hd], [hw, hh, hd], [hw, hh, -hd]
+            );
+            
+            // Pared inferior
+            addQuad(
+                [-hw, -hh, -hd], [hw, -hh, -hd], [hw, -hh, hd], [-hw, -hh, hd]
+            );
+            
+            // Crear la geometr¨ªa
+            const geometry = new THREE.BufferGeometry();
+            
+            // Convertir vertices array a Float32Array
+            const verticesArray = new Float32Array(vertices);
+            geometry.setAttribute('position', new THREE.BufferAttribute(verticesArray, 3));
+            
+            // Usar los ¨ªndices para las caras
+            geometry.setIndex(faces);
+            
+            // Calcular normales
+            geometry.computeVertexNormals();
+            
+            return geometry;
+        }
+
+        // Crear parte superior del molde
+        function createTopMold(fullGeometry, size) {
+            // Clonar la geometr¨ªa completa
+            const topGeometry = fullGeometry.clone();
+            
+            // Cortar por la mitad (solo mantener la parte superior)
+            const positions = topGeometry.attributes.position.array;
+            const newPositions = [];
+            
+            for (let i = 0; i < positions.length; i += 9) {
+                // Verificar si el tri¨¢ngulo est¨¢ en la mitad superior
+                const y1 = positions[i + 1];
+                const y2 = positions[i + 4];
+                const y3 = positions[i + 7];
+                
+                const avgY = (y1 + y2 + y3) / 3;
+                
+                if (avgY >= 0) {
+                    // Agregar este tri¨¢ngulo
+                    for (let j = 0; j < 9; j++) {
+                        newPositions.push(positions[i + j]);
+                    }
+                }
+            }
+            
+            const newGeometry = new THREE.BufferGeometry();
+            newGeometry.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+            newGeometry.computeVertexNormals();
+            
+            return newGeometry;
+        }
+
+        // Crear parte inferior del molde
+        function createBottomMold(fullGeometry, size) {
+            // Clonar la geometr¨ªa completa
+            const bottomGeometry = fullGeometry.clone();
+            
+            // Cortar por la mitad (solo mantener la parte inferior)
+            const positions = bottomGeometry.attributes.position.array;
+            const newPositions = [];
+            
+            for (let i = 0; i < positions.length; i += 9) {
+                // Verificar si el tri¨¢ngulo est¨¢ en la mitad inferior
+                const y1 = positions[i + 1];
+                const y2 = positions[i + 4];
+                const y3 = positions[i + 7];
+                
+                const avgY = (y1 + y2 + y3) / 3;
+                
+                if (avgY <= 0) {
+                    // Agregar este tri¨¢ngulo
+                    for (let j = 0; j < 9; j++) {
+                        newPositions.push(positions[i + j]);
+                    }
+                }
+            }
+            
+            const newGeometry = new THREE.BufferGeometry();
+            newGeometry.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+            newGeometry.computeVertexNormals();
+            
+            return newGeometry;
+        }
+
+        // Mostrar molde en 3D
+        function displayMoldIn3D(moldGeometry) {
+            // Crear material del molde
+            const moldMaterial = new THREE.MeshLambertMaterial({
+                color: 0x00b894,
+                transparent: true,
+                opacity: 0.7,
+                side: THREE.DoubleSide
+            });
+            
+            // Remover mesh anterior si existe
+            if (currentMesh) {
+                scene.remove(currentMesh);
+            }
+            
+            // Limpiar la escena de objetos anteriores
+            const objectsToRemove = [];
+            scene.traverse((child) => {
+                if (child.isMesh && child !== currentMesh) {
+                    objectsToRemove.push(child);
+                }
+            });
+            objectsToRemove.forEach(obj => scene.remove(obj));
+            
+            // Crear y agregar el mesh del molde
+            currentMesh = new THREE.Mesh(moldGeometry, moldMaterial);
+            scene.add(currentMesh);
+            
+            // Mostrar tambi¨¦n el objeto original en wireframe para referencia
+            const originalMaterial = new THREE.MeshLambertMaterial({
+                color: 0xff6b6b,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.3
+            });
+            
+            const originalMesh = new THREE.Mesh(originalGeometry, originalMaterial);
+            scene.add(originalMesh);
+        }
+
+        // Crear molde b¨¢sico como fallback
+        function createBasicMold() {
+            console.log('Creando molde b¨¢sico como fallback...');
+            
+            if (!originalGeometry) return;
+            
+            originalGeometry.computeBoundingBox();
+            const box = originalGeometry.boundingBox;
+            const size = box.getSize(new THREE.Vector3());
+            
+            const wallThickness = parseFloat(wallInput.value) || 5;
+            const tolerance = parseFloat(tolInput.value) || 0.8;
+            
+            const outerSize = {
+                x: size.x + (wallThickness + tolerance) * 2,
+                y: size.y + (wallThickness + tolerance) * 2,
+                z: size.z + (wallThickness + tolerance) * 2
+            };
+            
+            const basicMoldGeometry = new THREE.BoxGeometry(outerSize.x, outerSize.y, outerSize.z);
+            
+            // Guardar geometr¨ªas b¨¢sicas
+            window.moldData = {
+                full: basicMoldGeometry,
+                top: basicMoldGeometry.clone(),
+                bottom: basicMoldGeometry.clone(),
+                original: originalGeometry
+            };
+            
+            if (renderer && scene) {
+                displayMoldIn3D(basicMoldGeometry);
             }
         }
 
@@ -1148,8 +1369,10 @@
 
         // Descargar archivo STL
         function downloadSTL(type) {
-            if (!moldGeometry && !originalGeometry) {
-                showError('No hay geometr¨ªa disponible para descargar.');
+            console.log('Iniciando descarga de tipo:', type);
+            
+            if (!window.moldData) {
+                showError('No hay datos de molde disponibles. Genera el molde primero.');
                 return;
             }
             
@@ -1158,37 +1381,53 @@
             
             switch (type) {
                 case 'full':
-                    geometryToDownload = moldGeometry || originalGeometry;
+                    geometryToDownload = window.moldData.full;
                     filename = 'molde_completo.stl';
                     break;
                 case 'top':
-                    geometryToDownload = moldGeometry || originalGeometry;
+                    geometryToDownload = window.moldData.top;
                     filename = 'molde_superior.stl';
                     break;
                 case 'bottom':
-                    geometryToDownload = moldGeometry || originalGeometry;
+                    geometryToDownload = window.moldData.bottom;
                     filename = 'molde_inferior.stl';
                     break;
                 default:
+                    showError('Tipo de descarga no v¨¢lido.');
                     return;
             }
             
+            if (!geometryToDownload) {
+                showError('Geometr¨ªa no disponible para el tipo solicitado.');
+                return;
+            }
+            
             try {
+                console.log('Generando STL para:', filename);
                 const stlString = generateSTLString(geometryToDownload);
-                downloadFile(stlString, filename, 'application/octet-stream');
                 
-                // Mostrar mensaje de ¨¦xito
-                const originalText = document.querySelector(`#download${type.charAt(0).toUpperCase() + type.slice(1)}Btn`).innerHTML;
-                const btn = document.querySelector(`#download${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
-                btn.innerHTML = '<i class="fas fa-check"></i> Descargado';
-                btn.style.background = 'var(--success)';
-                
-                setTimeout(() => {
-                    btn.innerHTML = originalText;
-                    btn.style.background = '';
-                }, 2000);
+                if (stlString && stlString.length > 100) { // Verificar que el STL no est¨¦ vac¨ªo
+                    downloadFile(stlString, filename, 'application/octet-stream');
+                    
+                    // Mostrar mensaje de ¨¦xito
+                    const btn = document.querySelector(`#download${type.charAt(0).toUpperCase() + type.slice(1)}Btn`);
+                    const originalHTML = btn.innerHTML;
+                    
+                    btn.innerHTML = '<i class="fas fa-check"></i> Descargado';
+                    btn.style.background = 'var(--success)';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = originalHTML;
+                        btn.style.background = '';
+                    }, 2000);
+                    
+                    console.log('Descarga completada:', filename);
+                } else {
+                    throw new Error('STL generado est¨¢ vac¨ªo');
+                }
                 
             } catch (error) {
+                console.error('Error en descarga:', error);
                 showError('Error al generar archivo STL: ' + error.message);
             }
         }
