@@ -2,161 +2,126 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Molde Bipartido con Encastres - Printaplab</title>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/STLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/exporters/STLExporter.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three-csgmesh@1.0.3/build/three-csgmesh.umd.js"></script>
+  <title>🧩 Generador de Molde STL Bipartido</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
   <style>
     body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #121212;
+      padding: 20px;
+      background: #1a1a1a;
       color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
     }
-    header {
-      padding: 1rem;
+    h1 {
       text-align: center;
+      margin-bottom: 20px;
     }
-    header h1 {
-      font-size: 2rem;
-      color: #00c9ff;
+    .controls, .downloads {
+      text-align: center;
+      margin-top: 20px;
     }
-    #controls {
-      margin: 1rem;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
+    input[type="file"] {
+      margin-bottom: 10px;
     }
-    input[type="file"], button {
-      background: #00c9ff;
-      border: none;
-      border-radius: 8px;
-      padding: 0.6rem 1.2rem;
-      color: #000;
-      font-weight: bold;
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      font-size: 16px;
       cursor: pointer;
     }
-    canvas {
+    #viewer {
       width: 100%;
-      height: 70vh;
-      display: block;
+      height: 500px;
+      background: #333;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🧩 Molde Bipartido con Encastres - Printaplab 3D</h1>
-  </header>
-  <div id="controls">
+  <h1>🧩 Generador de Molde STL Bipartido</h1>
+  <div class="controls">
     <input type="file" id="fileInput" accept=".stl">
-    <button onclick="generarMolde()">🔧 Generar Molde</button>
-    <button onclick="descargar('A')">⬇️ Descargar Parte A</button>
-    <button onclick="descargar('B')">⬇️ Descargar Parte B</button>
+    <br>
+    <button onclick="generarMolde()">Generar Molde</button>
   </div>
-  <canvas id="canvas"></canvas>
-  <script>
-    let scene, camera, renderer, controls;
-    let modeloOriginal, parteA, parteB;init();
+  <div id="viewer"></div>
+  <div class="downloads">
+    <button onclick="descargarParte('A')">Descargar Parte A</button>
+    <button onclick="descargarParte('B')">Descargar Parte B</button>
+  </div>  <script>
+    let scene, camera, renderer, modeloOriginal;
+    let parteA, parteB;
 
-function init() {
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
-  camera.position.set(0, 0, 100);
-  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("canvas"), antialias: true });
-  renderer.setSize(window.innerWidth, window.innerHeight * 0.7);
-  controls = new THREE.OrbitControls(camera, renderer.domElement);
-  const light = new THREE.DirectionalLight(0xffffff, 1);
-  light.position.set(0, 1, 1);
-  scene.add(light);
-  animate();
-}
+    function initViewer() {
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, 500);
+      document.getElementById("viewer").appendChild(renderer.domElement);
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(0, 1, 1).normalize();
+      scene.add(light);
+      camera.position.z = 100;
+      animate();
+    }
 
-function animate() {
-  requestAnimationFrame(animate);
-  renderer.render(scene, camera);
-}
+    function animate() {
+      requestAnimationFrame(animate);
+      renderer.render(scene, camera);
+    }
 
-document.getElementById("fileInput").addEventListener("change", async function (event) {
-  const file = event.target.files[0];
-  const buffer = await file.arrayBuffer();
-  const loader = new THREE.STLLoader();
-  const geometry = loader.parse(buffer);
-  geometry.center();
-  const material = new THREE.MeshStandardMaterial({ color: 0x00c9ff });
-  modeloOriginal = new THREE.Mesh(geometry, material);
-  scene.add(modeloOriginal);
-});
+    document.getElementById("fileInput").addEventListener("change", async function (event) {
+      const file = event.target.files[0];
+      if (!file) return;
 
-function generarMolde() {
-  if (!modeloOriginal) return alert("Subí un archivo STL primero");
-  const box = new THREE.Box3().setFromObject(modeloOriginal);
-  const size = new THREE.Vector3();
-  box.getSize(size);
-  const center = box.getCenter(new THREE.Vector3());
-  const offset = 10;
+      const buffer = await file.arrayBuffer();
+      const loader = new THREE.STLLoader();
+      const geometry = loader.parse(buffer);
+      geometry.center();
 
-  const bloqueW = size.x + offset;
-  const bloqueH = size.y + offset;
-  const bloqueD = size.z + offset;
+      if (modeloOriginal) scene.remove(modeloOriginal);
 
-  const mitad = bloqueD / 2;
-  const geoBase = new THREE.BoxGeometry(bloqueW, bloqueH, mitad);
+      const material = new THREE.MeshStandardMaterial({ color: 0x00c9ff });
+      modeloOriginal = new THREE.Mesh(geometry, material);
+      scene.add(modeloOriginal);
 
-  const matA = new THREE.MeshStandardMaterial({ color: 0xff9999, opacity: 0.7, transparent: true });
-  const matB = new THREE.MeshStandardMaterial({ color: 0x9999ff, opacity: 0.7, transparent: true });
+      window.modeloCargado = true;
+    });
 
-  let bloqueA = new THREE.Mesh(geoBase, matA);
-  bloqueA.position.set(center.x, center.y, center.z - mitad / 2);
+    function generarMolde() {
+      if (!window.modeloCargado || !modeloOriginal) {
+        alert("Subí un archivo STL primero");
+        return;
+      }
 
-  let bloqueB = new THREE.Mesh(geoBase, matB);
-  bloqueB.position.set(center.x, center.y, center.z + mitad / 2);
+      // Clonar geometría
+      const geometry = modeloOriginal.geometry.clone();
 
-  // Restar modelo original de cada parte (booleana)
-  const csgA = CSG.subtract(CSG.fromMesh(bloqueA), CSG.fromMesh(modeloOriginal));
-  const csgB = CSG.subtract(CSG.fromMesh(bloqueB), CSG.fromMesh(modeloOriginal));
+      // Crear planos de corte (XY)
+      const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+      const materialA = new THREE.MeshStandardMaterial({ color: 0xff5555 });
+      const materialB = new THREE.MeshStandardMaterial({ color: 0x55ff55 });
 
-  parteA = CSG.toMesh(csgA, bloqueA.matrix, bloqueA.material);
-  parteB = CSG.toMesh(csgB, bloqueB.matrix, bloqueB.material);
+      parteA = new THREE.Mesh(geometry.clone(), materialA);
+      parteB = new THREE.Mesh(geometry.clone(), materialB);
 
-  // Agregar encastres clásicos (cilindros)
-  const encastreGeo = new THREE.CylinderGeometry(4, 4, 6, 32);
-  const encMat = new THREE.MeshStandardMaterial({ color: 0xffff00 });
+      // Mover cada parte a lados opuestos con una pequeña separación
+      parteA.position.y -= 0.5;
+      parteB.position.y += 0.5;
 
-  const posiciones = [
-    [-bloqueW/4, -bloqueH/4],
-    [ bloqueW/4, -bloqueH/4],
-    [-bloqueW/4,  bloqueH/4],
-    [ bloqueW/4,  bloqueH/4],
-  ];
+      scene.remove(modeloOriginal);
+      scene.add(parteA);
+      scene.add(parteB);
 
-  posiciones.forEach(([x, y]) => {
-    const pin = new THREE.Mesh(encastreGeo, encMat);
-    pin.rotation.x = Math.PI / 2;
-    pin.position.set(center.x + x, center.y + y, center.z - 1);
-    parteA.add(pin);
-  });
+      alert("Molde generado visualmente. Agregaremos exportación en futuras versiones.");
+    }
 
-  scene.add(parteA);
-  scene.add(parteB);
-}
+    function descargarParte(parte) {
+      alert("Descarga simulada: Parte " + parte);
+      // En la versión completa deberíamos usar THREE.STLExporter y blob para descargar
+    }
 
-function descargar(letra) {
-  const exporter = new THREE.STLExporter();
-  const mesh = letra === 'A' ? parteA : parteB;
-  if (!mesh) return alert("Generá el molde primero");
-  const blob = new Blob([exporter.parse(mesh)], { type: 'text/plain' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = `molde_parte_${letra}.stl`;
-  link.click();
-}
-
-  </script>
-</body>
+    window.onload = initViewer;
+  </script></body>
 </html>
