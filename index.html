@@ -1,93 +1,343 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ideas 3D - Printaplab</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      background-color: #f8f9fa;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background-color: #343a40;
-      color: white;
-      padding: 1rem;
-      text-align: center;
-    }
-    h1 {
-      margin: 0;
-    }
-    main {
-      padding: 2rem;
-    }
-    .card {
-      background-color: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-    }
-    .card h2 {
-      color: #007bff;
-      margin-top: 0;
-    }
-    footer {
-      background-color: #343a40;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 3rem;
-    }
-    a.button {
-      display: inline-block;
-      background-color: #007bff;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      margin-top: 1rem;
-      transition: background-color 0.3s;
-    }
-    a.button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRINTAPLAB 3D STORE</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; min-height: 100vh; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460); background-size: 400% 400%; animation: gradientShift 8s ease infinite; }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 25% { background-position: 100% 50%; } 50% { background-position: 100% 100%; } 75% { background-position: 0% 100%; } }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: rgba(0, 255, 255, 0.6); border-radius: 50%; animation: float 6s infinite linear; }
+        .particle:nth-child(2n) { background: rgba(255, 0, 150, 0.6); animation-duration: 8s; }
+        .particle:nth-child(3n) { background: rgba(255, 255, 0, 0.6); animation-duration: 10s; }
+        @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
+        .container { padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+        header { text-align: center; margin-bottom: 60px; position: relative; }
+        .main-title { font-family: 'Orbitron', monospace; font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: textGlow 3s ease-in-out infinite, gradientShift 6s ease infinite; margin-bottom: 10px; text-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+        @keyframes textGlow { 0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); } 50% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 0, 150, 0.8)); } }
+        .sub-title { font-size: clamp(1.2rem, 3vw, 2rem); color: #fff; font-weight: 300; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+        .brand-slogan { font-size: 1.1rem; color: #aaa; margin-bottom: 10px; }
+        .social-text { font-size: 1rem; color: #888; }
+        .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 60px; }
+        .social-link { display: flex; align-items: center; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.4s; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .social-link:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .social-link.ciciai { background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.8)); }
+        .social-link.cults3d { background: linear-gradient(135deg, rgba(255, 152, 0, 0.8), rgba(255, 183, 77, 0.8)); }
+        .social-link.tiktok { background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(194, 24, 91, 0.8)); }
+        .social-link.instagram { background: linear-gradient(135deg, #f44336, #e91e63, #9c27b0, #3f51b0, #2196f3); }
+        .social-icon { width: 24px; height: 24px; margin-right: 10px; transition: transform 0.3s ease; }
+        .social-link:hover .social-icon { transform: rotate(360deg) scale(1.1); }
+        
+        /* Contenedor de botones especiales */
+        .special-buttons-container { 
+            margin-bottom: 40px; 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+            gap: 20px; 
+        }
+        
+        .special-button { 
+            display: inline-flex; 
+            align-items: center; 
+            padding: 20px 40px; 
+            border-radius: 50px; 
+            text-decoration: none; 
+            font-weight: 700; 
+            font-size: 1.2rem; 
+            transition: all 0.4s; 
+            backdrop-filter: blur(15px); 
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Botón Funkos (el original) */
+        .special-button.funkos { 
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.8), rgba(138, 43, 226, 0.8));
+        }
+        .special-button.funkos::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff1493, #8a2be2, #00ffff, #ff0080);
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderPulse 2s linear infinite;
+        }
+        .special-button.funkos:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            box-shadow: 0 25px 50px rgba(255, 20, 147, 0.4);
+            background: linear-gradient(135deg, rgba(255, 20, 147, 1), rgba(138, 43, 226, 1));
+        }
+
+        /* Nuevo botón Diseño Destacado */
+        .special-button.featured { 
+            background: linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(255, 193, 7, 0.9));
+            color: #000;
+            position: relative;
+        }
+        .special-button.featured::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #ff9800, #ffc107, #ffeb3b, #ff5722);
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderPulse 1.5s linear infinite;
+        }
+        .special-button.featured:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            box-shadow: 0 25px 50px rgba(255, 152, 0, 0.6);
+            background: linear-gradient(135deg, rgba(255, 152, 0, 1), rgba(255, 193, 7, 1));
+        }
+        .special-button.featured::after {
+            content: '🔥';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        @keyframes borderPulse { 
+            0%, 100% { opacity: 0.7; } 
+            50% { opacity: 1; } 
+        }
+        
+        .special-button-icon { 
+            width: 28px; 
+            height: 28px; 
+            margin-right: 12px; 
+            transition: transform 0.3s ease; 
+        }
+        .special-button:hover .special-button-icon { 
+            transform: rotate(360deg) scale(1.2); 
+        }
+        
+        /* Imagen destacada para el botón */
+        .featured-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .special-button.featured:hover .featured-preview {
+            transform: scale(1.1) rotate(360deg);
+            border-color: rgba(0, 0, 0, 0.6);
+        }
+        
+        .calculator-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 40px; border-radius: 25px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); width: 95%; max-width: 600px; text-align: center; margin-bottom: 50px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; overflow: hidden; }
+        .calculator-container::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); border-radius: 25px; z-index: -1; animation: borderGlow 3s linear infinite; }
+        @keyframes borderGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .calculator-title { font-family: 'Orbitron', monospace; color: #00ffff; font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 30px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); font-weight: 700; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .input-group { text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #fff; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .input-group input { width: 100%; padding: 15px 20px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 15px; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 1rem; font-family: 'Exo 2', sans-serif; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .input-group input:focus { outline: none; border-color: #00ffff; box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); }
+        .calculate-btn { background: linear-gradient(135deg, #00ffff, #0080ff); color: #000; padding: 18px 40px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.4s; margin-top: 20px; box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .calculate-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.4); }
+        .result { margin-top: 30px; padding: 25px; background: rgba(0, 255, 255, 0.1); border-radius: 20px; border: 1px solid rgba(0, 255, 255, 0.3); opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+        .result.show { opacity: 1; transform: translateY(0); }
+        .result h2 { margin-bottom: 15px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 1.5rem; text-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+        .result p { font-size: clamp(2rem, 6vw, 3rem); font-weight: 700; color: #00ff80; text-shadow: 0 0 20px rgba(0, 255, 128, 0.5); font-family: 'Orbitron', monospace; }
+        .cost-breakdown { margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; text-align: left; font-size: 0.9rem; }
+        .cost-item { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .cost-item:last-child { border-bottom: none; font-weight: 700; font-size: 1.1rem; color: #00ff80; }
+        .footer { margin-top: 60px; text-align: center; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); width: 100%; font-size: 1.1rem; color: #888; }
+        @media (max-width: 768px) { 
+            .container { padding: 15px; } 
+            .calculator-container { padding: 25px; } 
+            .input-grid { grid-template-columns: 1fr; gap: 15px; } 
+            .social-links { gap: 15px; } 
+            .social-link { font-size: 0.9rem; padding: 12px 20px; } 
+            .special-button { font-size: 1rem; padding: 16px 32px; } 
+            .special-buttons-container { flex-direction: column; align-items: center; }
+        }
+    </style>
 </head>
 <body>
-
-  <header>
-    <h1>Ideas 3D - Printaplab</h1>
-    <p>Modelos útiles, creativos y listos para imprimir</p>
-  </header>
-
-  <main>
-    <div class="card">
-      <h2>¿Qué vas a imprimir hoy?</h2>
-      <p>Explorá ideas para imprimir con tu impresora FDM. Desde gadgets útiles hasta diseños divertidos.</p>
+    <div class="bg-animation"></div>
+    
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 0.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
     </div>
 
-    <!-- NUEVO BLOQUE: Señuelo Mojarra -->
-    <div style="max-width: 400px; margin: 2rem auto; border: 2px solid #26c485; border-radius: 16px; padding: 1rem; background-color: #e9fff5; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
-      <img src="img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" style="width: 100%; border-radius: 12px; margin-bottom: 1rem;">
-      <h2 style="font-size: 1.4rem; color: #1a7f5a; margin-bottom: 0.5rem; text-align: center;">¡Descargá el Señuelo Mojarra!</h2>
-      <p style="text-align: center; color: #333; font-size: 1rem;">Ideal para pesca variada. Diseño 3D listo para imprimir y usar.</p>
-      <div style="text-align: center; margin-top: 1rem;">
-        <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" style="background-color: #1a7f5a; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.3s;">
-          Descargar Gratis
-        </a>
-      </div>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <h1 class="main-title">PRINTAPLAB</h1>
+            </div>
+            <h2 class="sub-title">3D STORE</h2>
+            <p class="brand-slogan">Printaplab 3D Store</p>
+            <p class="social-text">Síguenos en nuestras redes sociales</p>
+        </header>
+
+        <div class="social-links">
+            <a href="https://www.ciciai.com/bot/ucrGrdZW" target="_blank" class="social-link ciciai">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Ciciai Bot
+            </a>
+
+            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 8V7l-3 2-3-2v1c0 1.1-.9 2-2 2s-2-.9-2-2V7L8 9l3 2v1c0 1.1.9 2 2 2s2-.9 2-2v-1l3 2 3-2v-1z"/>
+                </svg>
+                Modelos 3D
+            </a>
+
+            <a href="https://www.tiktok.com/@printaplab3dstore" target="_blank" class="social-link tiktok">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.321 5.562a5.122 5.122 0 0 1-.443-.258 6.228 6.228 0 0 1-1.137-.966c-.849-1.011-1.149-2.291-1.149-2.291H13.53v11.928c0 2.404-1.798 4.352-4.013 4.352-2.215 0-4.013-1.948-4.013-4.352 0-2.404 1.798-4.352 4.013-4.352.22 0 .434.018.642.05V6.645c-.208-.027-.418-.04-.642-.04C4.486 6.605 0 11.091 0 16.622s4.486 10.017 9.517 10.017 9.517-4.486 9.517-10.017V9.468a10.94 10.94 0 0 0 6.348 2.018v-3.062c-1.694 0-3.24-.54-4.514-1.456l.453-.406z"/>
+                </svg>
+                TikTok
+            </a>
+
+            <a href="https://www.instagram.com/printaplab3dstore" target="_blank" class="social-link instagram">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+                Instagram
+            </a>
+        </div>
+
+        <!-- Botones especiales -->
+        <div class="special-buttons-container">
+            <a href="https://printaplab3dstore.github.io/funkos.html" target="_blank" class="special-button funkos">
+                <svg class="special-button-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Funkos Personalizados
+            </a>
+
+            <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" class="special-button featured">
+                <img src="https://raw.githubusercontent.com/printaplab3dstore/printaplab3dstore.github.io/main/img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" class="featured-preview">
+                🎣 Diseño Destacado
+            </a>
+        </div>
+
+        <div class="calculator-container">
+            <h1 class="calculator-title">Calculadora de Costos FDM</h1>
+
+            <div class="input-grid">
+                <div class="input-group">
+                    <label for="materialCost">Costo del Filamento (ARS/kg)</label>
+                    <input type="number" id="materialCost" value="25000" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="weight">Peso de la Pieza (gramos)</label>
+                    <input type="number" id="weight" value="10" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="printTime">Tiempo de Impresión (horas)</label>
+                    <input type="number" id="printTime" value="1" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="powerCost">Costo de Energía (ARS/kWh)</label>
+                    <input type="number" id="powerCost" value="80" step="0.001">
+                </div>
+
+                <div class="input-group">
+                    <label for="powerConsumption">Consumo de Impresora (watts)</label>
+                    <input type="number" id="powerConsumption" value="100" step="1">
+                </div>
+
+                <div class="input-group">
+                    <label for="laborCostPerHour">Costo Mano de Obra (ARS/hora)</label>
+                    <input type="number" id="laborCostPerHour" value="1500" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="extraMaterialsCost">Costos Materiales Extra (ARS)</label>
+                    <input type="number" id="extraMaterialsCost" value="0" step="0.01">
+                </div>
+
+                <div class="input-group">
+                    <label for="markup">Margen de Ganancia (%)</label>
+                    <input type="number" id="markup" value="30" step="0.01">
+                </div>
+            </div>
+
+            <button class="calculate-btn" onclick="calculateCost()">Calcular Costo</button>
+
+            <div id="result" class="result">
+                <h2>Costo Total</h2>
+                <p id="totalCost">$0.00 ARS</p>
+                <div class="cost-breakdown" id="breakdown"></div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2024 PRINTAPLAB 3D STORE - Calculadora de Costos FDM</p>
+        </div>
     </div>
-    <!-- FIN NUEVO BLOQUE -->
 
-  </main>
+    <script>
+        function calculateCost() {
+            const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
+            const printTime = parseFloat(document.getElementById('printTime').value) || 0;
+            const powerCost = parseFloat(document.getElementById('powerCost').value) || 0;
+            const powerConsumption = parseFloat(document.getElementById('powerConsumption').value) || 0;
+            const laborCostPerHour = parseFloat(document.getElementById('laborCostPerHour').value) || 0;
+            const extraMaterialsCost = parseFloat(document.getElementById('extraMaterialsCost').value) || 0;
+            const markup = parseFloat(document.getElementById('markup').value) || 0;
 
-  <footer>
-    <p>&copy; 2025 Printaplab. Todos los derechos reservados.</p>
-  </footer>
+            const materialCostTotal = (materialCost * weight) / 1000;
+            const energyCost = (powerConsumption / 1000) * printTime * powerCost;
+            const laborCost = laborCostPerHour * printTime;
+            const baseCost = materialCostTotal + energyCost + laborCost + extraMaterialsCost;
+            const finalCost = baseCost * (1 + (markup / 100));
 
+            document.getElementById('totalCost').textContent = `$${finalCost.toFixed(2)} ARS`;
+            
+            document.getElementById('breakdown').innerHTML = `
+                <div class="cost-item"><span>Costo Material:</span><span>$${materialCostTotal.toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span>Costo Energía:</span><span>$${energyCost.toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span>Costo Mano de Obra:</span><span>$${laborCost.toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span>Materiales Extra:</span><span>$${extraMaterialsCost.toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span>Subtotal:</span><span>$${baseCost.toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span>Margen (${markup}%):</span><span>$${(finalCost - baseCost).toFixed(2)} ARS</span></div>
+                <div class="cost-item"><span><strong>TOTAL FINAL:</strong></span><span><strong>$${finalCost.toFixed(2)} ARS</strong></span></div>
+            `;
+
+            document.getElementById('result').classList.add('show');
+        }
+    </script>
 </body>
 </html>
