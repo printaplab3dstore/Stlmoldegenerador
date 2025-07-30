@@ -1,174 +1,93 @@
-<!DOCTYPE html><html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Generador de Molde STL Bipartido Vertical</title>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/loaders/STLLoader.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/examples/js/exporters/STLExporter.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/manthrax/THREE-CSGMesh/three-csg.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ideas 3D - Printaplab</title>
   <style>
     body {
-      background: #111;
-      color: #fff;
       font-family: sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #343a40;
+      color: white;
+      padding: 1rem;
+      text-align: center;
     }
     h1 {
-      margin-bottom: 20px;
+      margin: 0;
     }
-    canvas {
-      max-width: 100%;
-      background: #222;
+    main {
+      padding: 2rem;
+    }
+    .card {
+      background-color: white;
       border-radius: 10px;
-      margin-top: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
     }
-    .controls {
-      margin-top: 20px;
+    .card h2 {
+      color: #007bff;
+      margin-top: 0;
     }
-    button, input[type="file"], input[type="number"] {
-      margin: 5px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 5px;
-      background: #333;
-      color: #fff;
-      cursor: pointer;
+    footer {
+      background-color: #343a40;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 3rem;
     }
-    button:hover {
-      background: #555;
+    a.button {
+      display: inline-block;
+      background-color: #007bff;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 1rem;
+      transition: background-color 0.3s;
     }
-    label {
-      margin-top: 10px;
+    a.button:hover {
+      background-color: #0056b3;
     }
   </style>
 </head>
 <body>
-  <h1>🧱 Generador de Molde STL Vertical con Encastres</h1>
-  <input type="file" id="stlInput" accept=".stl" />
-  <div>
-    <label>📏 Diámetro del pin (mm):</label>
-    <input type="number" id="pinSize" value="5" min="1" step="1" />
-  </div>
-  <div class="controls">
-    <button id="btnGenerar" onclick="generateMold()" disabled>Generar Molde</button>
-    <button onclick="downloadSTL(partA, 'parteA.stl')">Descargar Parte A</button>
-    <button onclick="downloadSTL(partB, 'parteB.stl')">Descargar Parte B</button>
-  </div>
-  <div id="viewer"></div>  <script>
-    let scene, camera, renderer, model, partA, partB;
-    let modeloListo = false;
-    const viewer = document.getElementById("viewer");
-    const btnGenerar = document.getElementById("btnGenerar");
 
-    // Init escena
-    scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / 500, 0.1, 1000);
-    camera.position.z = 100;
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth * 0.8, 500);
-    viewer.appendChild(renderer.domElement);
+  <header>
+    <h1>Ideas 3D - Printaplab</h1>
+    <p>Modelos útiles, creativos y listos para imprimir</p>
+  </header>
 
-    const light = new THREE.DirectionalLight(0xffffff, 1);
-    light.position.set(1, 1, 1).normalize();
-    scene.add(light);
+  <main>
+    <div class="card">
+      <h2>¿Qué vas a imprimir hoy?</h2>
+      <p>Explorá ideas para imprimir con tu impresora FDM. Desde gadgets útiles hasta diseños divertidos.</p>
+    </div>
 
-    const loader = new THREE.STLLoader();
-    const input = document.getElementById("stlInput");
+    <!-- NUEVO BLOQUE: Señuelo Mojarra -->
+    <div style="max-width: 400px; margin: 2rem auto; border: 2px solid #26c485; border-radius: 16px; padding: 1rem; background-color: #e9fff5; box-shadow: 0 0 15px rgba(0,0,0,0.1);">
+      <img src="img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" style="width: 100%; border-radius: 12px; margin-bottom: 1rem;">
+      <h2 style="font-size: 1.4rem; color: #1a7f5a; margin-bottom: 0.5rem; text-align: center;">¡Descargá el Señuelo Mojarra!</h2>
+      <p style="text-align: center; color: #333; font-size: 1rem;">Ideal para pesca variada. Diseño 3D listo para imprimir y usar.</p>
+      <div style="text-align: center; margin-top: 1rem;">
+        <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" style="background-color: #1a7f5a; color: white; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: bold; display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.3s;">
+          Descargar Gratis
+        </a>
+      </div>
+    </div>
+    <!-- FIN NUEVO BLOQUE -->
 
-    input.addEventListener("change", function (e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const geometry = loader.parse(event.target.result);
-        geometry.center();
-        model = new THREE.Mesh(
-          geometry,
-          new THREE.MeshStandardMaterial({ color: 0x00ffff })
-        );
-        scene.clear();
-        scene.add(model);
-        scene.add(light);
-        modeloListo = true;
-        btnGenerar.disabled = false;
-      };
-      reader.readAsArrayBuffer(file);
-    });
+  </main>
 
-    function generateMold() {
-      if (!modeloListo || !model) return alert("Subí un archivo STL primero");
+  <footer>
+    <p>&copy; 2025 Printaplab. Todos los derechos reservados.</p>
+  </footer>
 
-      const pinDiameter = parseFloat(document.getElementById("pinSize").value);
-      const pinRadius = pinDiameter / 2;
-
-      const bbox = new THREE.Box3().setFromObject(model);
-      const size = bbox.getSize(new THREE.Vector3());
-      const moldPadding = 10;
-      const width = size.x + moldPadding;
-      const height = size.y + moldPadding;
-      const depth = size.z + moldPadding;
-
-      // Crear caja completa del molde
-      const boxGeo = new THREE.BoxGeometry(width, height, depth);
-      const boxMesh = new THREE.Mesh(boxGeo);
-      const moldBSP = CSG.fromMesh(boxMesh);
-      const modelBSP = CSG.fromMesh(model);
-      const resultBSP = moldBSP.subtract(modelBSP);
-
-      // Cortar verticalmente (mitad en X)
-      const cutterGeo = new THREE.BoxGeometry(width / 2, height * 2, depth * 2);
-      const leftBox = new THREE.Mesh(cutterGeo);
-      leftBox.position.x = -width / 4;
-
-      const rightBox = new THREE.Mesh(cutterGeo);
-      rightBox.position.x = width / 4;
-
-      const cutterLeft = CSG.fromMesh(leftBox);
-      const cutterRight = CSG.fromMesh(rightBox);
-
-      const moldFull = CSG.toMesh(resultBSP, boxMesh.matrix);
-
-      partA = CSG.toMesh(CSG.fromMesh(moldFull).intersect(cutterLeft), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0x9999ff }));
-      partB = CSG.toMesh(CSG.fromMesh(moldFull).intersect(cutterRight), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0xff9999 }));
-
-      // Agregar encastres cilíndricos (parte A = macho, parte B = hembra)
-      const pinGeo = new THREE.CylinderGeometry(pinRadius, pinRadius, 10, 32);
-      const pin = new THREE.Mesh(pinGeo);
-      pin.rotation.z = Math.PI / 2;
-      pin.position.set(0, -height / 4, 0);
-
-      const pinBSP = CSG.fromMesh(pin);
-      const partABSP = CSG.fromMesh(partA);
-      const partBBSP = CSG.fromMesh(partB);
-
-      partA = CSG.toMesh(partABSP.union(pinBSP), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0x9999ff }));
-      partB = CSG.toMesh(partBBSP.subtract(pinBSP), boxMesh.matrix, new THREE.MeshStandardMaterial({ color: 0xff9999 }));
-
-      scene.clear();
-      scene.add(partA);
-      scene.add(partB);
-      scene.add(light);
-    }
-
-    function downloadSTL(mesh, filename) {
-      if (!mesh) return alert("Generá el molde primero");
-      const exporter = new THREE.STLExporter();
-      const stlString = exporter.parse(mesh);
-      const blob = new Blob([stlString], { type: "text/plain" });
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-    }
-
-    function animate() {
-      requestAnimationFrame(animate);
-      renderer.render(scene, camera);
-    }
-    animate();
-  </script></body>
+</body>
 </html>
