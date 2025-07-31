@@ -27,6 +27,18 @@
         .social-link:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
         .social-link.ciciai { background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.8)); }
         .social-link.cults3d { background: linear-gradient(135deg, rgba(255, 152, 0, 0.8), rgba(255, 183, 77, 0.8)); }
+        .social-link.cults3d.enlarged { 
+            font-size: 1.2rem; 
+            padding: 18px 30px; 
+            font-weight: 700;
+        }
+        .social-link.cults3d.enlarged:hover { 
+            transform: translateY(-6px) scale(1.08); 
+        }
+        .social-link.cults3d.enlarged .social-icon { 
+            width: 28px; 
+            height: 28px; 
+        }
         .social-link.tiktok { background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(194, 24, 91, 0.8)); }
         .social-link.instagram { background: linear-gradient(135deg, #f44336, #e91e63, #9c27b0, #3f51b0, #2196f3); }
         .social-icon { width: 24px; height: 24px; margin-right: 10px; transition: transform 0.3s ease; }
@@ -81,6 +93,38 @@
             background: linear-gradient(135deg, rgba(255, 20, 147, 1), rgba(138, 43, 226, 1));
         }
 
+        /* Nuevo botón Llaveros */
+        .special-button.keychains { 
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(75, 0, 130, 0.9));
+            color: #fff;
+            position: relative;
+        }
+        .special-button.keychains::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3, #6a0dad);
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderPulse 1.8s linear infinite;
+        }
+        .special-button.keychains:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            box-shadow: 0 25px 50px rgba(138, 43, 226, 0.6);
+            background: linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(75, 0, 130, 1));
+        }
+        .special-button.keychains::after {
+            content: '🔑';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+
         /* Nuevo botón Diseño Destacado */
         .special-button.featured { 
             background: linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(255, 193, 7, 0.9));
@@ -131,6 +175,21 @@
         }
         .special-button:hover .special-button-icon { 
             transform: rotate(360deg) scale(1.2); 
+        }
+        
+        /* GIF destacado para llaveros */
+        .keychains-preview {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .special-button.keychains:hover .keychains-preview {
+            transform: scale(1.15) rotate(360deg);
+            border-color: rgba(255, 255, 255, 0.8);
         }
         
         /* Imagen destacada para el botón */
@@ -208,14 +267,14 @@
                 <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
-                Ciciai Bot
+                Bot de Ayuda FDM
             </a>
 
-            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d">
+            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d enlarged">
                 <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21 8V7l-3 2-3-2v1c0 1.1-.9 2-2 2s-2-.9-2-2V7L8 9l3 2v1c0 1.1.9 2 2 2s2-.9 2-2v-1l3 2 3-2v-1z"/>
                 </svg>
-                Modelos 3D
+                Mi Perfil de Cults
             </a>
 
             <a href="https://www.tiktok.com/@printaplab3dstore" target="_blank" class="social-link tiktok">
@@ -245,6 +304,11 @@
             <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" class="special-button featured">
                 <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" class="featured-preview">
                 🎣 Diseño Destacado
+            </a>
+
+            <a href="https://www.instagram.com/printaplab3dstore" target="_blank" class="special-button keychains">
+                <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/llaveros-personalizados.gif" alt="Llaveros Personalizados" class="keychains-preview">
+                🔑 Llaveros Personalizados
             </a>
         </div>
 
