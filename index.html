@@ -652,7 +652,104 @@
             font-weight: 700; 
             color: #00ff80; 
             text-shadow: 0 0 20px rgba(0, 255, 128, 0.5); 
-            font-family: 'Orbitron', monosp                TikTok
+            font-family: 'Orbitron', monospace; 
+        }
+        
+        .cost-breakdown { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background: rgba(255, 255, 255, 0.05); 
+            border-radius: 15px; 
+            text-align: left; 
+            font-size: 0.9rem; 
+        }
+        
+        .cost-item { 
+            display: flex; 
+            justify-content: space-between; 
+            margin-bottom: 8px; 
+            padding: 5px 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        
+        .cost-item:last-child { 
+            border-bottom: none; 
+            font-weight: 700; 
+            font-size: 1.1rem; 
+            color: #00ff80; 
+        }
+        
+        .footer { 
+            margin-top: 60px; 
+            text-align: center; 
+            padding: 30px; 
+            border-top: 1px solid rgba(255, 255, 255, 0.1); 
+            width: 100%; 
+            font-size: 1.1rem; 
+            color: #888; 
+        }
+        
+        @media (max-width: 768px) { 
+            .container { padding: 15px; } 
+            .calculator-container { padding: 25px; } 
+            .input-grid { grid-template-columns: 1fr; gap: 15px; } 
+            .social-links { gap: 15px; } 
+            .social-link { font-size: 0.9rem; padding: 12px 20px; } 
+            .special-button { font-size: 1rem; padding: 16px 32px; } 
+            .special-buttons-container { flex-direction: column; align-items: center; }
+            .carousel-container { height: 450px; }
+            .carousel-item { width: 240px; height: 300px; padding: 20px; }
+            .item-image { height: 140px; font-size: 3rem; }
+            .carousel-controls { bottom: -60px; }
+            .control-btn { width: 50px; height: 50px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 0.5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 1.5s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 2.5s;"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <h1 class="main-title">PRINTAPLAB</h1>
+            </div>
+            <h2 class="sub-title">3D STORE</h2>
+            <p class="brand-slogan">Printaplab 3D Store</p>
+            <p class="social-text">Síguenos en nuestras redes sociales</p>
+        </header>
+
+        <div class="social-links">
+            <a href="https://www.ciciai.com/bot/ucrGrdZW" target="_blank" class="social-link ciciai">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+                Ciciai Bot
+            </a>
+
+            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M21 8V7l-3 2-3-2v1c0 1.1-.9 2-2 2s-2-.9-2-2V7L8 9l3 2v1c0 1.1.9 2 2 2s2-.9 2-2v-1l3 2 3-2v-1z"/>
+                </svg>
+                Modelos 3D
+            </a>
+
+            <a href="https://www.tiktok.com/@printaplab3dstore" target="_blank" class="social-link tiktok">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19.321 5.562a5.122 5.122 0 0 1-.443-.258 6.228 6.228 0 0 1-1.137-.966c-.849-1.011-1.149-2.291-1.149-2.291H13.53v11.928c0 2.404-1.798 4.352-4.013 4.352-2.215 0-4.013-1.948-4.013-4.352 0-2.404 1.798-4.352 4.013-4.352.22 0 .434.018.642.05V6.645c-.208-.027-.418-.04-.642-.04C4.486 6.605 0 11.091 0 16.622s4.486 10.017 9.517 10.017 9.517-4.486 9.517-10.017V9.468a10.94 10.94 0 0 0 6.348 2.018v-3.062c-1.694 0-3.24-.54-4.514-1.456l.453-.406z"/>
+                </svg>
+                TikTok
             </a>
 
             <a href="https://www.instagram.com/printaplab3dstore" target="_blank" class="social-link instagram">
@@ -674,13 +771,91 @@
 
             <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" class="special-button featured">
                 <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" class="featured-preview">
-                🎣 Diseño Destacado
+                🎯 Diseño Destacado
             </a>
+        </div>
 
-            <a href="https://www.instagram.com/printaplab3dstore" target="_blank" class="special-button keychains">
-                <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/llaveros-personalizados.gif" alt="Llaveros Personalizados" class="keychains-preview">
-                🔑 Llaveros Personalizados
-            </a>
+        <!-- CARRUSEL 3D DE DISEÑOS -->
+        <div class="carousel-section">
+            <h2 class="carousel-title">🇵🇷 Mis Diseños Destacados</h2>
+            
+            <div class="carousel-container">
+                <div class="carousel-track" id="carouselTrack">
+                    
+                    <div class="carousel-item" style="--rotation: 0deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/lampara-coqui-puertorriqueno-diseno-articulado-y-sin-soportes')">
+                        <img class="item-image" src="https://printaplab3dstore.github.io/Stlmoldegenerador/images/coqui-lampara.jpg" alt="Lámpara Coquí Articulado" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/00ffff?text=🐸+Lámpara+Coquí'" loading="lazy">
+                        <div class="item-title">Lámpara Coquí Puertorriqueño</div>
+                        <div class="item-stats">
+                            <div class="item-stat">
+                                <div class="stat-icon">👁️</div>
+                                <div class="stat-value">3k</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">❤️</div>
+                                <div class="stat-value">14</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">⬇️</div>
+                                <div class="stat-value">92</div>
+                            </div>
+                        </div>
+                        <button class="cults-btn">Ver en Cults3D</button>
+                    </div>
+
+                    <div class="carousel-item" style="--rotation: 120deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/combo-cocina-boricua-con-patitas-cafetera-italiana-olla-arrocera')">
+                        <img class="item-image" src="https://printaplab3dstore.github.io/Stlmoldegenerador/images/combo-cocina.jpg" alt="Combo Cocina Boricua" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ff0080?text=☕+Combo+Cocina'" loading="lazy">
+                        <div class="item-title">Combo Cocina Boricua con Patitas</div>
+                        <div class="item-stats">
+                            <div class="item-stat">
+                                <div class="stat-icon">👁️</div>
+                                <div class="stat-value">585</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">❤️</div>
+                                <div class="stat-value">1</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">⬇️</div>
+                                <div class="stat-value">7</div>
+                            </div>
+                        </div>
+                        <button class="cults-btn">Ver en Cults3D</button>
+                    </div>
+
+                    <div class="carousel-item" style="--rotation: 240deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/casa/lampara-coqui-puertorriqueno-arte-funcional-con-identidad-boricua')">
+                        <img class="item-image" src="https://printaplab3dstore.github.io/Stlmoldegenerador/images/arte-funcional.jpg" alt="Lámpara Coquí Arte Funcional" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ffff00?text=💡+Arte+Funcional'" loading="lazy">
+                        <div class="item-title">Lámpara Coquí - Arte Funcional</div>
+                        <div class="item-stats">
+                            <div class="item-stat">
+                                <div class="stat-icon">👁️</div>
+                                <div class="stat-value">719</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">❤️</div>
+                                <div class="stat-value">7</div>
+                            </div>
+                            <div class="item-stat">
+                                <div class="stat-icon">⬇️</div>
+                                <div class="stat-value">11</div>
+                            </div>
+                        </div>
+                        <button class="cults-btn">Ver en Cults3D</button>
+                    </div>
+
+                </div>
+
+                <div class="carousel-controls">
+                    <button class="control-btn" onclick="pauseCarousel()" id="pauseBtn" title="Pausar rotación">
+                        ⏸️
+                    </button>
+                    <button class="control-btn" onclick="resumeCarousel()" id="playBtn" title="Reanudar rotación" style="display: none;">
+                        ▶️
+                    </button>
+                    <button class="control-btn" onclick="nextItem()" title="Siguiente">
+                        ➡️
+                    </button>
+                </div>
+            </div>
         </div>
 
         <div class="calculator-container">
@@ -743,6 +918,9 @@
     </div>
 
     <script>
+        let isPaused = false;
+        let currentRotation = 0;
+
         function calculateCost() {
             const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
             const weight = parseFloat(document.getElementById('weight').value) || 0;
@@ -773,6 +951,57 @@
 
             document.getElementById('result').classList.add('show');
         }
+
+        // Funciones del carrusel
+        function openDesign(url) {
+            window.open(url, '_blank');
+        }
+
+        function pauseCarousel() {
+            const track = document.getElementById('carouselTrack');
+            track.style.animationPlayState = 'paused';
+            document.getElementById('pauseBtn').style.display = 'none';
+            document.getElementById('playBtn').style.display = 'flex';
+            isPaused = true;
+        }
+
+        function resumeCarousel() {
+            const track = document.getElementById('carouselTrack');
+            track.style.animationPlayState = 'running';
+            document.getElementById('pauseBtn').style.display = 'flex';
+            document.getElementById('playBtn').style.display = 'none';
+            isPaused = false;
+        }
+
+        function nextItem() {
+            currentRotation += 120;
+            const track = document.getElementById('carouselTrack');
+            track.style.transform = `rotateY(${currentRotation}deg)`;
+            
+            // Pausa momentáneamente para mostrar el ítem
+            pauseCarousel();
+            setTimeout(() => {
+                if (!isPaused) resumeCarousel();
+            }, 2000);
+        }
+
+        // Pausa el carrusel cuando el usuario hace hover
+        document.getElementById('carouselTrack').addEventListener('mouseenter', () => {
+            if (!isPaused) {
+                document.getElementById('carouselTrack').style.animationPlayState = 'paused';
+            }
+        });
+
+        document.getElementById('carouselTrack').addEventListener('mouseleave', () => {
+            if (!isPaused) {
+                document.getElementById('carouselTrack').style.animationPlayState = 'running';
+            }
+        });
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Carrusel 3D iniciado correctamente');
+        });
     </script>
 </body>
 </html>
