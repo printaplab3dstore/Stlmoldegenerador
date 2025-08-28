@@ -104,11 +104,6 @@
             margin-bottom: 10px; 
         }
         
-        @keyframes textGlow { 
-            0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); } 
-            50% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 0, 150, 0.8)); } 
-        }
-        
         .sub-title { 
             font-size: clamp(1.2rem, 3vw, 2rem); 
             color: #fff; 
@@ -696,7 +691,7 @@
             .special-buttons-container { flex-direction: column; align-items: center; }
             .carousel-container { height: 450px; }
             .carousel-item { width: 240px; height: 300px; padding: 20px; }
-            .item-image { height: 140px; font-size: 3rem; }
+            .item-image { height: 140px; }
             .carousel-controls { bottom: -60px; }
             .control-btn { width: 50px; height: 50px; font-size: 20px; }
         }
@@ -768,19 +763,19 @@
 
             <a href="https://cults3d.com/es/modelo-3d/variado/senuelo-mojarra-para-pesca-variada" target="_blank" class="special-button featured">
                 <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" class="featured-preview">
-                🎯 Diseño Destacado
+                Diseño Destacado
             </a>
         </div>
 
         <!-- CARRUSEL 3D DE DISEÑOS -->
         <div class="carousel-section">
-            <h2 class="carousel-title">🇵🇷 Mis Diseños Destacados</h2>
+            <h2 class="carousel-title">Mis Diseños Destacados</h2>
             
             <div class="carousel-container">
                 <div class="carousel-track" id="carouselTrack">
                     
                     <div class="carousel-item" style="--rotation: 0deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/lampara-coqui-puertorriqueno-diseno-articulado-y-sin-soportes')">
-                        <img class="item-image" src="./img/coqui-lampara.jpg" alt="Lámpara Coquí Articulado" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/00ffff?text=🐸+Lámpara+Coquí'" loading="lazy">
+                        <img class="item-image" src="./img/coqui-lampara.jpg" alt="Lámpara Coquí Articulado" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/00ffff?text=Lámpara+Coquí'" loading="lazy">
                         <div class="item-title">Lámpara Coquí Puertorriqueño</div>
                         <div class="item-stats">
                             <div class="item-stat">
@@ -800,7 +795,7 @@
                     </div>
 
                     <div class="carousel-item" style="--rotation: 120deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/combo-cocina-boricua-con-patitas-cafetera-italiana-olla-arrocera')">
-                        <img class="item-image" src="./img/combo-cocina.jpg" alt="Combo Cocina Boricua" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ff0080?text=☕+Combo+Cocina'" loading="lazy">
+                        <img class="item-image" src="./img/combo-cocina.jpg" alt="Combo Cocina Boricua" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ff0080?text=Combo+Cocina'" loading="lazy">
                         <div class="item-title">Combo Cocina Boricua con Patitas</div>
                         <div class="item-stats">
                             <div class="item-stat">
@@ -820,45 +815,7 @@
                     </div>
 
                     <div class="carousel-item" style="--rotation: 240deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/casa/lampara-coqui-puertorriqueno-arte-funcional-con-identidad-boricua')">
-                        <img class="item-image" src="./img/arte-funcional.jpg" alt="Lámpara Coquí Arte Funcional" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ffff00?text=💡+Arte+Funcional'" loading="lazy">
-                        <div class="item-title">Lámpara Coquí - Arte Funcional</div>
-                        <div class="item-stats">
-                            <div class="item-stat">
-                                <div class="stat-icon">👁️</div>
-                                <div class="stat-value">719</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">❤️</div>
-                                <div class="stat-value">7</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">⬇️</div>
-                                <div class="stat-value">11</div>
-                            </div>
-                        </div>
-                        <button class="cults-btn">Ver en Cults3D</button>
-                    </div>d.com/es/modelo-3d/variado/combo-cocina-boricua-con-patitas-cafetera-italiana-olla-arrocera')">
-                        <img class="item-image" src="https://printaplab3dstore.github.io/Stlmoldegenerador/Img/combo-cocina.jpg" alt="Combo Cocina Boricua" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ff0080?text=☕+Combo+Cocina'" loading="lazy">
-                        <div class="item-title">Combo Cocina Boricua con Patitas</div>
-                        <div class="item-stats">
-                            <div class="item-stat">
-                                <div class="stat-icon">👁️</div>
-                                <div class="stat-value">585</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">❤️</div>
-                                <div class="stat-value">1</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">⬇️</div>
-                                <div class="stat-value">7</div>
-                            </div>
-                        </div>
-                        <button class="cults-btn">Ver en Cults3D</button>
-                    </div>
-
-                    <div class="carousel-item" style="--rotation: 240deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/casa/lampara-coqui-puertorriqueno-arte-funcional-con-identidad-boricua')">
-                        <img class="item-image" src="https://printaplab3dstore.github.io/Stlmoldegenerador/Img/arte-funcional.jpg" alt="Lámpara Coquí Arte Funcional" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ffff00?text=💡+Arte+Funcional'" loading="lazy">
+                        <img class="item-image" src="./img/arte-funcional.jpg" alt="Lámpara Coquí Arte Funcional" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ffff00?text=Arte+Funcional'" loading="lazy">
                         <div class="item-title">Lámpara Coquí - Arte Funcional</div>
                         <div class="item-stats">
                             <div class="item-stat">
