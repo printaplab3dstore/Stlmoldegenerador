@@ -1,0 +1,358 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Materiales para Impresión FDM</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            background-color: #F0F0F0;
+            
+        }
+        .title {
+            background-color: #FF6B35;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 0 0 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .material-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            height: 100%;
+        }
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .card-header {
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            padding: 10px;
+            color: white;
+            font-weight: bold;
+        }
+        .pla-header { background-color: #4CAF50; }
+        .abs-header { background-color: #FF9800; }
+        .petg-header { background-color: #2196F3; }
+        .tpu-header { background-color: #9C27B0; }
+        .nylon-header { background-color: #E91E63; }
+        
+        .temp-scale {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #ddd;
+            position: relative;
+            margin-top: 5px;
+        }
+        .temp-range {
+            height: 8px;
+            border-radius: 4px;
+            position: absolute;
+        }
+        .temp-label {
+            font-size: 10px;
+            position: absolute;
+            transform: translateX(-50%);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col p-8" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title self-start mb-6">
+<h1 class="text-3xl font-bold">Materiales para Impresión FDM</h1>
+</div>
+<!-- Main Content -->
+<div class="flex flex-col flex-1">
+<!-- Introduction -->
+<div class="flex mb-4">
+<div class="w-3/4">
+<p class="text-lg">
+                        Los filamentos son la &#34;tinta&#34; de las impresoras 3D FDM, y la elección del material es crucial para determinar las propiedades de la pieza final. Cada material ofrece características únicas que lo hacen más adecuado para ciertas aplicaciones.
+                    </p>
+</div>
+<div class="w-1/4 flex justify-end">
+<img alt="Filamentos PLA en varios colores" class="h-24 rounded-lg shadow-md" src="https://picture-search.skywork.ai/aippt/image/sheet/59e10354ce4c46f47ba170c63baa6660.jpg" data-sk-source-container="img" data-sk-source-url="https://www.impresoras3d.com/filamento-pla-consejos-caracteristicas-y-mucho-mas/" data-sk-source-id="1971000637051056128"/>
+</div>
+</div>
+<!-- Materials Comparison -->
+<div class="grid grid-cols-5 gap-4 flex-1">
+<!-- PLA -->
+<div class="material-card flex flex-col">
+<div class="card-header pla-header">
+<div class="flex justify-between items-center">
+<h2 class="text-lg">PLA</h2>
+<span class="text-xs">Ácido Poliláctico</span>
+</div>
+</div>
+<div class="p-3 flex-1 flex flex-col">
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-puzzle-piece mr-1 text-green-600"></i>Usos
+                            </h3>
+<p class="text-xs text-gray-600">Prototipos, modelos decorativos, juguetes</p>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-plus-circle mr-1 text-green-600"></i>Ventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Fácil de imprimir</li>
+<li>Bajo costo</li>
+<li>Biodegradable</li>
+<li>Poco olor</li>
+</ul>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-minus-circle mr-1 text-red-600"></i>Desventajas
+                            </h3>
+<p class="text-xs text-gray-600">Menor resistencia a altas temperaturas y al impacto</p>
+</div>
+<div class="mt-auto">
+<h3 class="text-sm font-bold text-gray-700 mb-1 flex items-center">
+<i class="fas fa-thermometer-half mr-1 text-orange-500"></i>Temperaturas
+                            </h3>
+<div class="flex flex-col">
+<div class="text-xs mb-1">Extrusor: 190°C - 220°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-green-500" style="left: 190px; width: 30px;"></div>
+</div>
+<div class="text-xs mt-2">Cama: 50°C - 60°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-green-300" style="left: 50px; width: 10px;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- ABS -->
+<div class="material-card flex flex-col">
+<div class="card-header abs-header">
+<div class="flex justify-between items-center">
+<h2 class="text-lg">ABS</h2>
+<span class="text-xs">Acrilonitrilo Butadieno Estireno</span>
+</div>
+</div>
+<div class="p-3 flex-1 flex flex-col">
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-puzzle-piece mr-1 text-yellow-600"></i>Usos
+                            </h3>
+<p class="text-xs text-gray-600">Piezas de ingeniería, prototipos, componentes con altas temperaturas</p>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-plus-circle mr-1 text-green-600"></i>Ventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Muy resistente</li>
+<li>Duradero</li>
+</ul>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-minus-circle mr-1 text-red-600"></i>Desventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Requiere cama caliente</li>
+<li>Emite olores fuertes</li>
+</ul>
+</div>
+<div class="mt-auto">
+<h3 class="text-sm font-bold text-gray-700 mb-1 flex items-center">
+<i class="fas fa-thermometer-half mr-1 text-orange-500"></i>Temperaturas
+                            </h3>
+<div class="flex flex-col">
+<div class="text-xs mb-1">Extrusor: 230°C - 250°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-yellow-500" style="left: 230px; width: 20px;"></div>
+</div>
+<div class="text-xs mt-2">Cama: 90°C - 110°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-yellow-300" style="left: 90px; width: 20px;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- PETG -->
+<div class="material-card flex flex-col">
+<div class="card-header petg-header">
+<div class="flex justify-between items-center">
+<h2 class="text-lg">PETG</h2>
+<span class="text-xs">Glicol de Tereftalato de Polietileno</span>
+</div>
+</div>
+<div class="p-3 flex-1 flex flex-col">
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-puzzle-piece mr-1 text-blue-600"></i>Usos
+                            </h3>
+<p class="text-xs text-gray-600">Piezas funcionales, carcasas, conectores</p>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-plus-circle mr-1 text-green-600"></i>Ventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Facilidad de uso del PLA</li>
+<li>Durabilidad del ABS</li>
+<li>Resistencia al impacto</li>
+</ul>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-minus-circle mr-1 text-red-600"></i>Desventajas
+                            </h3>
+<p class="text-xs text-gray-600">Propenso al &#34;stringing&#34; (hilos)</p>
+</div>
+<div class="mt-auto">
+<h3 class="text-sm font-bold text-gray-700 mb-1 flex items-center">
+<i class="fas fa-thermometer-half mr-1 text-orange-500"></i>Temperaturas
+                            </h3>
+<div class="flex flex-col">
+<div class="text-xs mb-1">Extrusor: 220°C - 250°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-blue-500" style="left: 220px; width: 30px;"></div>
+</div>
+<div class="text-xs mt-2">Cama: 70°C - 80°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-blue-300" style="left: 70px; width: 10px;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- TPU -->
+<div class="material-card flex flex-col">
+<div class="card-header tpu-header">
+<div class="flex justify-between items-center">
+<h2 class="text-lg">TPU</h2>
+<span class="text-xs">Poliuretano Termoplástico</span>
+</div>
+</div>
+<div class="p-3 flex-1 flex flex-col">
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-puzzle-piece mr-1 text-purple-600"></i>Usos
+                            </h3>
+<p class="text-xs text-gray-600">Piezas flexibles, fundas, juntas, amortiguadores</p>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-plus-circle mr-1 text-green-600"></i>Ventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Flexible y elástico</li>
+<li>Bueno para amortiguación</li>
+</ul>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-minus-circle mr-1 text-red-600"></i>Desventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Difícil de imprimir</li>
+<li>Requiere velocidades lentas</li>
+</ul>
+</div>
+<div class="mt-auto">
+<h3 class="text-sm font-bold text-gray-700 mb-1 flex items-center">
+<i class="fas fa-thermometer-half mr-1 text-orange-500"></i>Temperaturas
+                            </h3>
+<div class="flex flex-col">
+<div class="text-xs mb-1">Extrusor: 210°C - 230°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-purple-500" style="left: 210px; width: 20px;"></div>
+</div>
+<div class="text-xs mt-2">Cama: 30°C - 60°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-purple-300" style="left: 30px; width: 30px;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Nylon -->
+<div class="material-card flex flex-col">
+<div class="card-header nylon-header">
+<div class="flex justify-between items-center">
+<h2 class="text-lg">Nylon</h2>
+<span class="text-xs">Poliamida - PA</span>
+</div>
+</div>
+<div class="p-3 flex-1 flex flex-col">
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-puzzle-piece mr-1 text-pink-600"></i>Usos
+                            </h3>
+<p class="text-xs text-gray-600">Engranajes, rodamientos, piezas mecánicas</p>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-plus-circle mr-1 text-green-600"></i>Ventajas
+                            </h3>
+<ul class="text-xs text-gray-600 list-disc pl-4">
+<li>Resistencia y durabilidad</li>
+<li>Alta resistencia a la abrasión</li>
+</ul>
+</div>
+<div class="mb-3">
+<h3 class="text-sm font-bold text-gray-700 flex items-center">
+<i class="fas fa-minus-circle mr-1 text-red-600"></i>Desventajas
+                            </h3>
+<p class="text-xs text-gray-600">Absorbe humedad, requiere secado antes</p>
+</div>
+<div class="mt-auto">
+<h3 class="text-sm font-bold text-gray-700 mb-1 flex items-center">
+<i class="fas fa-thermometer-half mr-1 text-orange-500"></i>Temperaturas
+                            </h3>
+<div class="flex flex-col">
+<div class="text-xs mb-1">Extrusor: 240°C - 260°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-pink-500" style="left: 240px; width: 20px;"></div>
+</div>
+<div class="text-xs mt-2">Cama: 70°C - 100°C</div>
+<div class="temp-scale">
+<div class="temp-range bg-pink-300" style="left: 70px; width: 30px;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Temperature Legend -->
+<div class="flex justify-center mt-4">
+<div class="flex items-center text-xs text-gray-600">
+<div class="w-40 mr-4">
+<div class="w-full h-4 bg-gray-200 rounded-full relative">
+<div class="absolute inset-0 flex items-center justify-between px-2">
+<div class="temp-label" style="left: 0px;">200°C</div>
+<div class="temp-label" style="left: 100px;">250°C</div>
+</div>
+</div>
+</div>
+<span> Escala de temperatura (°C)</span>
+</div>
+</div>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 right-4 text-gray-500" style="visibility: hidden;">
+            6/10
+        </div>
+</div>
+
+</body></html>

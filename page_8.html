@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>El Futuro de la Impresión 3D</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            background-color: #F0F0F0;
+            
+        }
+        .title {
+            background-color: #FF6B35;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 0 0 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .trend-card {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        .trend-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+        .trend-icon {
+            background-color: #BFDF3F;
+            color: #333333;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .future-line {
+            height: 4px;
+            background: linear-gradient(to right, #FF6B35, #BFDF3F);
+            position: relative;
+            margin: 30px 0;
+        }
+        .future-dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #FF6B35;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col p-8" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title self-start mb-6">
+<h1 class="text-3xl font-bold">El Futuro de la Impresión 3D</h1>
+</div>
+<!-- Future Timeline Visual -->
+<div class="future-line w-3/4 mx-auto">
+<div class="future-dot" style="left: 10%"></div>
+<div class="future-dot" style="left: 30%"></div>
+<div class="future-dot" style="left: 50%"></div>
+<div class="future-dot" style="left: 70%"></div>
+<div class="future-dot" style="left: 90%"></div>
+</div>
+<!-- Main Content: Four Trends -->
+<div class="grid grid-cols-4 gap-6 flex-1">
+<!-- Trend 1: AI Integration -->
+<div class="trend-card p-5 flex flex-col items-center">
+<div class="trend-icon">
+<i class="fas fa-brain"></i>
+</div>
+<h2 class="text-xl font-bold text-[#333333] mb-2 text-center">Integración de IA</h2>
+<p class="text-[#333333] text-center">
+                    La IA optimizará los procesos de impresión 3D, ajustando parámetros como la velocidad y la temperatura en tiempo real para mejorar la calidad y reducir errores y desperdicios.
+                </p>
+<div class="mt-auto pt-3 w-full">
+<div class="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-[#FF6B35] rounded-full" style="width: 75%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1 text-right">Progreso actual</p>
+</div>
+</div>
+<!-- Trend 2: Advanced Materials -->
+<div class="trend-card p-5 flex flex-col items-center">
+<div class="trend-icon">
+<i class="fas fa-recycle"></i>
+</div>
+<h2 class="text-xl font-bold text-[#333333] mb-2 text-center">Materiales Avanzados</h2>
+<p class="text-[#333333] text-center">
+                    Expansión en el uso de biomateriales, materiales reciclados y compuestos reforzados con fibra de carbono, que mejorarán las propiedades mecánicas y promoverán prácticas más ecológicas.
+                </p>
+<div class="mt-auto pt-3 w-full">
+<div class="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-[#FF6B35] rounded-full" style="width: 60%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1 text-right">Progreso actual</p>
+</div>
+</div>
+<!-- Trend 3: Large-scale Personalization -->
+<div class="trend-card p-5 flex flex-col items-center">
+<div class="trend-icon">
+<i class="fas fa-industry"></i>
+</div>
+<h2 class="text-xl font-bold text-[#333333] mb-2 text-center">Fabricación Personalizada</h2>
+<p class="text-[#333333] text-center">
+                    La impresión 3D permitirá la producción masiva de productos altamente personalizados, eliminando la necesidad de grandes inventarios y reduciendo costes operativos.
+                </p>
+<div class="mt-auto pt-3 w-full">
+<div class="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-[#FF6B35] rounded-full" style="width: 45%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1 text-right">Progreso actual</p>
+</div>
+</div>
+<!-- Trend 4: Cost Reduction &amp; Accessibility -->
+<div class="trend-card p-5 flex flex-col items-center">
+<div class="trend-icon">
+<i class="fas fa-hand-holding-usd"></i>
+</div>
+<h2 class="text-xl font-bold text-[#333333] mb-2 text-center">Reducción de Costes</h2>
+<p class="text-[#333333] text-center">
+                    A medida que la tecnología madura, los costes asociados a las impresoras y materiales seguirán disminuyendo, democratizando su uso y permitiendo que tanto startups como grandes corporaciones exploren sus beneficios.
+                </p>
+<div class="mt-auto pt-3 w-full">
+<div class="w-full h-1 bg-gray-200 rounded-full overflow-hidden">
+<div class="h-full bg-[#FF6B35] rounded-full" style="width: 85%"></div>
+</div>
+<p class="text-xs text-gray-500 mt-1 text-right">Progreso actual</p>
+</div>
+</div>
+</div>
+<!-- Bottom Quote -->
+<div class="mt-6 text-center">
+<p class="text-lg italic text-[#333333]">&#34;El futuro de la impresión 3D es prometedor y se caracteriza por una evolución constante, impulsada por avances tecnológicos y una creciente demanda de soluciones personalizadas y sostenibles.&#34;</p>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 right-4 text-gray-500" style="visibility: hidden;">
+            8/10
+        </div>
+</div>
+
+</body></html>

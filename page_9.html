@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tu Primer Proyecto</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 854px; overflow: hidden; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 854px;
+            position: relative;
+            background-color: #F0F0F0;
+            
+        }
+        .title {
+            background-color: #FF6B35;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 0 0 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .content-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .project-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 4px solid #FF6B35;
+        }
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .project-icon {
+            color: #FF6B35;
+            font-size: 2rem;
+        }
+        .tip-item {
+            background-color: rgba(191, 223, 63, 0.2);
+            border-left: 3px solid #BFDF3F;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col p-8" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title self-start mb-6">
+<h1 class="text-3xl font-bold">Tu Primer Proyecto</h1>
+</div>
+<!-- Main Content -->
+<div class="flex flex-1 space-x-6">
+<!-- Left Column - Introduction and Tips -->
+<div class="w-1/3">
+<div class="content-box p-6 mb-6">
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Comienza con la Práctica</h2>
+<p class="text-gray-700 mb-4">
+                        Para dominar la impresión 3D, la práctica es fundamental. Comienza con proyectos sencillos y gratificantes para ganar confianza.
+                    </p>
+<div class="flex items-center mt-6">
+<div class="w-12 h-12 rounded-full bg-[#FF6B35] flex items-center justify-center text-white">
+<i class="fas fa-lightbulb text-xl"></i>
+</div>
+<p class="ml-3 text-gray-700 font-semibold">Experimenta y sé paciente</p>
+</div>
+</div>
+<div class="content-box p-6">
+<h2 class="text-xl font-bold text-gray-800 mb-3">Consejos para el Éxito</h2>
+<ul class="space-y-3">
+<li class="tip-item p-3">
+<span class="font-semibold text-gray-800">Descarga modelos listos:</span> Busca diseños validados por la comunidad
+                        </li>
+<li class="tip-item p-3">
+<span class="font-semibold text-gray-800">Comienza con PLA:</span> Es el material más fácil de imprimir y requiere menos configuración
+                        </li>
+<li class="tip-item p-3">
+<span class="font-semibold text-gray-800">Lee las instrucciones:</span> Configura bien el slicer para tu primer proyecto
+                        </li>
+<li class="tip-item p-3">
+<span class="font-semibold text-gray-800">No te desanimes:</span> La primera vez no sale perfecto, pero con práctica mejoras
+                        </li>
+</ul>
+</div>
+</div>
+<!-- Right Column - Project Ideas -->
+<div class="w-2/3">
+<div class="content-box p-6 h-full">
+<h2 class="text-2xl font-bold text-gray-800 mb-4">Ideas de Proyectos Iniciales</h2>
+<div class="grid grid-cols-2 gap-6">
+<!-- Project 1 -->
+<div class="project-card p-5">
+<div class="flex items-center mb-3">
+<div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+<i class="fas fa-mobile-alt project-icon"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-800">Soporte para Teléfono Móvil</h3>
+</div>
+<p class="text-gray-700 mb-3">
+                                Diseño simple que te permite colocar tu teléfono en cualquier superficie. Ideal para ver videos o tomar notas.
+                            </p>
+<div class="flex items-center text-sm text-gray-600">
+<i class="fas fa-check-circle text-green-500 mr-2"></i>
+<span>Fácil de usar y practicar</span>
+</div>
+</div>
+<!-- Project 2 -->
+<div class="project-card p-5">
+<div class="flex items-center mb-3">
+<div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+<i class="fas fa-key project-icon"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-800">Llavero Personalizado</h3>
+</div>
+<p class="text-gray-700 mb-3">
+                                Crea un llavero único con tu nombre, monograma o símbolo personal. Perfecto para comenzar a personalizar.
+                            </p>
+<div class="flex items-center text-sm text-gray-600">
+<i class="fas fa-check-circle text-green-500 mr-2"></i>
+<span>Útil y gratificante</span>
+</div>
+</div>
+<!-- Project 3 -->
+<div class="project-card p-5">
+<div class="flex items-center mb-3">
+<div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+<i class="fas fa-puzzle-piece project-icon"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-800">Pieza de Juguete</h3>
+</div>
+<p class="text-gray-700 mb-3">
+                                Designa un personaje o animal de tu elección. Puede ser simple o complejo según tu nivel de habilidad.
+                            </p>
+<div class="flex items-center text-sm text-gray-600">
+<i class="fas fa-check-circle text-green-500 mr-2"></i>
+<span>Diviértete mientras aprendes</span>
+</div>
+</div>
+<!-- Project 4 -->
+<div class="project-card p-5">
+<div class="flex items-center mb-3">
+<div class="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+<i class="fas fa-gift project-icon"></i>
+</div>
+<h3 class="text-xl font-bold text-gray-800">Regalo Personalizado</h3>
+</div>
+<p class="text-gray-700 mb-3">
+                                Crea un objeto personalizado para un amigo o familiar. Podría ser una medalla, un broche o un simple ornament.
+                            </p>
+<div class="flex items-center text-sm text-gray-600">
+<i class="fas fa-check-circle text-green-500 mr-2"></i>
+<span>Perfecto para obsequios</span>
+</div>
+</div>
+</div>
+<div class="mt-4 text-center text-gray-700 italic">
+                        &#34;Comienza pequeño, pero con gran pasión&#34;
+                    </div>
+</div>
+</div>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 right-4 text-gray-500" style="visibility: hidden;">
+            9/10
+        </div>
+</div>
+
+</body></html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Curso Básico de Introducción a la Impresión 3D</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;800&family=Open+Sans:wght@400;600&display=swap');
+        
+        body {width: 1280px; height: 720px; overflow: hidden; font-family: 'Open Sans', sans-serif;
+            margin: 0;
+            padding: 0;}
+        
+        .slide-container {
+            width: 1280px;
+            height: 720px;
+            position: relative;
+            
+        }
+        
+        .title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+        
+        .gradient-overlay {
+            background: linear-gradient(135deg, rgba(255,107,53,0.9) 0%, rgba(191,223,63,0.8) 100%);
+        }
+        
+        .tech-pattern {
+            background-image: radial-gradient(#333333 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide-container bg-gray-100" style=" overflow: hidden;">
+<!-- Background with subtle pattern -->
+<div class="absolute inset-0 tech-pattern opacity-10"></div>
+<!-- Main content container -->
+<div class="relative w-full h-full flex flex-col">
+<!-- Top decorative bar -->
+<div class="h-4 bg-gradient-to-r from-[#FF6B35] to-[#BFDF3F]"></div>
+<!-- Main content area -->
+<div class="flex flex-1">
+<!-- Left content area -->
+<div class="w-1/2 p-16 flex flex-col justify-center">
+<h1 class="title text-5xl text-[#333333] leading-tight mb-6">Curso Básico de<br/>Introducción a la<br/><span class="text-[#FF6B35]">Impresión 3D</span></h1>
+<div class="w-24 h-1 bg-[#BFDF3F] mb-6"></div>
+<p class="subtitle text-xl text-[#333333] mb-8">Aprende los fundamentos de esta revolucionaria tecnología y descubre cómo transformar tus ideas en objetos físicos</p>
+<div class="flex items-center">
+<div class="w-12 h-12 rounded-full bg-[#FF6B35] flex items-center justify-center text-white">
+<i class="fas fa-cube text-2xl"></i>
+</div>
+<div class="ml-4">
+<p class="text-[#333333] font-semibold">9 Lecciones</p>
+<p class="text-[#333333] text-sm">Todo lo necesario para empezar</p>
+</div>
+</div>
+</div>
+<!-- Right image area -->
+<div class="w-1/2 relative">
+<!-- Image with overlay -->
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="relative w-full h-full">
+<div class="absolute inset-0 gradient-overlay opacity-40"></div>
+<img alt="Impresión 3D en proceso" class="w-full h-full object-cover" src="https://picture-search.skywork.ai/aippt/image/sheet/af8cfb1424ac6db7b8835978864cc5b3.jpg" data-sk-source-container="img" data-sk-source-url="https://www.adslzone.net/reportajes/tecnologia/impresion-3d/" data-sk-source-id="1971000637130747905"/>
+</div>
+</div>
+<!-- Bottom decorative elements -->
+<div class="absolute bottom-0 left-0 w-full">
+<div class="h-16 bg-gradient-to-r from-[#FF6B35] to-[#BFDF3F] opacity-80"></div>
+<div class="absolute bottom-4 right-8 text-white flex items-center">
+<i class="fas fa-calendar-alt mr-2"></i>
+<span style="visibility: hidden;">2025</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+</body></html>

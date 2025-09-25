@@ -1,0 +1,153 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>El Proceso: De la Idea al Objeto</title>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script><style>
+        body {width: 1280px; min-height: 720px; overflow: hidden; margin: 0;
+            padding: 0;}
+        .slide {
+            width: 1280px;
+            min-height: 720px;
+            position: relative;
+            background-color: #F0F0F0;
+            
+        }
+        .title {
+            background-color: #FF6B35;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 0 0 30px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .process-step {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .process-step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .step-icon {
+            background-color: #FF6B35;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: -30px auto 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .arrow {
+            color: #BFDF3F;
+            font-size: 2rem;
+            margin-top: 25px;
+        }
+    
+html {
+    overflow: hidden;
+}</style>
+</head>
+<body>
+<div class="slide flex flex-col p-8" style=" overflow: hidden;">
+<!-- Title -->
+<div class="title self-start mb-10">
+<h1 class="text-3xl font-bold">El Proceso: De la Idea al Objeto</h1>
+</div>
+<!-- Main Content - Process Flow -->
+<div class="flex-1 flex flex-col">
+<div class="flex justify-between items-start mb-6">
+<!-- Step 1: Design -->
+<div class="process-step w-1/5 p-4">
+<div class="step-icon">
+<i class="fas fa-drafting-compass text-2xl"></i>
+</div>
+<h3 class="text-xl font-bold text-center text-[#333333] mb-2">Diseño y Modelado 3D</h3>
+<ul class="text-sm text-gray-700">
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Creación desde cero (CAD)</li>
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Descarga de modelos existentes</li>
+<li><i class="fas fa-check text-[#FF6B35] mr-1"></i> Formatos: STL, OBJ, 3MF</li>
+</ul>
+</div>
+<div class="arrow self-center">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Step 2: Slicing -->
+<div class="process-step w-1/5 p-4">
+<div class="step-icon">
+<i class="fas fa-cut text-2xl"></i>
+</div>
+<h3 class="text-xl font-bold text-center text-[#333333] mb-2">Laminado (Slicing)</h3>
+<ul class="text-sm text-gray-700">
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> &#34;Corta&#34; el modelo en capas</li>
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Genera archivo G-code</li>
+<li><i class="fas fa-check text-[#FF6B35] mr-1"></i> Configura parámetros</li>
+</ul>
+</div>
+<div class="arrow self-center">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Step 3: Calibration -->
+<div class="process-step w-1/5 p-4">
+<div class="step-icon">
+<i class="fas fa-sliders-h text-2xl"></i>
+</div>
+<h3 class="text-xl font-bold text-center text-[#333333] mb-2">Impresión y Calibración</h3>
+<ul class="text-sm text-gray-700">
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Transfiere G-code a la impresora</li>
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Calienta extrusor y cama</li>
+<li><i class="fas fa-check text-[#FF6B35] mr-1"></i> Nivelación y supervisión</li>
+</ul>
+</div>
+<div class="arrow self-center">
+<i class="fas fa-arrow-right"></i>
+</div>
+<!-- Step 4: Post-processing -->
+<div class="process-step w-1/5 p-4">
+<div class="step-icon">
+<i class="fas fa-magic text-2xl"></i>
+</div>
+<h3 class="text-xl font-bold text-center text-[#333333] mb-2">Post-procesado</h3>
+<ul class="text-sm text-gray-700">
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Retirada de soportes</li>
+<li class="mb-1"><i class="fas fa-check text-[#FF6B35] mr-1"></i> Lijado y acabados</li>
+<li><i class="fas fa-check text-[#FF6B35] mr-1"></i> Ensamblaje final</li>
+</ul>
+</div>
+</div>
+<!-- Step 5: Final Object -->
+<div class="flex justify-center mt-6">
+<div class="bg-white p-6 rounded-lg shadow-md w-2/3">
+<div class="flex items-center">
+<div class="bg-[#BFDF3F] p-4 rounded-full mr-6">
+<i class="fas fa-cube text-4xl text-[#333333]"></i>
+</div>
+<div>
+<h3 class="text-2xl font-bold text-[#333333] mb-2">Resultado: Tu Objeto 3D</h3>
+<p class="text-gray-700">
+                                El proceso completo transforma tu idea digital en un objeto físico tangible, listo para su uso final. Cada etapa es crucial para el éxito de la impresión, desde la calidad del diseño hasta el acabado final.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Tips at bottom -->
+<div class="bg-[#FF6B35] bg-opacity-20 p-3 rounded-lg mt-4">
+<p class="text-sm text-gray-700 flex items-center">
+<i class="fas fa-lightbulb text-[#FF6B35] mr-2 text-lg"></i>
+<span><strong>Consejo:</strong> Documenta cada paso del proceso para entender mejor cómo funciona la impresión 3D y mejorar tus resultados futuros.</span>
+</p>
+</div>
+<!-- Page Number -->
+<div class="absolute bottom-4 right-4 text-gray-500" style="visibility: hidden;">
+            5/10
+        </div>
+</div>
+
+</body></html>
