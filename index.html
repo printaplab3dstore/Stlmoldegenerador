@@ -6,391 +6,45 @@
     <title>PRINTAPLAB 3D STORE</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Exo+2:wght@300;400;600;700&display=swap');
-        
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
-        
-        body { 
-            font-family: 'Exo 2', sans-serif; 
-            background: #0a0a0a; 
-            color: #fff; 
-            overflow-x: hidden; 
-            min-height: 100vh; 
-        }
-        
-        .bg-animation { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            z-index: -2; 
-            background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460); 
-            background-size: 400% 400%; 
-            animation: gradientShift 8s ease infinite; 
-        }
-        
-        @keyframes gradientShift { 
-            0%, 100% { background-position: 0% 50%; } 
-            25% { background-position: 100% 50%; } 
-            50% { background-position: 100% 100%; } 
-            75% { background-position: 0% 100%; } 
-        }
-        
-        .particles { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            z-index: -1; 
-            pointer-events: none; 
-        }
-        
-        .particle { 
-            position: absolute; 
-            width: 4px; 
-            height: 4px; 
-            background: rgba(0, 255, 255, 0.6); 
-            border-radius: 50%; 
-            animation: float 6s infinite linear; 
-        }
-        
-        .particle:nth-child(2n) { 
-            background: rgba(255, 0, 150, 0.6); 
-            animation-duration: 8s; 
-        }
-        
-        .particle:nth-child(3n) { 
-            background: rgba(255, 255, 0, 0.6); 
-            animation-duration: 10s; 
-        }
-        
-        @keyframes float { 
-            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 
-            10% { opacity: 1; } 
-            90% { opacity: 1; } 
-            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } 
-        }
-        
-        .container { 
-            padding: 20px; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            position: relative; 
-            z-index: 1; 
-        }
-        
-        header { 
-            text-align: center; 
-            margin-bottom: 60px; 
-            position: relative; 
-        }
-        
-        .main-title { 
-            font-family: 'Orbitron', monospace; 
-            font-size: clamp(3rem, 8vw, 6rem); 
-            font-weight: 900; 
-            background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); 
-            background-size: 400% 400%; 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            background-clip: text; 
-            animation: gradientShift 6s ease infinite; 
-            margin-bottom: 10px; 
-        }
-        
-        .sub-title { 
-            font-size: clamp(1.2rem, 3vw, 2rem); 
-            color: #fff; 
-            font-weight: 300; 
-            text-transform: uppercase; 
-            letter-spacing: 3px; 
-            margin-bottom: 30px; 
-        }
-        
-        .brand-slogan { 
-            font-size: 1.1rem; 
-            color: #aaa; 
-            margin-bottom: 10px; 
-        }
-        
-        .social-text { 
-            font-size: 1rem; 
-            color: #888; 
-        }
-
-        /* CARRUSEL 3D STYLES */
-        .carousel-section {
-            margin: 80px 0;
-            width: 100%;
-            max-width: 1200px;
-        }
-
-        .carousel-title {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            text-align: center;
-            margin-bottom: 60px;
-            background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 4s ease infinite;
-        }
-
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            height: 500px;
-            perspective: 1500px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .carousel-track {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            transform-style: preserve-3d;
-            animation: rotate3d 15s infinite linear;
-        }
-
-        @keyframes rotate3d {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
-        }
-
-        .carousel-item {
-            position: absolute;
-            width: 280px;
-            height: 350px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 25px;
-            cursor: pointer;
-            transition: all 0.5s ease;
-            transform-style: preserve-3d;
-            overflow: hidden;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .carousel-item::before {
-            content: '';
-            position: absolute;
-            top: -3px;
-            left: -3px;
-            right: -3px;
-            bottom: -3px;
-            background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80);
-            border-radius: 20px;
-            z-index: -1;
-            opacity: 0.4;
-            animation: borderGlow 3s linear infinite;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 0.8; }
-        }
-
-        .carousel-item:nth-child(1) {
-            transform: rotateY(0deg) translateZ(250px);
-        }
-        
-        .carousel-item:nth-child(2) {
-            transform: rotateY(120deg) translateZ(250px);
-        }
-        
-        .carousel-item:nth-child(3) {
-            transform: rotateY(240deg) translateZ(250px);
-        }
-
-        .carousel-item:hover {
-            transform: rotateY(var(--rotation, 0deg)) translateZ(300px) scale(1.1);
-            box-shadow: 0 25px 60px rgba(0, 255, 255, 0.4);
-        }
-
-        .item-image {
-            width: 100%;
-            height: 180px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            transition: transform 0.4s ease;
-            object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .carousel-item:hover .item-image {
-            transform: scale(1.05) rotateZ(2deg);
-            box-shadow: 0 10px 25px rgba(0, 255, 255, 0.3);
-        }
-
-        .item-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Exo 2', sans-serif; background: #0a0a0a; color: #fff; overflow-x: hidden; min-height: 100vh; }
+        .bg-animation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background: linear-gradient(45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460); background-size: 400% 400%; animation: gradientShift 8s ease infinite; }
+        @keyframes gradientShift { 0%, 100% { background-position: 0% 50%; } 25% { background-position: 100% 50%; } 50% { background-position: 100% 100%; } 75% { background-position: 0% 100%; } }
+        .particles { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; }
+        .particle { position: absolute; width: 4px; height: 4px; background: rgba(0, 255, 255, 0.6); border-radius: 50%; animation: float 6s infinite linear; }
+        .particle:nth-child(2n) { background: rgba(255, 0, 150, 0.6); animation-duration: 8s; }
+        .particle:nth-child(3n) { background: rgba(255, 255, 0, 0.6); animation-duration: 10s; }
+        @keyframes float { 0% { transform: translateY(100vh) rotate(0deg); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-100px) rotate(360deg); opacity: 0; } }
+        .container { padding: 20px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 1; }
+        header { text-align: center; margin-bottom: 60px; position: relative; }
+        .main-title { font-family: 'Orbitron', monospace; font-size: clamp(3rem, 8vw, 6rem); font-weight: 900; background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; animation: textGlow 3s ease-in-out infinite, gradientShift 6s ease infinite; margin-bottom: 10px; text-shadow: 0 0 30px rgba(0, 255, 255, 0.5); }
+        @keyframes textGlow { 0%, 100% { filter: brightness(1) drop-shadow(0 0 20px rgba(0, 255, 255, 0.5)); } 50% { filter: brightness(1.2) drop-shadow(0 0 40px rgba(255, 0, 150, 0.8)); } }
+        .sub-title { font-size: clamp(1.2rem, 3vw, 2rem); color: #fff; font-weight: 300; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px; }
+        .brand-slogan { font-size: 1.1rem; color: #aaa; margin-bottom: 10px; }
+        .social-text { font-size: 1rem; color: #888; }
+        .social-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-bottom: 60px; }
+        .social-link { display: flex; align-items: center; padding: 15px 25px; border-radius: 50px; text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.4s; backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .social-link:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .social-link.ciciai { background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.8)); }
+        .social-link.cults3d { background: linear-gradient(135deg, rgba(255, 152, 0, 0.8), rgba(255, 183, 77, 0.8)); }
+        .social-link.cults3d.enlarged { 
+            font-size: 1.2rem; 
+            padding: 18px 30px; 
             font-weight: 700;
-            color: #00ffff;
-            margin-bottom: 15px;
-            text-align: center;
-            line-height: 1.3;
         }
-
-        .item-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        .social-link.cults3d.enlarged:hover { 
+            transform: translateY(-6px) scale(1.08); 
         }
-
-        .item-stat {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 8px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+        .social-link.cults3d.enlarged .social-icon { 
+            width: 28px; 
+            height: 28px; 
         }
-
-        .item-stat:hover {
-            background: rgba(0, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .stat-icon {
-            font-size: 1.2rem;
-        }
-
-        .stat-value {
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .cults-btn {
-            width: 100%;
-            padding: 12px 20px;
-            background: linear-gradient(135deg, #ff9800, #ffc107);
-            color: #000;
-            border: none;
-            border-radius: 25px;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
-        }
-
-        .cults-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 30px rgba(255, 152, 0, 0.5);
-            background: linear-gradient(135deg, #ffc107, #ff9800);
-        }
-
-        .carousel-controls {
-            position: absolute;
-            bottom: -80px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 20px;
-            z-index: 10;
-        }
-
-        .control-btn {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 50%;
-            color: #00ffff;
-            font-size: 24px;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            backdrop-filter: blur(15px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .control-btn:hover {
-            background: rgba(0, 255, 255, 0.2);
-            transform: scale(1.15) translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.4);
-            border-color: #00ffff;
-        }
-
-        .control-btn:active {
-            transform: scale(1.05) translateY(-2px);
-        }
+        .social-link.tiktok { background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(194, 24, 91, 0.8)); }
+        .social-link.instagram { background: linear-gradient(135deg, #f44336, #e91e63, #9c27b0, #3f51b0, #2196f3); }
+        .social-icon { width: 24px; height: 24px; margin-right: 10px; transition: transform 0.3s ease; }
+        .social-link:hover .social-icon { transform: rotate(360deg) scale(1.1); }
         
-        .social-links { 
-            display: flex; 
-            flex-wrap: wrap; 
-            justify-content: center; 
-            gap: 20px; 
-            margin-bottom: 40px; 
-        }
-        
-        .social-link { 
-            display: flex; 
-            align-items: center; 
-            padding: 15px 25px; 
-            border-radius: 50px; 
-            text-decoration: none; 
-            font-weight: 600; 
-            font-size: 1rem; 
-            transition: all 0.4s; 
-            backdrop-filter: blur(10px); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-        
-        .social-link:hover { 
-            transform: translateY(-5px) scale(1.05); 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); 
-        }
-        
-        .social-link.ciciai { 
-            background: linear-gradient(135deg, rgba(76, 175, 80, 0.8), rgba(102, 187, 106, 0.8)); 
-        }
-        
-        .social-link.cults3d { 
-            background: linear-gradient(135deg, rgba(255, 152, 0, 0.8), rgba(255, 183, 77, 0.8)); 
-        }
-        
-        .social-link.tiktok { 
-            background: linear-gradient(135deg, rgba(233, 30, 99, 0.8), rgba(194, 24, 91, 0.8)); 
-        }
-        
-        .social-link.instagram { 
-            background: linear-gradient(135deg, #f44336, #e91e63, #9c27b0, #3f51b0, #2196f3); 
-        }
-        
-        .social-icon { 
-            width: 24px; 
-            height: 24px; 
-            margin-right: 10px; 
-            transition: transform 0.3s ease; 
-        }
-        
-        .social-link:hover .social-icon { 
-            transform: rotate(360deg) scale(1.1); 
-        }
-
+        /* Contenedor de botones especiales */
         .special-buttons-container { 
             margin-bottom: 40px; 
             display: flex; 
@@ -417,10 +71,10 @@
             overflow: hidden;
         }
 
+        /* Botón Funkos (el original) */
         .special-button.funkos { 
             background: linear-gradient(135deg, rgba(255, 20, 147, 0.8), rgba(138, 43, 226, 0.8));
         }
-        
         .special-button.funkos::before {
             content: '';
             position: absolute;
@@ -433,19 +87,50 @@
             z-index: -1;
             animation: borderPulse 2s linear infinite;
         }
-        
         .special-button.funkos:hover { 
             transform: translateY(-8px) scale(1.08); 
             box-shadow: 0 25px 50px rgba(255, 20, 147, 0.4);
             background: linear-gradient(135deg, rgba(255, 20, 147, 1), rgba(138, 43, 226, 1));
         }
 
+        /* Nuevo botón Llaveros */
+        .special-button.keychains { 
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.9), rgba(75, 0, 130, 0.9));
+            color: #fff;
+            position: relative;
+        }
+        .special-button.keychains::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #8a2be2, #4b0082, #9400d3, #6a0dad);
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderPulse 1.8s linear infinite;
+        }
+        .special-button.keychains:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            box-shadow: 0 25px 50px rgba(138, 43, 226, 0.6);
+            background: linear-gradient(135deg, rgba(138, 43, 226, 1), rgba(75, 0, 130, 1));
+        }
+        .special-button.keychains::after {
+            content: '🔑';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 24px;
+            animation: bounce 2s infinite;
+        }
+
+        /* Nuevo botón Diseño Destacado */
         .special-button.featured { 
             background: linear-gradient(135deg, rgba(255, 152, 0, 0.9), rgba(255, 193, 7, 0.9));
             color: #000;
             position: relative;
         }
-        
         .special-button.featured::before {
             content: '';
             position: absolute;
@@ -458,13 +143,11 @@
             z-index: -1;
             animation: borderPulse 1.5s linear infinite;
         }
-        
         .special-button.featured:hover { 
             transform: translateY(-8px) scale(1.08); 
             box-shadow: 0 25px 50px rgba(255, 152, 0, 0.6);
             background: linear-gradient(135deg, rgba(255, 152, 0, 1), rgba(255, 193, 7, 1));
         }
-        
         .special-button.featured::after {
             content: '🔥';
             position: absolute;
@@ -473,7 +156,41 @@
             font-size: 24px;
             animation: bounce 2s infinite;
         }
-        
+
+        /* NUEVO BOTÓN MINI CURSO */
+        .special-button.course { 
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.9), rgba(0, 128, 255, 0.9));
+            color: #000;
+            position: relative;
+            font-size: 1.3rem;
+            padding: 22px 45px;
+        }
+        .special-button.course::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, #0080ff, #00ff80, #ff0080);
+            border-radius: 50px;
+            z-index: -1;
+            animation: borderPulse 1.2s linear infinite;
+        }
+        .special-button.course:hover { 
+            transform: translateY(-8px) scale(1.08); 
+            box-shadow: 0 25px 50px rgba(0, 255, 255, 0.6);
+            background: linear-gradient(135deg, rgba(0, 255, 255, 1), rgba(0, 128, 255, 1));
+        }
+        .special-button.course::after {
+            content: '🎓';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 28px;
+            animation: bounce 2s infinite;
+        }
+
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
@@ -491,11 +208,26 @@
             margin-right: 12px; 
             transition: transform 0.3s ease; 
         }
-        
         .special-button:hover .special-button-icon { 
             transform: rotate(360deg) scale(1.2); 
         }
         
+        /* GIF destacado para llaveros */
+        .keychains-preview {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            transition: all 0.3s ease;
+        }
+        .special-button.keychains:hover .keychains-preview {
+            transform: scale(1.15) rotate(360deg);
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        /* Imagen destacada para el botón */
         .featured-preview {
             width: 40px;
             height: 40px;
@@ -505,182 +237,206 @@
             border: 2px solid rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
         }
-        
         .special-button.featured:hover .featured-preview {
             transform: scale(1.1) rotate(360deg);
             border-color: rgba(0, 0, 0, 0.6);
         }
-        
-        .calculator-container { 
-            background: rgba(255, 255, 255, 0.05); 
-            backdrop-filter: blur(20px); 
-            padding: 40px; 
-            border-radius: 25px; 
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); 
-            width: 95%; 
-            max-width: 600px; 
-            text-align: center; 
-            margin-bottom: 50px; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            position: relative; 
-            overflow: hidden; 
+
+        /* CURSO MODAL/OVERLAY */
+        .course-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: none;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .course-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80);
+            border-radius: 25px;
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+        .course-header {
+            padding: 40px;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 128, 255, 0.1));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .course-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            color: #00ffff;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+
+        .course-subtitle {
+            font-size: 1.2rem;
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .close-course {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 128, 0.8);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .close-course:hover {
+            background: rgba(255, 0, 128, 1);
+            transform: scale(1.1);
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+
+        .lesson-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lesson-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .lesson-number {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00ffff, #0080ff);
+            color: #000;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+
+        .lesson-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        .lesson-description {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .lesson-duration {
+            display: flex;
+            align-items: center;
+            color: #00ffff;
+            font-size: 0.9rem;
+        }
+
+        /* IFRAME PARA MOSTRAR LAS PÁGINAS DEL CURSO */
+        .course-iframe {
+            width: 100%;
+            height: 80vh;
+            border: none;
+            border-radius: 15px;
+            background: white;
+            display: none;
+        }
+
+        .back-to-lessons {
+            background: linear-gradient(135deg, #ff0080, #ff1493);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-to-lessons:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #ff1493, #ff0080);
         }
         
-        .calculator-container::before { 
-            content: ''; 
-            position: absolute; 
-            top: -2px; 
-            left: -2px; 
-            right: -2px; 
-            bottom: -2px; 
-            background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); 
-            border-radius: 25px; 
-            z-index: -1; 
-            animation: borderGlow 3s linear infinite; 
-        }
-        
-        @keyframes borderGlow { 
-            0%, 100% { opacity: 0.5; } 
-            50% { opacity: 1; } 
-        }
-        
-        .calculator-title { 
-            font-family: 'Orbitron', monospace; 
-            color: #00ffff; 
-            font-size: clamp(1.5rem, 4vw, 2.5rem); 
-            margin-bottom: 30px; 
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); 
-            font-weight: 700; 
-        }
-        
-        .input-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 30px; 
-        }
-        
-        .input-group { 
-            text-align: left; 
-        }
-        
-        .input-group label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-weight: 600; 
-            color: #fff; 
-            font-size: 0.9rem; 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-        }
-        
-        .input-group input { 
-            width: 100%; 
-            padding: 15px 20px; 
-            border: 2px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 15px; 
-            background: rgba(255, 255, 255, 0.05); 
-            color: #fff; 
-            font-size: 1rem; 
-            font-family: 'Exo 2', sans-serif; 
-            transition: all 0.3s ease; 
-            backdrop-filter: blur(10px); 
-        }
-        
-        .input-group input:focus { 
-            outline: none; 
-            border-color: #00ffff; 
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); 
-            background: rgba(255, 255, 255, 0.1); 
-        }
-        
-        .calculate-btn { 
-            background: linear-gradient(135deg, #00ffff, #0080ff); 
-            color: #000; 
-            padding: 18px 40px; 
-            border: none; 
-            border-radius: 50px; 
-            font-size: 1.2rem; 
-            font-weight: 700; 
-            cursor: pointer; 
-            transition: all 0.4s; 
-            margin-top: 20px; 
-            box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3); 
-            text-transform: uppercase; 
-            letter-spacing: 1px; 
-        }
-        
-        .calculate-btn:hover { 
-            transform: translateY(-3px) scale(1.05); 
-            box-shadow: 0 20px 40px rgba(0, 255, 255, 0.4); 
-        }
-        
-        .result { 
-            margin-top: 30px; 
-            padding: 25px; 
-            background: rgba(0, 255, 255, 0.1); 
-            border-radius: 20px; 
-            border: 1px solid rgba(0, 255, 255, 0.3); 
-            opacity: 0; 
-            transform: translateY(20px); 
-            transition: all 0.6s; 
-        }
-        
-        .result.show { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
-        
-        .result h2 { 
-            margin-bottom: 15px; 
-            color: #00ffff; 
-            font-family: 'Orbitron', monospace; 
-            font-size: 1.5rem; 
-            text-shadow: 0 0 15px rgba(0, 255, 255, 0.5); 
-        }
-        
-        .result p { 
-            font-size: clamp(2rem, 6vw, 3rem); 
-            font-weight: 700; 
-            color: #00ff80; 
-            text-shadow: 0 0 20px rgba(0, 255, 128, 0.5); 
-            font-family: 'Orbitron', monospace; 
-        }
-        
-        .cost-breakdown { 
-            margin-top: 20px; 
-            padding: 20px; 
-            background: rgba(255, 255, 255, 0.05); 
-            border-radius: 15px; 
-            text-align: left; 
-            font-size: 0.9rem; 
-        }
-        
-        .cost-item { 
-            display: flex; 
-            justify-content: space-between; 
-            margin-bottom: 8px; 
-            padding: 5px 0; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-        
-        .cost-item:last-child { 
-            border-bottom: none; 
-            font-weight: 700; 
-            font-size: 1.1rem; 
-            color: #00ff80; 
-        }
-        
-        .footer { 
-            margin-top: 60px; 
-            text-align: center; 
-            padding: 30px; 
-            border-top: 1px solid rgba(255, 255, 255, 0.1); 
-            width: 100%; 
-            font-size: 1.1rem; 
-            color: #888; 
-        }
-        
+        .calculator-container { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); padding: 40px; border-radius: 25px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); width: 95%; max-width: 600px; text-align: center; margin-bottom: 50px; border: 1px solid rgba(255, 255, 255, 0.1); position: relative; overflow: hidden; }
+        .calculator-container::before { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(45deg, #00ffff, #ff0080, #ffff00, #00ff80); border-radius: 25px; z-index: -1; animation: borderGlow 3s linear infinite; }
+        .calculator-title { font-family: 'Orbitron', monospace; color: #00ffff; font-size: clamp(1.5rem, 4vw, 2.5rem); margin-bottom: 30px; text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); font-weight: 700; }
+        .input-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .input-group { text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #fff; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+        .input-group input { width: 100%; padding: 15px 20px; border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 15px; background: rgba(255, 255, 255, 0.05); color: #fff; font-size: 1rem; font-family: 'Exo 2', sans-serif; transition: all 0.3s ease; backdrop-filter: blur(10px); }
+        .input-group input:focus { outline: none; border-color: #00ffff; box-shadow: 0 0 20px rgba(0, 255, 255, 0.3); background: rgba(255, 255, 255, 0.1); }
+        .calculate-btn { background: linear-gradient(135deg, #00ffff, #0080ff); color: #000; padding: 18px 40px; border: none; border-radius: 50px; font-size: 1.2rem; font-weight: 700; cursor: pointer; transition: all 0.4s; margin-top: 20px; box-shadow: 0 10px 30px rgba(0, 255, 255, 0.3); text-transform: uppercase; letter-spacing: 1px; }
+        .calculate-btn:hover { transform: translateY(-3px) scale(1.05); box-shadow: 0 20px 40px rgba(0, 255, 255, 0.4); }
+        .result { margin-top: 30px; padding: 25px; background: rgba(0, 255, 255, 0.1); border-radius: 20px; border: 1px solid rgba(0, 255, 255, 0.3); opacity: 0; transform: translateY(20px); transition: all 0.6s; }
+        .result.show { opacity: 1; transform: translateY(0); }
+        .result h2 { margin-bottom: 15px; color: #00ffff; font-family: 'Orbitron', monospace; font-size: 1.5rem; text-shadow: 0 0 15px rgba(0, 255, 255, 0.5); }
+        .result p { font-size: clamp(2rem, 6vw, 3rem); font-weight: 700; color: #00ff80; text-shadow: 0 0 20px rgba(0, 255, 128, 0.5); font-family: 'Orbitron', monospace; }
+        .cost-breakdown { margin-top: 20px; padding: 20px; background: rgba(255, 255, 255, 0.05); border-radius: 15px; text-align: left; font-size: 0.9rem; }
+        .cost-item { display: flex; justify-content: space-between; margin-bottom: 8px; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .cost-item:last-child { border-bottom: none; font-weight: 700; font-size: 1.1rem; color: #00ff80; }
+        .footer { margin-top: 60px; text-align: center; padding: 30px; border-top: 1px solid rgba(255, 255, 255, 0.1); width: 100%; font-size: 1.1rem; color: #888; }
         @media (max-width: 768px) { 
             .container { padding: 15px; } 
             .calculator-container { padding: 25px; } 
@@ -689,11 +445,7 @@
             .social-link { font-size: 0.9rem; padding: 12px 20px; } 
             .special-button { font-size: 1rem; padding: 16px 32px; } 
             .special-buttons-container { flex-direction: column; align-items: center; }
-            .carousel-container { height: 450px; }
-            .carousel-item { width: 240px; height: 300px; padding: 20px; }
-            .item-image { height: 140px; }
-            .carousel-controls { bottom: -60px; }
-            .control-btn { width: 50px; height: 50px; font-size: 20px; }
+            .course-grid { grid-template-columns: 1fr; padding: 20px; }
         }
     </style>
 </head>
@@ -727,14 +479,14 @@
                 <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                 </svg>
-                Ciciai Bot
+                Bot de Ayuda FDM
             </a>
 
-            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d">
+            <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-link cults3d enlarged">
                 <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M21 8V7l-3 2-3-2v1c0 1.1-.9 2-2 2s-2-.9-2-2V7L8 9l3 2v1c0 1.1.9 2 2 2s2-.9 2-2v-1l3 2 3-2v-1z"/>
                 </svg>
-                Modelos 3D
+                Mi Perfil de Cults
             </a>
 
             <a href="https://www.tiktok.com/@printaplab3dstore" target="_blank" class="social-link tiktok">
@@ -765,235 +517,180 @@
                 <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/senuelo-mojarra.jpg" alt="Señuelo Mojarra" class="featured-preview">
                 Diseño Destacado
             </a>
+
+            <a href="https://www.instagram.com/printaplab3dstore" target="_blank" class="special-button keychains">
+                <img src="https://printaplab3dstore.github.io/Stlmoldegenerador/img/llaveros-personalizados.gif" alt="Llaveros Personalizados" class="keychains-preview">
+                Llaveros Personalizados
+            </a>
+
+            <!-- NUEVO BOTÓN DEL MINI CURSO -->
+            <a href="#" onclick="openCourse()" class="special-button course">
+                <svg class="special-button-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 16l-5 2.72L7 16v-3.73L12 15l5-2.73V16z"/>
+                </svg>
+                Mini Curso 3D
+            </a>
         </div>
 
-        <!-- CARRUSEL 3D DE DISEÑOS -->
-        <div class="carousel-section">
-            <h2 class="carousel-title">Mis Diseños Destacados</h2>
-            
-            <div class="carousel-container">
-                <div class="carousel-track" id="carouselTrack">
-                    
-                    <div class="carousel-item" style="--rotation: 0deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/lampara-coqui-puertorriqueno-diseno-articulado-y-sin-soportes')">
-                        <img class="item-image" src="./img/coqui-lampara.jpg" alt="Lámpara Coquí Articulado" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/00ffff?text=Lámpara+Coquí'" loading="lazy">
-                        <div class="item-title">Lámpara Coquí Puertorriqueño</div>
-                        <div class="item-stats">
-                            <div class="item-stat">
-                                <div class="stat-icon">👁️</div>
-                                <div class="stat-value">3k</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">❤️</div>
-                                <div class="stat-value">14</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">⬇️</div>
-                                <div class="stat-value">92</div>
-                            </div>
-                        </div>
-                        <button class="cults-btn">Ver en Cults3D</button>
+        <!-- OVERLAY DEL CURSO -->
+        <div id="courseOverlay" class="course-overlay">
+            <div class="course-container">
+                <button class="close-course" onclick="closeCourse()">×</button>
+                
+                <!-- Vista principal del curso -->
+                <div id="courseLessons">
+                    <div class="course-header">
+                        <h1 class="course-title">Mini Curso: Impresión 3D</h1>
+                        <p class="course-subtitle">Descubre los fundamentos de la fabricación aditiva</p>
                     </div>
 
-                    <div class="carousel-item" style="--rotation: 120deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/variado/combo-cocina-boricua-con-patitas-cafetera-italiana-olla-arrocera')">
-                        <img class="item-image" src="./img/combo-cocina.jpg" alt="Combo Cocina Boricua" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ff0080?text=Combo+Cocina'" loading="lazy">
-                        <div class="item-title">Combo Cocina Boricua con Patitas</div>
-                        <div class="item-stats">
-                            <div class="item-stat">
-                                <div class="stat-icon">👁️</div>
-                                <div class="stat-value">585</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">❤️</div>
-                                <div class="stat-value">1</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">⬇️</div>
-                                <div class="stat-value">7</div>
+                    <div class="course-grid">
+                        <div class="lesson-card" onclick="openLesson('page_1')">
+                            <div class="lesson-number">1</div>
+                            <h3 class="lesson-title">Introducción al Curso</h3>
+                            <p class="lesson-description">
+                                Bienvenida al mundo de la impresión 3D. Conoce qué aprenderás y por qué esta tecnología es revolucionaria.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>5 min</span>
                             </div>
                         </div>
-                        <button class="cults-btn">Ver en Cults3D</button>
-                    </div>
 
-                    <div class="carousel-item" style="--rotation: 240deg;" onclick="openDesign('https://cults3d.com/es/modelo-3d/casa/lampara-coqui-puertorriqueno-arte-funcional-con-identidad-boricua')">
-                        <img class="item-image" src="./img/arte-funcional.jpg" alt="Lámpara Coquí Arte Funcional" onerror="this.src='https://via.placeholder.com/280x180/1a1a2e/ffff00?text=Arte+Funcional'" loading="lazy">
-                        <div class="item-title">Lámpara Coquí - Arte Funcional</div>
-                        <div class="item-stats">
-                            <div class="item-stat">
-                                <div class="stat-icon">👁️</div>
-                                <div class="stat-value">719</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">❤️</div>
-                                <div class="stat-value">7</div>
-                            </div>
-                            <div class="item-stat">
-                                <div class="stat-icon">⬇️</div>
-                                <div class="stat-value">11</div>
+                        <div class="lesson-card" onclick="openLesson('page_2')">
+                            <div class="lesson-number">2</div>
+                            <h3 class="lesson-title">¿Qué es la Impresión 3D?</h3>
+                            <p class="lesson-description">
+                                Definición, características y diferencias entre fabricación aditiva y sustractiva.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>7 min</span>
                             </div>
                         </div>
-                        <button class="cults-btn">Ver en Cults3D</button>
-                    </div>
 
+                        <div class="lesson-card" onclick="openLesson('page_3')">
+                            <div class="lesson-number">3</div>
+                            <h3 class="lesson-title">¿Por qué es una Revolución?</h3>
+                            <p class="lesson-description">
+                                Ventajas de la impresión 3D: prototipado rápido, personalización, reducción de costes y democratización.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>8 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_4')">
+                            <div class="lesson-number">4</div>
+                            <h3 class="lesson-title">Tecnologías de Impresión 3D</h3>
+                            <p class="lesson-description">
+                                Conoce FDM/FFF, SLA/DLP y tecnologías profesionales. Ventajas y desventajas de cada una.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>10 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_5')">
+                            <div class="lesson-number">5</div>
+                            <h3 class="lesson-title">El Proceso: De la Idea al Objeto</h3>
+                            <p class="lesson-description">
+                                Flujo completo: diseño 3D, laminado, impresión, calibración y post-procesado.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>12 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_6')">
+                            <div class="lesson-number">6</div>
+                            <h3 class="lesson-title">Materiales para Impresión FDM</h3>
+                            <p class="lesson-description">
+                                Comparativa detallada de PLA, ABS, PETG, TPU y Nylon con temperaturas y aplicaciones.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>15 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_7')">
+                            <div class="lesson-number">7</div>
+                            <h3 class="lesson-title">Aplicaciones Prácticas</h3>
+                            <p class="lesson-description">
+                                Casos de uso en medicina, ingeniería, arquitectura, educación, aeroespacial y entretenimiento.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>10 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_8')">
+                            <div class="lesson-number">8</div>
+                            <h3 class="lesson-title">El Futuro de la Impresión 3D</h3>
+                            <p class="lesson-description">
+                                Tendencias emergentes: IA, materiales avanzados, fabricación personalizada y reducción de costes.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>8 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_9')">
+                            <div class="lesson-number">9</div>
+                            <h3 class="lesson-title">Tu Primer Proyecto</h3>
+                            <p class="lesson-description">
+                                Consejos prácticos y ideas de proyectos iniciales para comenzar tu aventura en 3D.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>12 min</span>
+                            </div>
+                        </div>
+
+                        <div class="lesson-card" onclick="openLesson('page_10')">
+                            <div class="lesson-number">10</div>
+                            <h3 class="lesson-title">¡Comienza tu Viaje en 3D!</h3>
+                            <p class="lesson-description">
+                                Resumen del curso, próximos pasos y recursos adicionales para seguir aprendiendo.
+                            </p>
+                            <div class="lesson-duration">
+                                <svg style="width: 16px; height: 16px; margin-right: 5px;" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.7L16.2,16.2Z"/>
+                                </svg>
+                                <span>5 min</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="carousel-controls">
-                    <button class="control-btn" onclick="pauseCarousel()" id="pauseBtn" title="Pausar rotación">
-                        ⏸️
-                    </button>
-                    <button class="control-btn" onclick="resumeCarousel()" id="playBtn" title="Reanudar rotación" style="display: none;">
-                        ▶️
-                    </button>
-                    <button class="control-btn" onclick="nextItem()" title="Siguiente">
-                        ➡️
-                    </button>
+                <!-- Vista de lección individual -->
+                <div id="lessonView" style="display: none;">
+                    <button class="back-to-lessons" onclick="backToLessons()">← Volver a las Lecciones</button>
+                    <iframe id="lessonFrame" class="course-iframe"></iframe>
                 </div>
             </div>
         </div>
-
-        <div class="calculator-container">
-            <h1 class="calculator-title">Calculadora de Costos FDM</h1>
-
-            <div class="input-grid">
-                <div class="input-group">
-                    <label for="materialCost">Costo del Filamento (ARS/kg)</label>
-                    <input type="number" id="materialCost" value="25000" step="0.01">
-                </div>
-
-                <div class="input-group">
-                    <label for="weight">Peso de la Pieza (gramos)</label>
-                    <input type="number" id="weight" value="10" step="0.01">
-                </div>
-
-                <div class="input-group">
-                    <label for="printTime">Tiempo de Impresión (horas)</label>
-                    <input type="number" id="printTime" value="1" step="0.01">
-                </div>
-
-                <div class="input-group">
-                    <label for="powerCost">Costo de Energía (ARS/kWh)</label>
-                    <input type="number" id="powerCost" value="80" step="0.001">
-                </div>
-
-                <div class="input-group">
-                    <label for="powerConsumption">Consumo de Impresora (watts)</label>
-                    <input type="number" id="powerConsumption" value="100" step="1">
-                </div>
-
-                <div class="input-group">
-                    <label for="laborCostPerHour">Costo Mano de Obra (ARS/hora)</label>
-                    <input type="number" id="laborCostPerHour" value="1500" step="0.01">
-                </div>
-
-                <div class="input-group">
-                    <label for="extraMaterialsCost">Costos Materiales Extra (ARS)</label>
-                    <input type="number" id="extraMaterialsCost" value="0" step="0.01">
-                </div>
-
-                <div class="input-group">
-                    <label for="markup">Margen de Ganancia (%)</label>
-                    <input type="number" id="markup" value="30" step="0.01">
-                </div>
-            </div>
-
-            <button class="calculate-btn" onclick="calculateCost()">Calcular Costo</button>
-
-            <div id="result" class="result">
-                <h2>Costo Total</h2>
-                <p id="totalCost">$0.00 ARS</p>
-                <div class="cost-breakdown" id="breakdown"></div>
-            </div>
-        </div>
-
-        <div class="footer">
-            <p>© 2024 PRINTAPLAB 3D STORE - Calculadora de Costos FDM</p>
-        </div>
-    </div>
-
-    <script>
-        let isPaused = false;
-        let currentRotation = 0;
-
-        function calculateCost() {
-            const materialCost = parseFloat(document.getElementById('materialCost').value) || 0;
-            const weight = parseFloat(document.getElementById('weight').value) || 0;
-            const printTime = parseFloat(document.getElementById('printTime').value) || 0;
-            const powerCost = parseFloat(document.getElementById('powerCost').value) || 0;
-            const powerConsumption = parseFloat(document.getElementById('powerConsumption').value) || 0;
-            const laborCostPerHour = parseFloat(document.getElementById('laborCostPerHour').value) || 0;
-            const extraMaterialsCost = parseFloat(document.getElementById('extraMaterialsCost').value) || 0;
-            const markup = parseFloat(document.getElementById('markup').value) || 0;
-
-            const materialCostTotal = (materialCost * weight) / 1000;
-            const energyCost = (powerConsumption / 1000) * printTime * powerCost;
-            const laborCost = laborCostPerHour * printTime;
-            const baseCost = materialCostTotal + energyCost + laborCost + extraMaterialsCost;
-            const finalCost = baseCost * (1 + (markup / 100));
-
-            document.getElementById('totalCost').textContent = `$${finalCost.toFixed(2)} ARS`;
-            
-            document.getElementById('breakdown').innerHTML = `
-                <div class="cost-item"><span>Costo Material:</span><span>$${materialCostTotal.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>Costo Energía:</span><span>$${energyCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>Costo Mano de Obra:</span><span>$${laborCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>Materiales Extra:</span><span>$${extraMaterialsCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>Subtotal:</span><span>$${baseCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>Margen (${markup}%):</span><span>$${(finalCost - baseCost).toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span><strong>TOTAL FINAL:</strong></span><span><strong>$${finalCost.toFixed(2)} ARS</strong></span></div>
-            `;
-
-            document.getElementById('result').classList.add('show');
-        }
-
-        // Funciones del carrusel
-        function openDesign(url) {
-            window.open(url, '_blank');
-        }
-
-        function pauseCarousel() {
-            const track = document.getElementById('carouselTrack');
-            track.style.animationPlayState = 'paused';
-            document.getElementById('pauseBtn').style.display = 'none';
-            document.getElementById('playBtn').style.display = 'flex';
-            isPaused = true;
-        }
-
-        function resumeCarousel() {
-            const track = document.getElementById('carouselTrack');
-            track.style.animationPlayState = 'running';
-            document.getElementById('pauseBtn').style.display = 'flex';
-            document.getElementById('playBtn').style.display = 'none';
-            isPaused = false;
-        }
-
-        function nextItem() {
-            currentRotation += 120;
-            const track = document.getElementById('carouselTrack');
-            track.style.transform = `rotateY(${currentRotation}deg)`;
-            
-            // Pausa momentáneamente para mostrar el ítem
-            pauseCarousel();
-            setTimeout(() => {
-                if (!isPaused) resumeCarousel();
-            }, 2000);
-        }
-
-        // Pausa el carrusel cuando el usuario hace hover
-        document.getElementById('carouselTrack').addEventListener('mouseenter', () => {
-            if (!isPaused) {
-                document.getElementById('carouselTrack').style.animationPlayState = 'paused';
-            }
-        });
-
-        document.getElementById('carouselTrack').addEventListener('mouseleave', () => {
-            if (!isPaused) {
-                document.getElementById('carouselTrack').style.animationPlayState = 'running';
-            }
-        });
-
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('Carrusel 3D iniciado correctamente');
-        });
-    </script>
-</body>
-</html>
