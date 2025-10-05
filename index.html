@@ -5,450 +5,379 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>Curso Completo de Marketing de Afiliados - Edición Vistosa</title>
+    <title>Guía Definitiva Hotmart Marketing de Afiliados</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        coral: '#FF6B6B',
-                        'coral-light': '#FF8E8E',
-                        turquoise: '#4ECDC4',
-                        'turquoise-light': '#45B7B8',
-                        purple: '#9B59B6',
-                        'purple-light': '#BB8FCE',
-                        pink: '#FFB6C1',
-                        'pink-light': '#FFC0CB',
-                        yellow: '#FFE66D',
-                        mint: '#98FB98',
-                        sky: '#87CEEB',
-                        lavender: '#E6E6FA'
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+        * {
+            font-family: 'Inter', sans-serif;
         }
-
-        @keyframes gradientShift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff4757 100%);
         }
-
-        .rainbow-gradient {
-            background: linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 25%, #45B7B8 50%, #96CEB4 75%, #FFEAA7 100%);
-        }
-
-        .coral-gradient {
-            background: linear-gradient(135deg, #FF6B6B 0%, #FF8E8E 100%);
-        }
-
-        .turquoise-gradient {
-            background: linear-gradient(135deg, #4ECDC4 0%, #45B7B8 100%);
-        }
-
-        .purple-gradient {
-            background: linear-gradient(135deg, #9B59B6 0%, #BB8FCE 100%);
-        }
-
-        .pink-gradient {
-            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
-        }
-
-        .yellow-gradient {
-            background: linear-gradient(135deg, #FFE66D 0%, #FFEAA7 100%);
-        }
-
-        .mint-gradient {
-            background: linear-gradient(135deg, #98FB98 0%, #90EE90 100%);
-        }
-
-        .sky-gradient {
-            background: linear-gradient(135deg, #87CEEB 0%, #B0E0E6 100%);
-        }
-
-        .card-hover {
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            transform-style: preserve-3d;
-        }
-
-        .card-hover:hover {
-            transform: translateY(-10px) rotateX(5deg);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 
-                        0 0 30px rgba(255, 107, 107, 0.3);
-        }
-
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-
-        @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .pulse-glow {
-            animation: pulseGlow 2s ease-in-out infinite alternate;
-        }
-
-        @keyframes pulseGlow {
-            from { box-shadow: 0 0 20px rgba(255, 107, 107, 0.4); }
-            to { box-shadow: 0 0 30px rgba(78, 205, 196, 0.6); }
-        }
-
-        .sidebar {
-            background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
-            backdrop-filter: blur(20px);
-            border-right: 3px solid transparent;
-            background-clip: padding-box;
-            scrollbar-width: thin;
-            scrollbar-color: #FF6B6B #f1f5f9;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: linear-gradient(180deg, #FFB6C1, #87CEEB);
-            border-radius: 10px;
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: linear-gradient(180deg, #FF6B6B, #4ECDC4);
-            border-radius: 10px;
-        }
-
-        .nav-item {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.5s;
-        }
-
-        .nav-item:hover::before {
-            left: 100%;
-        }
-
-        .nav-item:hover {
-            transform: translateX(5px);
-            background: linear-gradient(135deg, #FF6B6B, #4ECDC4);
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-
-        .geometric-bg {
-            position: relative;
-            overflow: hidden;
-        }
-
-        .geometric-bg::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(155, 89, 182, 0.1) 0%, transparent 50%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .text-gradient {
-            background: linear-gradient(135deg, #FF6B6B, #4ECDC4, #9B59B6);
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #ff6b35, #f7931e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientText 3s ease-in-out infinite;
         }
-
-        @keyframes gradientText {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+        
+        .card-hover {
+            transition: all 0.3s ease;
         }
-
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .nav-item {
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: rgba(255, 107, 53, 0.1);
+            border-left: 4px solid #ff6b35;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b35, #f7931e);
+            z-index: 1000;
+            transition: width 0.3s ease;
+        }
+        
+        .section-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .section-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
         .icon-bounce {
-            animation: iconBounce 2s ease-in-out infinite;
+            animation: bounce 2s infinite;
         }
-
-        @keyframes iconBounce {
+        
+        @keyframes bounce {
             0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
             40% { transform: translateY(-10px); }
             60% { transform: translateY(-5px); }
         }
-
-        .sparkle {
-            position: relative;
-        }
-
-        .sparkle::after {
-            content: '✨';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            animation: sparkleRotate 2s linear infinite;
-        }
-
-        @keyframes sparkleRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .rainbow-border {
-            border: 3px solid;
-            border-image: linear-gradient(45deg, #FF6B6B, #4ECDC4, #9B59B6, #FFE66D) 1;
-            border-radius: 15px;
-        }
-
-        .glass-effect {
+        
+        .glassmorphism {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .neon-glow {
-            box-shadow: 
-                0 0 5px rgba(255, 107, 107, 0.5),
-                0 0 10px rgba(255, 107, 107, 0.5),
-                0 0 15px rgba(255, 107, 107, 0.5),
-                0 0 20px rgba(78, 205, 196, 0.5);
-        }
     </style>
 </head>
-<body class="font-sans">
-    <!-- Floating Decorative Elements -->
-    <div class="fixed inset-0 pointer-events-none z-0">
-        <div class="absolute top-20 left-10 w-20 h-20 bg-coral rounded-full opacity-20 floating"></div>
-        <div class="absolute top-40 right-20 w-16 h-16 bg-turquoise rounded-full opacity-20 floating" style="animation-delay: 1s;"></div>
-        <div class="absolute bottom-40 left-20 w-12 h-12 bg-purple rounded-full opacity-20 floating" style="animation-delay: 2s;"></div>
-        <div class="absolute bottom-20 right-40 w-24 h-24 bg-pink rounded-full opacity-20 floating" style="animation-delay: 0.5s;"></div>
-    </div>
-
+<body class="bg-gray-50">
+    <div class="progress-bar" id="progressBar"></div>
+    
     <!-- Header -->
-    <header class="rainbow-gradient text-white py-8 shadow-2xl fixed w-full top-0 z-50 glass-effect">
+    <header class="gradient-bg text-white py-6 sticky top-0 z-50 shadow-lg">
         <div class="container mx-auto px-6">
             <div class="flex items-center justify-between">
-                <h1 class="text-4xl font-bold flex items-center sparkle">
-                    <i class="fas fa-rocket mr-4 icon-bounce text-yellow"></i>
-                    <span class="text-gradient">Marketing de Afiliados Pro</span>
+                <h1 class="text-3xl font-bold animate-slide-in">
+                    <i class="fas fa-rocket mr-3"></i>
+                    Guía Definitiva Hotmart Marketing de Afiliados
                 </h1>
-                <div class="hidden md:flex items-center space-x-6">
-                    <span class="glass-effect px-6 py-3 rounded-full text-sm font-semibold neon-glow">
-                        <i class="fas fa-users mr-2 text-coral"></i>
-                        +10,000 estudiantes
-                    </span>
-                    <span class="glass-effect px-6 py-3 rounded-full text-sm font-semibold neon-glow">
-                        <i class="fas fa-star mr-2 text-yellow"></i>
-                        4.9/5 estrellas
-                    </span>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#inicio" class="hover:text-orange-200 transition-colors">Inicio</a>
+                    <a href="#ventajas" class="hover:text-orange-200 transition-colors">Ventajas</a>
+                    <a href="#primeros-pasos" class="hover:text-orange-200 transition-colors">Primeros Pasos</a>
+                    <a href="#estrategias" class="hover:text-orange-200 transition-colors">Estrategias</a>
                 </div>
             </div>
         </div>
     </header>
 
-    <div class="flex pt-24">
-        <!-- Sidebar -->
-        <nav class="sidebar fixed left-0 top-24 h-full w-80 shadow-2xl overflow-y-auto z-40">
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <nav class="w-80 bg-white shadow-lg h-screen sticky top-20 overflow-y-auto hidden lg:block">
             <div class="p-6">
-                <h2 class="text-2xl font-bold text-gradient mb-8 text-center">✨ Contenido del Curso ✨</h2>
-                <ul class="space-y-3">
-                    <li><a href="#introduccion" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-play-circle mr-4 text-coral"></i>Introducción</a></li>
-                    <li><a href="#ventajas" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-thumbs-up mr-4 text-turquoise"></i>Ventajas de ser Afiliado</a></li>
-                    <li><a href="#primeros-pasos" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-flag mr-4 text-purple"></i>Primeros Pasos</a></li>
-                    <li><a href="#mercado" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-search mr-4 text-pink"></i>Explorar Mercado</a></li>
-                    <li><a href="#producto-ganador" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-trophy mr-4 text-yellow"></i>Producto Ganador</a></li>
-                    <li><a href="#tiktok" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fab fa-tiktok mr-4 text-coral"></i>TikTok para Ventas</a></li>
-                    <li><a href="#contenido-viral" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-fire mr-4 text-turquoise"></i>Contenido Viral</a></li>
-                    <li><a href="#canva" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-palette mr-4 text-purple"></i>Diseño con Canva</a></li>
-                    <li><a href="#cta" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-bullhorn mr-4 text-pink"></i>Llamadas a la Acción</a></li>
-                    <li><a href="#nichos" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-target mr-4 text-yellow"></i>Especialización</a></li>
-                    <li><a href="#autenticidad" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-heart mr-4 text-coral"></i>Autenticidad</a></li>
-                    <li><a href="#analisis" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-chart-line mr-4 text-turquoise"></i>Análisis de Datos</a></li>
-                    <li><a href="#multicanal" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-network-wired mr-4 text-purple"></i>Estrategia Multicanal</a></li>
-                    <li><a href="#herramientas" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-tools mr-4 text-pink"></i>Herramientas Avanzadas</a></li>
-                    <li><a href="#metricas" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-analytics mr-4 text-yellow"></i>Métricas y KPIs</a></li>
-                    <li><a href="#casos-exito" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-medal mr-4 text-coral"></i>Casos de Éxito</a></li>
-                    <li><a href="#estrategias-2024" class="nav-item flex items-center p-4 text-gray-700 rounded-2xl transition-colors"><i class="fas fa-rocket mr-4 text-turquoise"></i>Estrategias 2024</a></li>
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Contenido</h3>
+                <ul class="space-y-2">
+                    <li><a href="#que-es" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">¿Qué es el Marketing de Afiliados?</a></li>
+                    <li><a href="#ventajas" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Ventajas de ser Afiliado</a></li>
+                    <li><a href="#primeros-pasos" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Primeros Pasos</a></li>
+                    <li><a href="#mercado" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Explorando el Mercado</a></li>
+                    <li><a href="#producto-ganador" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Elegir Producto Ganador</a></li>
+                    <li><a href="#tiktok" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Configurar TikTok</a></li>
+                    <li><a href="#contenido-viral" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Contenido Viral</a></li>
+                    <li><a href="#canva" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Diseño con Canva</a></li>
+                    <li><a href="#llamadas-accion" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Llamadas a la Acción</a></li>
+                    <li><a href="#nicho" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Especialización en Nicho</a></li>
+                    <li><a href="#autenticidad" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Autenticidad</a></li>
+                    <li><a href="#analisis" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Análisis de Datos</a></li>
+                    <li><a href="#multicanal" class="nav-item block p-3 rounded-lg text-gray-700 hover:text-orange-600">Estrategia Multicanal</a></li>
                 </ul>
             </div>
         </nav>
 
         <!-- Main Content -->
-        <main class="ml-80 flex-1 p-8 geometric-bg">
-            <!-- Introducción -->
-            <section id="introduccion" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover rainbow-border">
-                    <div class="text-center mb-10">
-                        <h2 class="text-5xl font-bold text-gradient mb-6">🚀 ¿Qué es el Marketing de Afiliados? 🚀</h2>
-                        <p class="text-2xl text-gray-600 font-medium">Descubre cómo generar ingresos promocionando productos de terceros</p>
+        <main class="flex-1 lg:ml-0">
+            <!-- Hero Section -->
+            <section id="inicio" class="gradient-bg text-white py-20">
+                <div class="container mx-auto px-6 text-center">
+                    <div class="animate-float">
+                        <i class="fas fa-chart-line text-6xl mb-6 text-orange-200"></i>
+                    </div>
+                    <h2 class="text-5xl font-bold mb-6">Vende sin tu propio producto</h2>
+                    <p class="text-xl mb-8 max-w-3xl mx-auto">Solo con tu celular, TikTok y Canva. Estrategias reales que funcionan para principiantes</p>
+                    <div class="flex justify-center space-x-4">
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 glassmorphism">
+                            <i class="fas fa-mobile-alt text-2xl mb-2"></i>
+                            <p class="font-semibold">Solo tu celular</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 glassmorphism">
+                            <i class="fab fa-tiktok text-2xl mb-2"></i>
+                            <p class="font-semibold">TikTok</p>
+                        </div>
+                        <div class="bg-white bg-opacity-20 rounded-lg p-4 glassmorphism">
+                            <i class="fas fa-palette text-2xl mb-2"></i>
+                            <p class="font-semibold">Canva</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ¿Qué es el Marketing de Afiliados? -->
+            <section id="que-es" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">¿Qué es el Marketing de Afiliados?</h2>
+                        <p class="text-xl text-gray-600">Un modelo de negocio basado en el rendimiento</p>
                     </div>
                     
-                    <div class="grid md:grid-cols-2 gap-10 items-center">
+                    <div class="grid md:grid-cols-2 gap-12 items-center">
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-6 flex items-center">
-                                <i class="fas fa-lightbulb mr-3 text-yellow icon-bounce"></i>
-                                Definición
-                            </h3>
-                            <p class="text-gray-600 mb-8 leading-relaxed text-lg">
-                                El marketing de afiliados es un modelo de negocio basado en el rendimiento, donde promocionas productos o servicios de otras personas o empresas y ganas una comisión por cada venta que generas.
-                            </p>
-                            
-                            <div class="coral-gradient p-8 rounded-2xl text-white shadow-lg">
-                                <h4 class="font-bold text-xl mb-4 flex items-center">
-                                    <i class="fas fa-cogs mr-3"></i>
-                                    Proceso Básico:
-                                </h4>
-                                <div class="flex items-center justify-between text-sm font-semibold">
-                                    <span class="bg-white/20 px-4 py-2 rounded-full">1. Afiliado</span>
-                                    <i class="fas fa-arrow-right text-2xl"></i>
-                                    <span class="bg-white/20 px-4 py-2 rounded-full">2. Enlace</span>
-                                    <i class="fas fa-arrow-right text-2xl"></i>
-                                    <span class="bg-white/20 px-4 py-2 rounded-full">3. Venta</span>
-                                    <i class="fas fa-arrow-right text-2xl"></i>
-                                    <span class="bg-white/20 px-4 py-2 rounded-full">4. Comisión</span>
-                                </div>
+                            <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                                <h3 class="text-2xl font-bold text-gray-800 mb-4">
+                                    <i class="fas fa-lightbulb text-orange-500 mr-3"></i>
+                                    Definición
+                                </h3>
+                                <p class="text-gray-600 leading-relaxed">
+                                    El marketing de afiliados es un modelo de negocio basado en el rendimiento, donde promocionas productos o servicios de otras personas o empresas y ganas una comisión por cada venta que generas.
+                                </p>
                             </div>
                         </div>
                         
-                        <div class="text-center">
-                            <div class="turquoise-gradient p-10 rounded-3xl text-white shadow-2xl floating">
-                                <i class="fas fa-handshake text-8xl mb-6 icon-bounce"></i>
-                                <h4 class="text-2xl font-bold mb-4">Hotmart como Intermediario</h4>
-                                <p class="text-lg opacity-90">Gestiona comisiones, seguimiento de ventas y pagos de forma automática y segura</p>
+                        <div>
+                            <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-8 text-white card-hover">
+                                <h3 class="text-2xl font-bold mb-4">
+                                    <i class="fas fa-cogs mr-3"></i>
+                                    Cómo funciona en Hotmart
+                                </h3>
+                                <p class="mb-4">Hotmart actúa como intermediario, gestionando:</p>
+                                <ul class="space-y-2">
+                                    <li><i class="fas fa-check mr-2"></i>El cálculo y distribución automática de comisiones</li>
+                                    <li><i class="fas fa-check mr-2"></i>El seguimiento de las ventas</li>
+                                    <li><i class="fas fa-check mr-2"></i>Los pagos a los afiliados y creadores</li>
+                                </ul>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Proceso Visual -->
+                    <div class="mt-16">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg">
+                            <h3 class="text-2xl font-bold text-center mb-8 gradient-text">Proceso de Marketing de Afiliados</h3>
+                            <div class="flex flex-wrap justify-center items-center space-x-4">
+                                <div class="text-center mb-4">
+                                    <div class="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-2">1</div>
+                                    <p class="font-semibold">Afiliado</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-orange-500 text-2xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-2">2</div>
+                                    <p class="font-semibold">Enlace</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-orange-500 text-2xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-2">3</div>
+                                    <p class="font-semibold">Venta</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-orange-500 text-2xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-2">4</div>
+                                    <p class="font-semibold">Comisión</p>
+                                </div>
+                            </div>
+                            <p class="text-center text-gray-600 mt-6 font-medium">Hotmart se encarga de gestionar todo el proceso de forma segura y automática</p>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Ventajas -->
-            <section id="ventajas" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🌟 Ventajas de ser Afiliado en Hotmart 🌟</h2>
-                    
-                    <div class="grid md:grid-cols-3 gap-8">
-                        <div class="mint-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-box-open text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Sin Producto Propio</h3>
-                            <p class="text-white/90">Puedes empezar a vender inmediatamente sin crear, desarrollar o mantener un producto.</p>
+            <section id="ventajas" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Ventajas de ser Afiliado en Hotmart</h2>
+                        <p class="text-xl text-gray-600">Descubre por qué miles eligen Hotmart</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-box-open text-blue-500 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">No necesitas producto propio</h3>
+                                <p class="text-gray-600">Puedes empezar a vender inmediatamente sin la complejidad de crear, desarrollar o mantener un producto.</p>
+                            </div>
                         </div>
-                        
-                        <div class="sky-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-globe text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Sin Sitio Web</h3>
-                            <p class="text-white/90">Promociona a través de redes sociales, blogs u otros medios sin necesidad de un sitio web propio.</p>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-globe text-green-500 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">No se requiere sitio web</h3>
+                                <p class="text-gray-600">Es posible promocionar productos a través de redes sociales, blogs u otros medios, sin necesidad de tener un sitio web propio.</p>
+                            </div>
                         </div>
-                        
-                        <div class="yellow-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-coins text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Comisiones Automáticas</h3>
-                            <p class="text-white/90">Hotmart calcula y distribuye las comisiones automáticamente, garantizando tu pago.</p>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-coins text-orange-500 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">Comisiones automáticas</h3>
+                                <p class="text-gray-600">Hotmart calcula y distribuye las comisiones de forma automática en el momento de la venta, garantizando que recibas tu pago.</p>
+                            </div>
                         </div>
-                        
-                        <div class="purple-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-clock text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Flexibilidad Total</h3>
-                            <p class="text-white/90">Trabaja desde cualquier lugar y en cualquier momento, adaptando tu negocio a tu estilo de vida.</p>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-clock text-purple-500 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">Flexibilidad total</h3>
+                                <p class="text-gray-600">Puedes trabajar desde cualquier lugar y en cualquier momento, adaptando tu negocio a tu estilo de vida.</p>
+                            </div>
                         </div>
-                        
-                        <div class="coral-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-shopping-cart text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Amplia Variedad</h3>
-                            <p class="text-white/90">Acceso a miles de productos digitales en diversos nichos para elegir los que más te gusten.</p>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-shopping-cart text-red-500 text-2xl"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">Amplia variedad</h3>
+                                <p class="text-gray-600">Acceso a miles de productos digitales en diversos nichos, lo que te permite elegir aquellos con los que tienes mayor afinidad.</p>
+                            </div>
                         </div>
-                        
-                        <div class="pink-gradient p-8 rounded-2xl text-center shadow-lg card-hover">
-                            <i class="fas fa-play text-5xl text-white mb-6 icon-bounce"></i>
-                            <h3 class="text-xl font-bold text-white mb-4">Comienza Hoy</h3>
-                            <p class="text-white/90">Sin barreras de entrada ni riesgos, solo oportunidades para ganar dinero mientras aprendes.</p>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-rocket text-indigo-500 text-2xl icon-bounce"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-4">Comienza hoy mismo</h3>
+                                <p class="text-gray-600">Sin barreras de entrada ni riesgos, solo oportunidades para ganar dinero mientras aprendes el negocio.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
             <!-- Primeros Pasos -->
-            <section id="primeros-pasos" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🎯 Primeros Pasos en Hotmart 🎯</h2>
-                    
-                    <div class="space-y-8">
-                        <div class="flex items-start space-x-6">
-                            <div class="coral-gradient text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl shadow-lg pulse-glow">1</div>
-                            <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-gray-800 mb-3">Accede a la página oficial</h3>
-                                <p class="text-gray-600 text-lg">Dirígete al sitio web principal de Hotmart: <span class="font-mono bg-coral/20 px-3 py-2 rounded-lg text-coral font-bold">www.hotmart.com</span></p>
+            <section id="primeros-pasos" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Primeros Pasos en Hotmart</h2>
+                        <p class="text-xl text-gray-600">El registro es gratuito y sencillo</p>
+                    </div>
+
+                    <div class="max-w-4xl mx-auto">
+                        <div class="space-y-8">
+                            <div class="flex items-start space-x-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">1</div>
+                                </div>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg flex-1 card-hover">
+                                    <h3 class="text-xl font-bold mb-3">Accede a la página oficial</h3>
+                                    <p class="text-gray-600">Dirígete al sitio web principal de Hotmart: <span class="font-semibold text-orange-600">www.hotmart.com</span></p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-6">
-                            <div class="turquoise-gradient text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl shadow-lg pulse-glow">2</div>
-                            <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-gray-800 mb-3">Haz clic en "Regístrate"</h3>
-                                <p class="text-gray-600 text-lg">En la esquina superior derecha de la página, encontrarás el botón de registro.</p>
+
+                            <div class="flex items-start space-x-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">2</div>
+                                </div>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg flex-1 card-hover">
+                                    <h3 class="text-xl font-bold mb-3">Haz clic en "Regístrate"</h3>
+                                    <p class="text-gray-600">En la esquina superior derecha de la página. Puedes encontrarlo en la cabecera.</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-6">
-                            <div class="purple-gradient text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl shadow-lg pulse-glow">3</div>
-                            <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-gray-800 mb-3">Rellena el formulario</h3>
-                                <p class="text-gray-600 text-lg">Proporciona tu nombre completo, correo electrónico y crea una contraseña segura. Asegúrate de usar tu nombre real.</p>
+
+                            <div class="flex items-start space-x-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">3</div>
+                                </div>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg flex-1 card-hover">
+                                    <h3 class="text-xl font-bold mb-3">Rellena el formulario</h3>
+                                    <p class="text-gray-600">Proporciona tu nombre completo, correo electrónico y crea una contraseña segura. Asegúrate de usar tu nombre real.</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-6">
-                            <div class="mint-gradient text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl shadow-lg pulse-glow">4</div>
-                            <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-gray-800 mb-3">Selecciona tu objetivo</h3>
-                                <p class="text-gray-600 text-lg">Elige la opción "Vender Productos" para indicar que deseas operar como afiliado.</p>
+
+                            <div class="flex items-start space-x-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">4</div>
+                                </div>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg flex-1 card-hover">
+                                    <h3 class="text-xl font-bold mb-3">Selecciona tu objetivo</h3>
+                                    <p class="text-gray-600">Elige la opción "Vender Productos" para indicar que deseas operar como afiliado. Importante para configurar tu cuenta correctamente.</p>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div class="flex items-start space-x-6">
-                            <div class="yellow-gradient text-white rounded-full w-16 h-16 flex items-center justify-center font-bold text-2xl shadow-lg pulse-glow">5</div>
-                            <div class="flex-1">
-                                <h3 class="text-2xl font-bold text-gray-800 mb-3">Completa tu registro</h3>
-                                <div class="bg-gradient-to-r from-yellow/20 to-coral/20 p-6 rounded-2xl">
-                                    <p class="text-gray-600 mb-4 text-lg">Dentro de la plataforma, completa tu perfil con:</p>
-                                    <ul class="list-disc list-inside text-gray-600 space-y-2 text-lg">
-                                        <li>Tipo de documento</li>
-                                        <li>Documento de identificación</li>
-                                        <li>Fecha de nacimiento</li>
-                                        <li>Indica si eres persona natural o jurídica</li>
-                                    </ul>
-                                    <p class="text-lg text-coral font-bold mt-4 flex items-center">
-                                        <i class="fas fa-exclamation-triangle mr-2"></i>
-                                        Asegúrate de que toda la información sea correcta para evitar problemas con los pagos.
-                                    </p>
+
+                            <div class="flex items-start space-x-6">
+                                <div class="flex-shrink-0">
+                                    <div class="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-white font-bold text-xl">5</div>
+                                </div>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg flex-1 card-hover">
+                                    <h3 class="text-xl font-bold mb-3">Completa tu registro</h3>
+                                    <div class="text-gray-600">
+                                        <p class="mb-3">Dentro de la plataforma, completa tu perfil con información adicional:</p>
+                                        <ul class="space-y-2">
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Tipo de documento</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Documento de identificación</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Fecha de nacimiento</li>
+                                            <li><i class="fas fa-check text-green-500 mr-2"></i>Indica si eres persona natural o jurídica</li>
+                                        </ul>
+                                        <p class="mt-3 font-medium">Asegúrate de que toda la información sea correcta para evitar problemas con los pagos de comisiones.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -456,192 +385,228 @@
                 </div>
             </section>
 
-            <!-- Explorar Mercado -->
-            <section id="mercado" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🔍 Explorando el Mercado de Afiliación 🔍</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-compass mr-3 text-coral icon-bounce"></i>
+            <!-- Explorando el Mercado -->
+            <section id="mercado" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Explorando el Mercado de Afiliación</h2>
+                        <p class="text-xl text-gray-600">Herramientas y estrategias para encontrar productos</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <h3 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-search text-blue-500 mr-3"></i>
                                 Herramientas de Navegación
                             </h3>
                             
                             <div class="space-y-6">
-                                <div class="coral-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-search mr-3"></i>
-                                        Búsqueda por palabras clave
-                                    </h4>
-                                    <p>Introduce términos relacionados con tu nicho de interés</p>
+                                <div class="border-l-4 border-blue-500 pl-4">
+                                    <h4 class="font-bold text-lg mb-2">Búsqueda por palabras clave</h4>
+                                    <p class="text-gray-600">Introduce términos relacionados con tu nicho de interés</p>
                                 </div>
                                 
-                                <div class="turquoise-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-filter mr-3"></i>
-                                        Filtros por nicho
-                                    </h4>
-                                    <p>Explora categorías como "Salud y Deportes", "Educación", "Negocios"</p>
+                                <div class="border-l-4 border-green-500 pl-4">
+                                    <h4 class="font-bold text-lg mb-2">Filtros por nicho</h4>
+                                    <p class="text-gray-600">Explora categorías como "Salud y Deportes", "Educación", "Negocios"</p>
                                 </div>
                                 
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-sort mr-3"></i>
-                                        Clasificaciones
-                                    </h4>
-                                    <p>"Más Calientes", "Más Queridos", "Más Recientes"</p>
+                                <div class="border-l-4 border-purple-500 pl-4">
+                                    <h4 class="font-bold text-lg mb-2">Clasificaciones</h4>
+                                    <p class="text-gray-600">"Más Calientes", "Más Queridos", "Más Recientes"</p>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-tags mr-3 text-turquoise icon-bounce"></i>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <h3 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-handshake text-orange-500 mr-3"></i>
                                 Tipos de Afiliación
                             </h3>
                             
-                            <div class="space-y-8">
-                                <div class="mint-gradient p-8 rounded-2xl text-white shadow-lg">
-                                    <h4 class="text-2xl font-bold mb-4 flex items-center">
-                                        <i class="fas fa-mouse-pointer mr-3"></i>
-                                        Afiliación con 1-clic
-                                    </h4>
-                                    <ul class="space-y-3 text-lg">
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Permite afiliarte de forma inmediata</li>
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Obtienes enlaces de promoción al instante</li>
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Ideal para productos con alta demanda</li>
+                            <div class="space-y-6">
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-bold text-lg mb-2 text-green-700">Afiliación con 1-clic</h4>
+                                    <ul class="text-gray-600 space-y-1">
+                                        <li><i class="fas fa-check text-green-500 mr-2"></i>Permite afiliarte de forma inmediata</li>
+                                        <li><i class="fas fa-check text-green-500 mr-2"></i>Obtienes enlaces al instante</li>
+                                        <li><i class="fas fa-check text-green-500 mr-2"></i>Ideal para productos con alta demanda</li>
                                     </ul>
                                 </div>
                                 
-                                <div class="yellow-gradient p-8 rounded-2xl text-white shadow-lg">
-                                    <h4 class="text-2xl font-bold mb-4 flex items-center">
-                                        <i class="fas fa-user-check mr-3"></i>
-                                        Afiliación por solicitud
-                                    </h4>
-                                    <ul class="space-y-3 text-lg">
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Requiere aprobación del productor</li>
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Para productos que buscan afiliados especializados</li>
-                                        <li class="flex items-center"><i class="fas fa-check mr-3"></i>Ideal para productos que requieren perfil específico</li>
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-bold text-lg mb-2 text-blue-700">Afiliación por solicitud</h4>
+                                    <ul class="text-gray-600 space-y-1">
+                                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Requiere aprobación del productor</li>
+                                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Para afiliados especializados</li>
+                                        <li><i class="fas fa-check text-blue-500 mr-2"></i>Productos que requieren perfil específico</li>
                                     </ul>
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mt-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 text-white text-center">
+                        <i class="fas fa-lightbulb text-3xl mb-4"></i>
+                        <p class="text-lg font-medium">Consejo: Explora diferentes nichos y tipos de afiliación para encontrar la mejor opción según tu experiencia y objetivos.</p>
                     </div>
                 </div>
             </section>
 
             <!-- Producto Ganador -->
-            <section id="producto-ganador" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🏆 Cómo Elegir un Producto Ganador 🏆</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-bullseye mr-3 text-coral icon-bounce"></i>
-                                Criterios Esenciales
-                            </h3>
-                            
-                            <div class="space-y-6">
-                                <div class="flex items-start space-x-4">
-                                    <i class="fas fa-bullseye text-3xl text-coral mt-2"></i>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-3 text-xl">Alineación con tu nicho</h4>
-                                        <p class="text-gray-600 text-lg">Elige productos relacionados con tus intereses o tu audiencia para crear contenido auténtico.</p>
+            <section id="producto-ganador" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Cómo Elegir un Producto Ganador</h2>
+                        <p class="text-xl text-gray-600">La selección del producto es crítica para el éxito</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
+                        <div class="space-y-8">
+                            <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-bullseye text-blue-500 text-xl"></i>
                                     </div>
+                                    <h3 class="text-xl font-bold">Alineación con tu nicho</h3>
                                 </div>
-                                
-                                <div class="flex items-start space-x-4">
-                                    <i class="fas fa-star text-3xl text-yellow mt-2"></i>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-3 text-xl">Calidad del producto</h4>
-                                        <p class="text-gray-600 text-lg">Investiga el producto y su página de ventas. Debe estar bien desarrollado y ser visualmente atractivo.</p>
+                                <p class="text-gray-600">Elige productos que se relacionen con tus intereses o con el público al que te diriges. Esto facilita la creación de contenido auténtico y relevante.</p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-star text-green-500 text-xl"></i>
                                     </div>
+                                    <h3 class="text-xl font-bold">Calidad del producto</h3>
                                 </div>
-                                
-                                <div class="flex items-start space-x-4">
-                                    <i class="fas fa-percentage text-3xl text-mint mt-2"></i>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-3 text-xl">Porcentaje de comisión atractivo</h4>
-                                        <p class="text-gray-600 text-lg">Busca productos que ofrezcan entre 50% y 80% de comisión.</p>
+                                <p class="text-gray-600">Investiga el producto y su página de ventas. Un buen producto debe estar bien desarrollado, ser visualmente atractivo y ofrecer información actualizada sin errores.</p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-percentage text-orange-500 text-xl"></i>
                                     </div>
+                                    <h3 class="text-xl font-bold">Porcentaje de comisión atractivo</h3>
                                 </div>
-                                
-                                <div class="flex items-start space-x-4">
-                                    <i class="fas fa-tools text-3xl text-turquoise mt-2"></i>
-                                    <div>
-                                        <h4 class="font-bold text-gray-800 mb-3 text-xl">Materiales de apoyo</h4>
-                                        <p class="text-gray-600 text-lg">Algunos productores ofrecen imágenes, videos y textos promocionales.</p>
+                                <p class="text-gray-600">Hotmart ofrece comisiones que pueden variar entre el 0% y el 80%. Busca productos que ofrezcan un porcentaje generoso, idealmente entre el 50% y el 80%.</p>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-tools text-purple-500 text-xl"></i>
                                     </div>
+                                    <h3 class="text-xl font-bold">Materiales de apoyo</h3>
                                 </div>
+                                <p class="text-gray-600">Algunos productores ofrecen materiales de promoción (imágenes, videos, textos) que pueden facilitar tu trabajo y mejorar la efectividad de tus ventas.</p>
                             </div>
                         </div>
-                        
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-chart-pie mr-3 text-turquoise icon-bounce"></i>
-                                Rango de Comisiones
-                            </h3>
-                            <div class="rainbow-gradient p-10 rounded-3xl text-white text-center shadow-2xl floating">
-                                <div class="text-8xl font-bold mb-6">0% - 80%</div>
-                                <p class="text-2xl mb-6">Rango de comisiones en Hotmart</p>
-                                <div class="bg-white/20 p-6 rounded-2xl">
-                                    <p class="text-lg flex items-center justify-center">
-                                        <i class="fas fa-lightbulb mr-3 text-yellow"></i>
-                                        <strong>Recomendación:</strong> Busca productos con comisiones del 50-80% para maximizar tus ganancias
-                                    </p>
+
+                        <div class="bg-gradient-to-br from-orange-500 to-red-500 rounded-2xl p-8 text-white">
+                            <h3 class="text-2xl font-bold mb-6 text-center">Rango de Comisiones en Hotmart</h3>
+                            <div class="relative">
+                                <div class="bg-white bg-opacity-20 rounded-full h-8 mb-4">
+                                    <div class="bg-white rounded-full h-8 flex items-center justify-end pr-4" style="width: 80%;">
+                                        <span class="font-bold text-orange-500">80%</span>
+                                    </div>
                                 </div>
+                                <div class="flex justify-between text-sm">
+                                    <span>0%</span>
+                                    <span>Comisión Máxima: 80%</span>
+                                </div>
+                            </div>
+                            <div class="mt-6 text-center">
+                                <p class="text-lg font-medium">¡Busca productos con comisiones del 50-80%!</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- TikTok para Ventas -->
-            <section id="tiktok" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">📱 Configurando tu Perfil de TikTok para Ventas 📱</h2>
-                    
-                    <div class="space-y-10">
-                        <div class="pink-gradient p-8 rounded-3xl text-white shadow-lg">
-                            <h3 class="text-3xl font-bold mb-6 flex items-center">
-                                <i class="fab fa-tiktok mr-4 text-5xl icon-bounce"></i>
-                                1. Convierte a TikTok Business
-                            </h3>
-                            <p class="text-xl">Activa tu cuenta de negocio para poder añadir un enlace clicable en tu biografía y dirigir tráfico a tus ofertas de afiliado.</p>
-                        </div>
-                        
-                        <div class="grid md:grid-cols-3 gap-8">
-                            <div class="coral-gradient p-8 rounded-2xl text-white text-center shadow-lg card-hover">
-                                <i class="fas fa-user text-4xl mb-4"></i>
-                                <h4 class="font-bold text-xl mb-3">Nombre de usuario claro</h4>
-                                <p>Fácil de recordar y relevante para tu nicho</p>
-                            </div>
-                            
-                            <div class="turquoise-gradient p-8 rounded-2xl text-white text-center shadow-lg card-hover">
-                                <i class="fas fa-camera text-4xl mb-4"></i>
-                                <h4 class="font-bold text-xl mb-3">Foto de perfil profesional</h4>
-                                <p>Imagen que genere confianza y represente tu marca</p>
-                            </div>
-                            
-                            <div class="purple-gradient p-8 rounded-2xl text-white text-center shadow-lg card-hover">
-                                <i class="fas fa-edit text-4xl mb-4"></i>
-                                <h4 class="font-bold text-xl mb-3">Biografía optimizada</h4>
-                                <p>Explica qué ofreces e incluye una llamada a la acción clara</p>
+            <!-- TikTok Configuration -->
+            <section id="tiktok" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Configurando tu Perfil de TikTok para Ventas</h2>
+                        <p class="text-xl text-gray-600">Optimiza tu perfil para maximizar conversiones</p>
+                    </div>
+
+                    <div class="max-w-4xl mx-auto space-y-8">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fab fa-tiktok text-pink-500 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold">1. Convierte a TikTok Business</h3>
+                                    <p class="text-gray-600">Activa tu cuenta de negocio para poder añadir un enlace clicable en tu biografía</p>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div class="bg-gradient-to-r from-yellow/20 to-coral/20 p-8 rounded-3xl">
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                                <i class="fas fa-link mr-3 text-yellow text-3xl"></i>
-                                3. Configura enlaces clicables
-                            </h3>
-                            <p class="text-gray-600 mb-6 text-lg">Usa herramientas de "link-in-bio" como Linktree o Linkpop para consolidar múltiples enlaces:</p>
-                            <ul class="list-disc list-inside text-gray-600 space-y-3 text-lg">
-                                <li>Enlace directo a tu perfil de Hotmart</li>
-                                <li>Enlace de afiliado específico del producto que promociones</li>
-                                <li>Actualiza regularmente con ofertas exclusivas</li>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-user-edit text-blue-500 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold">2. Optimiza tu perfil</h3>
+                                </div>
+                            </div>
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-at text-green-500"></i>
+                                    </div>
+                                    <h4 class="font-bold mb-2">Nombre de usuario claro</h4>
+                                    <p class="text-gray-600 text-sm">Fácil de recordar y relevante para tu nicho</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-camera text-purple-500"></i>
+                                    </div>
+                                    <h4 class="font-bold mb-2">Foto profesional</h4>
+                                    <p class="text-gray-600 text-sm">Imagen que genere confianza y represente tu marca</p>
+                                </div>
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-edit text-orange-500"></i>
+                                    </div>
+                                    <h4 class="font-bold mb-2">Biografía optimizada</h4>
+                                    <p class="text-gray-600 text-sm">Explica qué ofreces e incluye llamada a la acción</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <div class="flex items-center mb-6">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-link text-indigo-500 text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-2xl font-bold">3. Configura enlaces clicables</h3>
+                                </div>
+                            </div>
+                            <div class="bg-gray-50 rounded-lg p-6">
+                                <p class="mb-4">Usa herramientas de "link-in-bio" como Linktree o Linkpop para consolidar múltiples enlaces:</p>
+                                <ul class="space-y-2">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Enlace directo a tu perfil de Hotmart</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Enlace de afiliado específico del producto que promociones</li>
+                                </ul>
+                                <div class="mt-4 p-4 bg-orange-100 rounded-lg">
+                                    <p class="font-medium text-orange-800">Objetivo: Hacer que el camino desde el video hasta el clic en el enlace sea lo más sencillo posible</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl p-8 text-white">
+                            <h3 class="text-xl font-bold mb-4">Tips para maximizar conversiones</h3>
+                            <ul class="space-y-3">
+                                <li><i class="fas fa-star mr-3"></i>Haz que tu bio sea tu primera y última palabra con clientes potenciales</li>
+                                <li><i class="fas fa-star mr-3"></i>Usa un lenguaje conversacional y auténtico en tu biografía</li>
+                                <li><i class="fas fa-star mr-3"></i>Incluye tu nombre real y una foto clara para aumentar la confianza</li>
                             </ul>
                         </div>
                     </div>
@@ -649,89 +614,98 @@
             </section>
 
             <!-- Contenido Viral -->
-            <section id="contenido-viral" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🔥 Creación de Contenido Viral en TikTok 🔥</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
+            <section id="contenido-viral" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Creación de Contenido Viral en TikTok</h2>
+                        <p class="text-xl text-gray-600">Tipos de contenido que funcionan</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-fire mr-3 text-coral icon-bounce"></i>
-                                Tipos de Contenido Viral
-                            </h3>
-                            
+                            <h3 class="text-2xl font-bold mb-8">Tipos de Contenido Viral</h3>
                             <div class="space-y-6">
-                                <div class="sky-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-play-circle mr-3"></i>
-                                        Tutoriales Rápidos
-                                    </h4>
-                                    <p>Demuestra cómo usar el producto de forma sencilla y efectiva</p>
+                                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-play text-blue-500"></i>
+                                        </div>
+                                        <h4 class="text-xl font-bold">Tutoriales Rápidos</h4>
+                                    </div>
+                                    <p class="text-gray-600">Demuestra cómo usar el producto de forma sencilla y efectiva</p>
                                 </div>
-                                
-                                <div class="mint-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-box-open mr-3"></i>
-                                        Unboxings
-                                    </h4>
-                                    <p>Muestra la experiencia de abrir y descubrir un producto nuevo</p>
+
+                                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-box-open text-green-500"></i>
+                                        </div>
+                                        <h4 class="text-xl font-bold">Unboxings</h4>
+                                    </div>
+                                    <p class="text-gray-600">Muestra la experiencia de abrir y descubrir un producto nuevo</p>
                                 </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-star mr-3"></i>
-                                        Reseñas de Productos
-                                    </h4>
-                                    <p>Ofrece tu opinión honesta y destaca los beneficios clave</p>
+
+                                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-star text-purple-500"></i>
+                                        </div>
+                                        <h4 class="text-xl font-bold">Reseñas de Productos</h4>
+                                    </div>
+                                    <p class="text-gray-600">Ofrece tu opinión honesta y destaca los beneficios clave</p>
                                 </div>
-                                
-                                <div class="coral-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-exchange-alt mr-3"></i>
-                                        Antes y Después
-                                    </h4>
-                                    <p>Ilustra la transformación que el producto puede generar</p>
+
+                                <div class="bg-white rounded-2xl p-6 shadow-lg card-hover">
+                                    <div class="flex items-center mb-4">
+                                        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                            <i class="fas fa-exchange-alt text-orange-500"></i>
+                                        </div>
+                                        <h4 class="text-xl font-bold">Antes y Después</h4>
+                                    </div>
+                                    <p class="text-gray-600">Ilustra la transformación que el producto puede generar</p>
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-magic mr-3 text-turquoise icon-bounce"></i>
-                                Fórmula para el Éxito
-                            </h3>
-                            
-                            <div class="rainbow-gradient p-8 rounded-3xl text-white shadow-2xl">
-                                <div class="space-y-6">
-                                    <div class="flex items-center text-xl">
-                                        <i class="fas fa-music text-3xl mr-4"></i>
-                                        <span class="font-bold">Audio en tendencia</span>
+                            <h3 class="text-2xl font-bold mb-8">Estrategias para el Éxito</h3>
+                            <div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-8 text-white">
+                                <h4 class="text-xl font-bold mb-6">Fórmula para crear videos promocionales</h4>
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-music text-sm"></i>
+                                        </div>
+                                        <span>Audio en tendencia</span>
                                     </div>
-                                    <div class="flex items-center text-xl">
-                                        <i class="fas fa-hashtag text-3xl mr-4"></i>
-                                        <span class="font-bold">Hashtags relevantes</span>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-hashtag text-sm"></i>
+                                        </div>
+                                        <span>Hashtags relevantes</span>
                                     </div>
-                                    <div class="flex items-center text-xl">
-                                        <i class="fas fa-heart text-3xl mr-4"></i>
-                                        <span class="font-bold">Contenido auténtico</span>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-heart text-sm"></i>
+                                        </div>
+                                        <span>Contenido auténtico</span>
                                     </div>
-                                    <div class="flex items-center text-xl">
-                                        <i class="fas fa-bullhorn text-3xl mr-4"></i>
-                                        <span class="font-bold">Llamada a la acción</span>
+                                    <div class="flex items-center">
+                                        <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-3">
+                                            <i class="fas fa-bullhorn text-sm"></i>
+                                        </div>
+                                        <span>Llamada a la acción</span>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="mt-8 bg-gradient-to-r from-yellow/20 to-pink/20 p-6 rounded-2xl">
-                                <h4 class="font-bold text-gray-800 mb-4 text-xl flex items-center">
-                                    <i class="fas fa-lightbulb mr-3 text-yellow"></i>
-                                    Trucos para promocionar sin ser obvio:
-                                </h4>
-                                <ul class="text-gray-600 space-y-2 text-lg">
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-mint"></i>Incorpora humor o desafíos personales</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-mint"></i>Haz que el producto sea parte natural de tu vida</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-mint"></i>Muestra la emoción o transformación</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-mint"></i>Hace que el camino al enlace sea evidente pero sencillo</li>
+
+                            <div class="mt-8 bg-white rounded-2xl p-6 shadow-lg">
+                                <h4 class="text-xl font-bold mb-4">Trucos para promocionar sin ser obvio</h4>
+                                <ul class="space-y-3 text-gray-600">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Incorpora humor o desafíos personales</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Haz que el producto sea parte natural de tu vida</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Muestra la emoción o la transformación</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Hace que el camino al enlace sea evidente pero sencillo</li>
                                 </ul>
                             </div>
                         </div>
@@ -740,74 +714,62 @@
             </section>
 
             <!-- Canva -->
-            <section id="canva" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🎨 Diseño Profesional con Canva desde tu Celular 🎨</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
+            <section id="canva" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Diseño Profesional con Canva desde tu Celular</h2>
+                        <p class="text-xl text-gray-600">Crea recursos visuales atractivos fácilmente</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <div class="rainbow-gradient p-10 rounded-3xl text-white text-center mb-8 floating">
-                                <i class="fas fa-palette text-6xl mb-6 icon-bounce"></i>
-                                <h3 class="text-2xl font-bold">Canva Mobile</h3>
-                                <p class="text-lg opacity-90">Herramienta de diseño gráfico intuitiva para tu celular</p>
-                            </div>
-                            
-                            <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                                <i class="fas fa-star mr-3 text-yellow"></i>
-                                Ideales para:
-                            </h3>
-                            <div class="space-y-4">
-                                <div class="flex items-center space-x-4 bg-coral/10 p-4 rounded-xl">
-                                    <i class="fas fa-video text-coral text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Portadas de videos de TikTok</span>
+                            <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                                <div class="flex items-center mb-6">
+                                    <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                        <i class="fas fa-palette text-purple-500 text-2xl"></i>
+                                    </div>
+                                    <h3 class="text-2xl font-bold">Canva Mobile</h3>
                                 </div>
-                                <div class="flex items-center space-x-4 bg-turquoise/10 p-4 rounded-xl">
-                                    <i class="fas fa-images text-turquoise text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Gráficos para historias</span>
-                                </div>
-                                <div class="flex items-center space-x-4 bg-purple/10 p-4 rounded-xl">
-                                    <i class="fas fa-link text-purple text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Diseño de "link in bio"</span>
+                                <p class="text-gray-600 mb-6">Canva es una herramienta de diseño gráfico intuitiva que puedes usar directamente desde tu celular para crear recursos visuales atractivos.</p>
+                                
+                                <h4 class="font-bold text-lg mb-4">Ideales para:</h4>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-video text-red-500 mr-3"></i>
+                                        <span>Portadas de videos de TikTok</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-images text-blue-500 mr-3"></i>
+                                        <span>Gráficos para historias</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-link text-green-500 mr-3"></i>
+                                        <span>Diseño de "link in bio"</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div>
-                            <h3 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-magic mr-3 text-purple icon-bounce"></i>
-                                Trucos para Principiantes
-                            </h3>
-                            <div class="space-y-6">
-                                <div class="mint-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-template mr-3"></i>
-                                        Usa plantillas predefinidas
-                                    </h4>
-                                    <p>Personalízalas a tu gusto para ahorrar tiempo</p>
-                                </div>
-                                
-                                <div class="sky-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-font mr-3"></i>
-                                        Juega con las fuentes
-                                    </h4>
-                                    <p>Diferentes tamaños de texto para crear jerarquía</p>
-                                </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-puzzle-piece mr-3"></i>
-                                        Combina elementos
-                                    </h4>
-                                    <p>Crea diseños únicos mezclando diferentes componentes</p>
-                                </div>
-                                
-                                <div class="yellow-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-save mr-3"></i>
-                                        Guarda y reutiliza
-                                    </h4>
-                                    <p>Diseños que funcionen bien para futuras campañas</p>
+
+                        <div class="space-y-6">
+                            <div class="bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl p-8 text-white">
+                                <h3 class="text-xl font-bold mb-4">
+                                    <i class="fas fa-lightbulb mr-3"></i>
+                                    Trucos para principiantes
+                                </h3>
+                                <ul class="space-y-3">
+                                    <li><i class="fas fa-star mr-3"></i>Utiliza plantillas predefinidas y personalízalas</li>
+                                    <li><i class="fas fa-star mr-3"></i>Juega con las fuentes y tamaños de texto</li>
+                                    <li><i class="fas fa-star mr-3"></i>Combina diferentes elementos para crear diseños únicos</li>
+                                    <li><i class="fas fa-star mr-3"></i>Guarda y reutiliza diseños que funcionen bien</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-white rounded-2xl p-6 shadow-lg">
+                                <div class="bg-orange-100 rounded-lg p-4">
+                                    <p class="font-medium text-orange-800">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Consejo: La calidad visual de tu contenido puede marcar una gran diferencia en la percepción de tu audiencia y en la efectividad de tus campañas.
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -816,203 +778,238 @@
             </section>
 
             <!-- Llamadas a la Acción -->
-            <section id="cta" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">📢 Llamadas a la Acción Efectivas 📢</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div class="space-y-8">
-                            <div class="coral-gradient p-8 rounded-3xl text-white shadow-lg">
-                                <h3 class="text-2xl font-bold mb-4 flex items-center">
-                                    <i class="fas fa-microphone mr-3 text-3xl"></i>
-                                    Indicación Verbal
-                                </h3>
-                                <p class="text-lg">Menciona explícitamente "enlace en mi perfil" o "haz clic en el enlace de la biografía" durante tus videos.</p>
+            <section id="llamadas-accion" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Llamados a la Acción Efectivos</h2>
+                        <p class="text-xl text-gray-600">Guía a tu audiencia hacia tu enlace de afiliado</p>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+                        <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-microphone text-blue-500 text-2xl"></i>
                             </div>
-                            
-                            <div class="sky-gradient p-8 rounded-3xl text-white shadow-lg">
-                                <h3 class="text-2xl font-bold mb-4 flex items-center">
-                                    <i class="fas fa-text-width mr-3 text-3xl"></i>
-                                    Texto en Pantalla
-                                </h3>
-                                <p class="text-lg">Utiliza superposiciones de texto en tus videos que apunten visualmente a tu biografía.</p>
-                            </div>
+                            <h3 class="text-lg font-bold mb-3">Indicación Verbal</h3>
+                            <p class="text-gray-600 text-sm">Menciona explícitamente "enlace en mi perfil" durante tus videos</p>
                         </div>
-                        
-                        <div class="space-y-8">
-                            <div class="mint-gradient p-8 rounded-3xl text-white shadow-lg">
-                                <h3 class="text-2xl font-bold mb-4 flex items-center">
-                                    <i class="fas fa-thumbtack mr-3 text-3xl"></i>
-                                    Comentario Fijado
-                                </h3>
-                                <p class="text-lg">Deja un comentario fijado en tus videos con una llamada a la acción clara y un recordatorio para visitar tu perfil.</p>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-text-height text-green-500 text-2xl"></i>
                             </div>
-                            
-                            <div class="purple-gradient p-8 rounded-3xl text-white shadow-lg">
-                                <h3 class="text-2xl font-bold mb-4 flex items-center">
-                                    <i class="fas fa-tag mr-3 text-3xl"></i>
-                                    Códigos de Descuento
-                                </h3>
-                                <p class="text-lg">Si el producto ofrece códigos únicos, promuévelos en tus videos. Incentiva la compra y permite un seguimiento preciso.</p>
+                            <h3 class="text-lg font-bold mb-3">Texto en Pantalla</h3>
+                            <p class="text-gray-600 text-sm">Utiliza superposiciones de texto que apunten visualmente a tu biografía</p>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-thumbtack text-purple-500 text-2xl"></i>
                             </div>
+                            <h3 class="text-lg font-bold mb-3">Comentario Fijado</h3>
+                            <p class="text-gray-600 text-sm">Deja un comentario fijado con una llamada a la acción clara</p>
+                        </div>
+
+                        <div class="bg-white rounded-2xl p-6 shadow-lg card-hover text-center">
+                            <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-tag text-orange-500 text-2xl"></i>
+                            </div>
+                            <h3 class="text-lg font-bold mb-3">Códigos de Descuento</h3>
+                            <p class="text-gray-600 text-sm">Promueve códigos únicos para incentivar la compra</p>
                         </div>
                     </div>
-                    
-                    <div class="mt-10 rainbow-gradient p-8 rounded-3xl text-white text-center shadow-2xl">
-                        <h3 class="text-2xl font-bold mb-6">🎯 Flujo de Conversión 🎯</h3>
-                        <div class="flex items-center justify-center space-x-6 text-lg font-bold">
-                            <span class="bg-white/20 px-4 py-3 rounded-full">Video</span>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                            <span class="bg-white/20 px-4 py-3 rounded-full">CTA</span>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                            <span class="bg-white/20 px-4 py-3 rounded-full">Enlace</span>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                            <span class="bg-white/20 px-4 py-3 rounded-full">Venta</span>
-                            <i class="fas fa-arrow-right text-2xl"></i>
-                            <span class="bg-white/20 px-4 py-3 rounded-full">Comisión</span>
+
+                    <div class="bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl p-8 text-white">
+                        <div class="text-center">
+                            <h3 class="text-2xl font-bold mb-4">Flujo de Conversión</h3>
+                            <div class="flex flex-wrap justify-center items-center space-x-4">
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-video text-white"></i>
+                                    </div>
+                                    <p class="font-semibold">Video</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-white text-xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-bullhorn text-white"></i>
+                                    </div>
+                                    <p class="font-semibold">CTA</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-white text-xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-mouse-pointer text-white"></i>
+                                    </div>
+                                    <p class="font-semibold">Enlace</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-white text-xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-shopping-cart text-white"></i>
+                                    </div>
+                                    <p class="font-semibold">Venta</p>
+                                </div>
+                                <i class="fas fa-arrow-right text-white text-xl"></i>
+                                <div class="text-center mb-4">
+                                    <div class="w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-coins text-white"></i>
+                                    </div>
+                                    <p class="font-semibold">Comisión</p>
+                                </div>
+                            </div>
+                            <p class="mt-6 text-lg font-medium">Truco: Haz que el camino desde el video hasta el clic sea lo más sencillo y evidente posible</p>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- Especialización en Nichos -->
-            <section id="nichos" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🎯 Especialización en un Nicho Rentable 🎯</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
+            <!-- Especialización en Nicho -->
+            <section id="nicho" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Especialización en un Nicho Rentable</h2>
+                        <p class="text-xl text-gray-600">Construye autoridad y confianza con tu audiencia</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-question-circle mr-3 text-coral icon-bounce"></i>
-                                ¿Por qué la especialización importa?
-                            </h3>
-                            <p class="text-gray-600 mb-8 text-lg leading-relaxed">En lugar de promocionar una variedad de productos sin conexión, especializarte en un área específica te permite construir autoridad y confianza con tu audiencia.</p>
-                            
-                            <div class="mint-gradient p-8 rounded-3xl text-white shadow-lg">
-                                <h4 class="font-bold text-2xl mb-6 flex items-center">
-                                    <i class="fas fa-trophy mr-3"></i>
-                                    Beneficios de la especialización:
-                                </h4>
-                                <ul class="space-y-3 text-lg">
-                                    <li class="flex items-center"><i class="fas fa-check mr-3"></i>Contenido más relevante y resonante</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3"></i>Mayores tasas de conversión</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3"></i>Construcción de reputación como experto</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3"></i>Audiencia más comprometida</li>
+                            <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                                <h3 class="text-2xl font-bold mb-6">
+                                    <i class="fas fa-bullseye text-orange-500 mr-3"></i>
+                                    Por qué la especialización importa
+                                </h3>
+                                <p class="text-gray-600 mb-6">En lugar de promocionar una variedad de productos sin conexión, especializarte en un área específica te permite construir autoridad y confianza con tu audiencia.</p>
+                                
+                                <h4 class="font-bold text-lg mb-4">Beneficios de la especialización</h4>
+                                <ul class="space-y-3">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Tu contenido será más relevante y resonará profundamente</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Lograrás mayores tasas de conversión</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Te permitirá construir una reputación como experto</li>
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-star mr-3 text-turquoise icon-bounce"></i>
-                                Ejemplos de Nichos Rentables
-                            </h3>
-                            
-                            <div class="grid grid-cols-2 gap-6">
-                                <div class="coral-gradient p-6 rounded-2xl text-white text-center shadow-lg card-hover">
-                                    <i class="fas fa-dumbbell text-4xl mb-4 icon-bounce"></i>
-                                    <h4 class="font-bold text-xl">Fitness</h4>
-                                    <p class="text-sm opacity-90">Entrenamiento, nutrición y rutinas</p>
+                            <h3 class="text-2xl font-bold mb-6">Ejemplos de Nichos Rentables</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover text-center">
+                                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-dumbbell text-red-500"></i>
+                                    </div>
+                                    <h4 class="font-bold">Fitness</h4>
+                                    <p class="text-sm text-gray-600">Entrenamiento, nutrición y rutinas</p>
                                 </div>
-                                
-                                <div class="mint-gradient p-6 rounded-2xl text-white text-center shadow-lg card-hover">
-                                    <i class="fas fa-leaf text-4xl mb-4 icon-bounce"></i>
-                                    <h4 class="font-bold text-xl">Cocina vegana</h4>
-                                    <p class="text-sm opacity-90">Recetas y consejos de alimentación</p>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover text-center">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-leaf text-green-500"></i>
+                                    </div>
+                                    <h4 class="font-bold">Cocina vegana</h4>
+                                    <p class="text-sm text-gray-600">Recetas y consejos de alimentación</p>
                                 </div>
-                                
-                                <div class="sky-gradient p-6 rounded-2xl text-white text-center shadow-lg card-hover">
-                                    <i class="fas fa-chart-line text-4xl mb-4 icon-bounce"></i>
-                                    <h4 class="font-bold text-xl">Finanzas</h4>
-                                    <p class="text-sm opacity-90">Ahorro, inversión y gestión del dinero</p>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover text-center">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-chart-line text-blue-500"></i>
+                                    </div>
+                                    <h4 class="font-bold">Finanzas personales</h4>
+                                    <p class="text-sm text-gray-600">Ahorro, inversión y gestión</p>
                                 </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white text-center shadow-lg card-hover">
-                                    <i class="fas fa-home text-4xl mb-4 icon-bounce"></i>
-                                    <h4 class="font-bold text-xl">Decoración</h4>
-                                    <p class="text-sm opacity-90">Ideas y consejos para el hogar</p>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover text-center">
+                                    <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                                        <i class="fas fa-home text-purple-500"></i>
+                                    </div>
+                                    <h4 class="font-bold">Decoración</h4>
+                                    <p class="text-sm text-gray-600">Ideas y consejos para el hogar</p>
                                 </div>
-                            </div>
-                            
-                            <div class="mt-8 bg-gradient-to-r from-yellow/20 to-pink/20 p-6 rounded-2xl">
-                                <h4 class="font-bold text-gray-800 mb-4 text-xl flex items-center">
-                                    <i class="fas fa-lightbulb mr-3 text-yellow"></i>
-                                    Cómo elegir tu nicho:
-                                </h4>
-                                <p class="text-gray-600 text-lg">Considera tus propios intereses y la audiencia con la que te sientas cómodo interactuando. Esto te permitirá crear contenido auténtico y genuino.</p>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="mt-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-2xl p-8 text-white">
+                        <h3 class="text-xl font-bold mb-4">
+                            <i class="fas fa-compass mr-3"></i>
+                            Cómo elegir tu nicho
+                        </h3>
+                        <p class="text-lg">Considera tus propios intereses y la audiencia con la que te sientas cómodo interactuando. Esto te permitirá crear contenido auténtico y genuino.</p>
                     </div>
                 </div>
             </section>
 
             <!-- Autenticidad -->
-            <section id="autenticidad" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">💖 Autenticidad: La Clave del Éxito 💖</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <div class="bg-gradient-to-br from-red-100 to-red-50 p-8 rounded-3xl mb-8 border-l-8 border-coral">
-                                <h3 class="text-2xl font-bold text-coral mb-6 flex items-center">
-                                    <i class="fas fa-times-circle mr-3 text-3xl"></i>
-                                    Prácticas a evitar
-                                </h3>
-                                <ul class="space-y-4 text-gray-600 text-lg">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-ban text-coral mr-3 mt-1 text-xl"></i>
-                                        <span>"Me han enviado este producto" - Frases que suenan a publicidad forzada</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-ban text-coral mr-3 mt-1 text-xl"></i>
-                                        <span>Promociones forzadas que se sienten más como publicidad que contenido genuino</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-ban text-coral mr-3 mt-1 text-xl"></i>
-                                        <span>Disimular opiniones - No ser auténtico sobre tus verdaderas impresiones</span>
-                                    </li>
-                                </ul>
+            <section id="autenticidad" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Autenticidad: La Clave del Éxito</h2>
+                        <p class="text-xl text-gray-600">La honestidad construye confianza y impulsa las ventas</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <div class="bg-red-50 rounded-2xl p-8 border-l-4 border-red-500">
+                            <h3 class="text-2xl font-bold text-red-700 mb-6">
+                                <i class="fas fa-times-circle mr-3"></i>
+                                Frases y prácticas a evitar
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-red-600 mb-2">❌ "Me han enviado este producto"</h4>
+                                    <p class="text-gray-600 text-sm">Frases que suenan a publicidad forzada</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-red-600 mb-2">❌ Promociones forzadas</h4>
+                                    <p class="text-gray-600 text-sm">Cuando los videos se sienten más como publicidad que como contenido genuino</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-red-600 mb-2">❌ Disimular opiniones</h4>
+                                    <p class="text-gray-600 text-sm">No ser auténtico sobre tus verdaderas impresiones del producto</p>
+                                </div>
                             </div>
                         </div>
-                        
-                        <div>
-                            <div class="bg-gradient-to-br from-green-100 to-green-50 p-8 rounded-3xl mb-8 border-l-8 border-mint">
-                                <h3 class="text-2xl font-bold text-mint mb-6 flex items-center">
-                                    <i class="fas fa-check-circle mr-3 text-3xl"></i>
-                                    Prácticas auténticas
-                                </h3>
-                                <ul class="space-y-4 text-gray-600 text-lg">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-heart text-mint mr-3 mt-1 text-xl"></i>
-                                        <span>Promocionar solo productos que genuinamente crees y has probado</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-heart text-mint mr-3 mt-1 text-xl"></i>
-                                        <span>Ser transparente - Si recibes un producto gratis, díselo a tu audiencia naturalmente</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-heart text-mint mr-3 mt-1 text-xl"></i>
-                                        <span>Reseñas auténticas - Expresar verdaderas opiniones, incluso críticas constructivas</span>
-                                    </li>
-                                </ul>
+
+                        <div class="bg-green-50 rounded-2xl p-8 border-l-4 border-green-500">
+                            <h3 class="text-2xl font-bold text-green-700 mb-6">
+                                <i class="fas fa-check-circle mr-3"></i>
+                                Prácticas auténticas que funcionan
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-green-600 mb-2">✅ Promocionar solo productos que crees</h4>
+                                    <p class="text-gray-600 text-sm">Sólo habla de productos que hayas probado y que valores realmente</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-green-600 mb-2">✅ Ser transparente</h4>
+                                    <p class="text-gray-600 text-sm">Si recibes un producto gratis, díselo a tu audiencia de manera natural</p>
+                                </div>
+                                <div class="bg-white rounded-lg p-4">
+                                    <h4 class="font-bold text-green-600 mb-2">✅ Reseñas auténticas</h4>
+                                    <p class="text-gray-600 text-sm">Expresar tus verdaderas opiniones, incluso las críticas constructivas</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="rainbow-gradient p-10 rounded-3xl text-white text-center shadow-2xl">
-                        <h3 class="text-2xl font-bold mb-8">✨ Beneficios de la Autenticidad a Largo Plazo ✨</h3>
+
+                    <div class="mt-12 bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white text-center">
+                        <h3 class="text-2xl font-bold mb-6">Beneficios de la autenticidad a largo plazo</h3>
                         <div class="grid md:grid-cols-3 gap-6">
-                            <div class="bg-white/20 p-6 rounded-2xl card-hover">
-                                <i class="fas fa-handshake text-4xl mb-4 icon-bounce"></i>
-                                <p class="font-bold text-xl">Construye Confianza</p>
+                            <div>
+                                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-handshake text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-lg">Construye confianza</h4>
                             </div>
-                            <div class="bg-white/20 p-6 rounded-2xl card-hover">
-                                <i class="fas fa-chart-line text-4xl mb-4 icon-bounce"></i>
-                                <p class="font-bold text-xl">Impulsa Ventas</p>
+                            <div>
+                                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-chart-line text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-lg">Impulsa ventas</h4>
                             </div>
-                            <div class="bg-white/20 p-6 rounded-2xl card-hover">
-                                <i class="fas fa-users text-4xl mb-4 icon-bounce"></i>
-                                <p class="font-bold text-xl">Genera Lealtad</p>
+                            <div>
+                                <div class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-heart text-2xl"></i>
+                                </div>
+                                <h4 class="font-bold text-lg">Genera lealtad</h4>
                             </div>
                         </div>
                     </div>
@@ -1020,62 +1017,86 @@
             </section>
 
             <!-- Análisis de Datos -->
-            <section id="analisis" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">📊 Análisis de Datos y Optimización 📊</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-chart-bar mr-3 text-coral icon-bounce"></i>
-                                Métricas Clave a Monitorizar
+            <section id="analisis" class="py-16 bg-gray-100 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Análisis de Datos y Optimización</h2>
+                        <p class="text-xl text-gray-600">Optimiza tu estrategia con datos precisos</p>
+                    </div>
+
+                    <div class="grid lg:grid-cols-2 gap-12">
+                        <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                            <h3 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-chart-bar text-blue-500 mr-3"></i>
+                                Por qué analizar tus datos
                             </h3>
+                            <p class="text-gray-600 mb-6">El análisis de datos es indispensable para optimizar tu estrategia de marketing de afiliados. TikTok proporciona analíticas detalladas que te permiten entender qué videos tienen mejor rendimiento.</p>
                             
-                            <div class="space-y-6">
-                                <div class="coral-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-2">GPM (Gross Merchandise Value)</h4>
-                                    <p>Valor bruto de mercancía generado por cada 1,000 vistas</p>
-                                </div>
-                                
-                                <div class="turquoise-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-2">Clics</h4>
-                                    <p>Número de veces que se hace clic en tu enlace</p>
-                                </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-2">Conversiones</h4>
-                                    <p>Ventas generadas a través de tu enlace de afiliado</p>
-                                </div>
-                                
-                                <div class="mint-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-2">ROI (Return on Investment)</h4>
-                                    <p>Relación entre inversión y retorno (ganancias)</p>
-                                </div>
-                            </div>
+                            <h4 class="font-bold text-lg mb-4">Cómo usar datos para mejorar</h4>
+                            <ul class="space-y-3">
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Identifica qué tipos de videos tienen mayor tasa de conversión</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Replica el éxito de tus videos más exitosos</li>
+                                <li><i class="fas fa-check text-green-500 mr-2"></i>Refina tu enfoque para mejorar continuamente el ROI</li>
+                            </ul>
                         </div>
-                        
+
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-chart-line mr-3 text-turquoise icon-bounce"></i>
-                                Cómo usar datos para mejorar
-                            </h3>
-                            
-                            <div class="rainbow-gradient p-8 rounded-3xl text-white mb-8 shadow-2xl">
-                                <canvas id="performanceChart" width="400" height="200"></canvas>
-                            </div>
-                            
+                            <h3 class="text-2xl font-bold mb-6">Métricas clave a monitorizar</h3>
                             <div class="space-y-4">
-                                <div class="flex items-center space-x-4 bg-coral/10 p-4 rounded-xl">
-                                    <i class="fas fa-search text-coral text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Identifica qué tipos de videos tienen mayor tasa de conversión</span>
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-eye text-blue-500"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">GPM</h4>
+                                                <p class="text-sm text-gray-600">Valor bruto de mercancía generado por cada 1,000 vistas</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center space-x-4 bg-turquoise/10 p-4 rounded-xl">
-                                    <i class="fas fa-copy text-turquoise text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Replica el éxito de tus videos más exitosos</span>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-mouse-pointer text-green-500"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">Clics</h4>
+                                                <p class="text-sm text-gray-600">Número de veces que se hace clic en tu enlace</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center space-x-4 bg-purple/10 p-4 rounded-xl">
-                                    <i class="fas fa-chart-line text-purple text-2xl"></i>
-                                    <span class="text-gray-600 text-lg">Refina tu enfoque para mejorar continuamente el ROI</span>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-shopping-cart text-purple-500"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">Conversiones</h4>
+                                                <p class="text-sm text-gray-600">Ventas generadas a través de tu enlace de afiliado</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white rounded-lg p-4 shadow-lg card-hover">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center">
+                                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                                <i class="fas fa-coins text-orange-500"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold">ROI</h4>
+                                                <p class="text-sm text-gray-600">Relación entre inversión y retorno (ganancias)</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1084,385 +1105,87 @@
             </section>
 
             <!-- Estrategia Multicanal -->
-            <section id="multicanal" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🌐 Estrategia Multicanal para Escalar tus Ingresos 🌐</h2>
-                    
-                    <div class="grid md:grid-cols-3 gap-8 mb-10">
-                        <div class="pink-gradient p-8 rounded-3xl text-white text-center shadow-lg card-hover floating">
-                            <i class="fab fa-tiktok text-6xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-3">TikTok</h3>
-                            <p class="text-lg opacity-90">Generador principal de tráfico</p>
-                        </div>
-                        
-                        <div class="coral-gradient p-8 rounded-3xl text-white text-center shadow-lg card-hover floating" style="animation-delay: 0.5s;">
-                            <i class="fab fa-youtube text-6xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-3">YouTube</h3>
-                            <p class="text-lg opacity-90">Contenido más detallado</p>
-                        </div>
-                        
-                        <div class="purple-gradient p-8 rounded-3xl text-white text-center shadow-lg card-hover floating" style="animation-delay: 1s;">
-                            <i class="fab fa-instagram text-6xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-3">Instagram</h3>
-                            <p class="text-lg opacity-90">Stories y posts visuales</p>
-                        </div>
+            <section id="multicanal" class="py-16 section-fade">
+                <div class="container mx-auto px-6">
+                    <div class="text-center mb-12">
+                        <h2 class="text-4xl font-bold gradient-text mb-4">Estrategia Multicanal para Escalar tus Ingresos</h2>
+                        <p class="text-xl text-gray-600">Diversifica tus canales para maximizar resultados</p>
                     </div>
-                    
-                    <div class="bg-gradient-to-r from-turquoise/20 to-mint/20 p-8 rounded-3xl">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-rocket mr-3 text-turquoise text-3xl"></i>
-                            Beneficios de la Estrategia Multicanal
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-check mr-3 text-mint text-xl"></i>Amplía tu alcance y te conecta con más audiencias</li>
-                                <li class="flex items-center"><i class="fas fa-check mr-3 text-mint text-xl"></i>Proporciona múltiples puntos de contacto para la conversión</li>
-                            </ul>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-check mr-3 text-mint text-xl"></i>Permite ofrecer información más detallada sobre los productos</li>
-                                <li class="flex items-center"><i class="fas fa-check mr-3 text-mint text-xl"></i>Construye una relación más fuerte con tu audiencia</li>
-                            </ul>
-                        </div>
-                    </div>
-                    
-                    <div class="mt-8 bg-gradient-to-r from-yellow/20 to-coral/20 p-8 rounded-3xl">
-                        <h4 class="font-bold text-gray-800 mb-4 text-xl flex items-center">
-                            <i class="fas fa-lightbulb mr-3 text-yellow text-2xl"></i>
-                            Ejemplo de Implementación
-                        </h4>
-                        <p class="text-gray-600 text-lg">Un influencer de belleza usa TikTok para mostrar looks rápidos de maquillaje y luego dirige a los espectadores a YouTube para tutoriales completos con enlaces de productos afiliados.</p>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Herramientas Avanzadas -->
-            <section id="herramientas" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🛠️ Herramientas Avanzadas para Marketing de Afiliados 🛠️</h2>
-                    
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <div class="sky-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-link text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">Gestión de Enlaces</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Linktree</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Linkpop</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Bio.link</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Shorby</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="mint-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-chart-bar text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">Analytics</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Google Analytics</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>TikTok Analytics</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Hotmart Analytics</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>ClickMeter</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="purple-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-robot text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">Automatización</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Zapier</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>IFTTT</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Buffer</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Hootsuite</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="coral-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-envelope text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">Email Marketing</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Mailchimp</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>ConvertKit</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>GetResponse</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>ActiveCampaign</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="yellow-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-search text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">SEO y Keywords</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Ahrefs</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>SEMrush</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Ubersuggest</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Google Keyword Planner</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="pink-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <i class="fas fa-video text-5xl mb-6 icon-bounce"></i>
-                            <h3 class="text-2xl font-bold mb-4">Edición de Video</h3>
-                            <ul class="space-y-3 text-lg">
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>CapCut</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>InShot</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Adobe Premiere Rush</li>
-                                <li class="flex items-center"><i class="fas fa-star mr-2"></i>Filmora</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Métricas y KPIs -->
-            <section id="metricas" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">📈 Métricas y KPIs Esenciales 📈</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
+                    <div class="grid lg:grid-cols-2 gap-12 items-center">
                         <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-chart-pie mr-3 text-coral icon-bounce"></i>
-                                KPIs Principales
-                            </h3>
-                            
-                            <div class="space-y-6">
-                                <div class="coral-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-bold text-xl">Tasa de Conversión</h4>
-                                        <span class="text-3xl font-bold">2.5%</span>
-                                    </div>
-                                    <p>Porcentaje de visitantes que realizan una compra</p>
-                                </div>
+                            <div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+                                <h3 class="text-2xl font-bold mb-6">
+                                    <i class="fas fa-network-wired text-purple-500 mr-3"></i>
+                                    Diversificación de Canales
+                                </h3>
+                                <p class="text-gray-600 mb-6">Utiliza TikTok como generador principal de tráfico y dirige a tu audiencia a otras plataformas donde puedas colocar tus enlaces de afiliado.</p>
                                 
-                                <div class="turquoise-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-bold text-xl">CTR (Click-Through Rate)</h4>
-                                        <span class="text-3xl font-bold">5.8%</span>
-                                    </div>
-                                    <p>Porcentaje de personas que hacen clic en tu enlace</p>
-                                </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-bold text-xl">EPC (Earnings Per Click)</h4>
-                                        <span class="text-3xl font-bold">$1.25</span>
-                                    </div>
-                                    <p>Ganancias promedio por cada clic en tu enlace</p>
-                                </div>
-                                
-                                <div class="mint-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <div class="flex justify-between items-center mb-3">
-                                        <h4 class="font-bold text-xl">LTV (Lifetime Value)</h4>
-                                        <span class="text-3xl font-bold">$85</span>
-                                    </div>
-                                    <p>Valor total que genera un cliente a lo largo del tiempo</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-chart-line mr-3 text-turquoise icon-bounce"></i>
-                                Dashboard de Rendimiento
-                            </h3>
-                            <div class="bg-gradient-to-br from-gray-50 to-gray-100 p-8 rounded-3xl shadow-lg">
-                                <canvas id="kpiChart" width="400" height="300"></canvas>
-                            </div>
-                            
-                            <div class="mt-8 bg-gradient-to-r from-sky/20 to-turquoise/20 p-6 rounded-2xl">
-                                <h4 class="font-bold text-gray-800 mb-4 text-xl flex items-center">
-                                    <i class="fas fa-lightbulb mr-3 text-sky text-2xl"></i>
-                                    Consejos para mejorar KPIs:
-                                </h4>
-                                <ul class="text-gray-600 space-y-2 text-lg">
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-turquoise"></i>Optimiza tus llamadas a la acción</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-turquoise"></i>Prueba diferentes tipos de contenido</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-turquoise"></i>Analiza el comportamiento de tu audiencia</li>
-                                    <li class="flex items-center"><i class="fas fa-check mr-3 text-turquoise"></i>Ajusta tus estrategias basándote en datos</li>
+                                <h4 class="font-bold text-lg mb-4">Beneficios de la Estrategia Multicanal</h4>
+                                <ul class="space-y-3">
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Amplía tu alcance y te conecta con más audiencias</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Proporciona múltiples puntos de contacto para la conversión</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Permite ofrecer información más detallada sobre los productos</li>
+                                    <li><i class="fas fa-check text-green-500 mr-2"></i>Construye una relación más fuerte con tu audiencia</li>
                                 </ul>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Casos de Éxito -->
-            <section id="casos-exito" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🏅 Casos de Éxito Inspiradores 🏅</h2>
-                    
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        <div class="mint-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <div class="text-center mb-6">
-                                <i class="fas fa-user-circle text-6xl mb-4 icon-bounce"></i>
-                                <h3 class="text-2xl font-bold">Pat Flynn</h3>
-                                <p class="text-lg opacity-90">Smart Passive Income</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-5xl font-bold mb-3">$3M+</div>
-                                <p class="text-lg mb-2">Ingresos anuales por marketing de afiliados</p>
-                                <p class="text-sm opacity-80">80% de sus ingresos provienen de afiliación</p>
-                            </div>
-                        </div>
-                        
-                        <div class="sky-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <div class="text-center mb-6">
-                                <i class="fas fa-laptop text-6xl mb-4 icon-bounce"></i>
-                                <h3 class="text-2xl font-bold">NerdWallet</h3>
-                                <p class="text-lg opacity-90">Finanzas Personales</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-5xl font-bold mb-3">$379M</div>
-                                <p class="text-lg mb-2">Ingresos anuales en 2021</p>
-                                <p class="text-sm opacity-80">Líder en marketing de afiliados financieros</p>
-                            </div>
-                        </div>
-                        
-                        <div class="purple-gradient p-8 rounded-3xl text-white shadow-lg card-hover">
-                            <div class="text-center mb-6">
-                                <i class="fas fa-shopping-bag text-6xl mb-4 icon-bounce"></i>
-                                <h3 class="text-2xl font-bold">Camper x CJ</h3>
-                                <p class="text-lg opacity-90">Moda y Calzado</p>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-5xl font-bold mb-3">+20%</div>
-                                <p class="text-lg mb-2">Crecimiento anual en beneficios</p>
-                                <p class="text-sm opacity-80">Tras migrar a programa de afiliados</p>
+                        <div class="bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl p-8 text-white">
+                            <h3 class="text-2xl font-bold mb-6">
+                                <i class="fas fa-lightbulb mr-3"></i>
+                                Ejemplo de Implementación
+                            </h3>
+                            <div class="bg-white bg-opacity-20 rounded-lg p-6">
+                                <p class="text-lg font-medium mb-4">Caso de Éxito: Influencer de Belleza</p>
+                                <div class="space-y-3">
+                                    <div class="flex items-center">
+                                        <i class="fab fa-tiktok text-2xl mr-3"></i>
+                                        <span>TikTok: Looks rápidos de maquillaje</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fas fa-arrow-down text-xl mr-3"></i>
+                                        <span>Dirige tráfico hacia</span>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <i class="fab fa-youtube text-2xl mr-3"></i>
+                                        <span>YouTube: Tutoriales completos con enlaces de afiliados</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="mt-10 bg-gradient-to-r from-coral/20 to-turquoise/20 p-8 rounded-3xl">
-                        <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                            <i class="fas fa-key mr-3 text-coral text-3xl"></i>
-                            Factores Clave del Éxito
-                        </h3>
-                        <div class="grid md:grid-cols-2 gap-8">
-                            <ul class="space-y-4">
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Contenido de alta calidad y valor</span>
-                                </li>
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Construcción de confianza con la audiencia</span>
-                                </li>
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Diversificación de canales de tráfico</span>
-                                </li>
-                            </ul>
-                            <ul class="space-y-4">
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Análisis constante y optimización</span>
-                                </li>
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Selección cuidadosa de productos</span>
-                                </li>
-                                <li class="flex items-center space-x-4 text-lg">
-                                    <i class="fas fa-check-circle text-mint text-2xl"></i>
-                                    <span class="text-gray-600">Consistencia y persistencia</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Estrategias 2024 -->
-            <section id="estrategias-2024" class="mb-20">
-                <div class="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl p-10 card-hover">
-                    <h2 class="text-4xl font-bold text-gradient mb-12 text-center">🚀 Estrategias Avanzadas 2024 🚀</h2>
-                    
-                    <div class="grid md:grid-cols-2 gap-10">
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-star mr-3 text-coral icon-bounce"></i>
-                                Tendencias Emergentes
-                            </h3>
-                            
-                            <div class="space-y-6">
-                                <div class="pink-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-robot mr-3"></i>
-                                        IA y Automatización
-                                    </h4>
-                                    <p>Uso de herramientas de IA para crear contenido, optimizar campañas y personalizar experiencias.</p>
+                    <div class="mt-12 bg-white rounded-2xl p-8 shadow-lg">
+                        <h3 class="text-2xl font-bold text-center mb-8">Ecosistema de Canales</h3>
+                        <div class="grid md:grid-cols-4 gap-6">
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fab fa-tiktok text-pink-500 text-2xl"></i>
                                 </div>
-                                
-                                <div class="sky-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-video mr-3"></i>
-                                        Video Corto Dominante
-                                    </h4>
-                                    <p>TikTok, Instagram Reels y YouTube Shorts como principales canales de conversión.</p>
-                                </div>
-                                
-                                <div class="mint-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-microphone mr-3"></i>
-                                        Audio Marketing
-                                    </h4>
-                                    <p>Podcasts y contenido de audio como nuevas oportunidades de afiliación.</p>
-                                </div>
-                                
-                                <div class="purple-gradient p-6 rounded-2xl text-white shadow-lg">
-                                    <h4 class="font-bold text-xl mb-3 flex items-center">
-                                        <i class="fas fa-users mr-3"></i>
-                                        Micro-Influencers
-                                    </h4>
-                                    <p>Mayor efectividad de influencers con audiencias más pequeñas pero más comprometidas.</p>
-                                </div>
+                                <h4 class="font-bold">TikTok</h4>
+                                <p class="text-sm text-gray-600">Generador de tráfico principal</p>
                             </div>
-                        </div>
-                        
-                        <div>
-                            <h3 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
-                                <i class="fas fa-rocket mr-3 text-turquoise icon-bounce"></i>
-                                Estrategias de Implementación
-                            </h3>
-                            
-                            <div class="rainbow-gradient p-8 rounded-3xl text-white mb-8 shadow-2xl">
-                                <h4 class="text-2xl font-bold mb-6">Plan de Acción 90 Días</h4>
-                                <div class="space-y-4 text-lg">
-                                    <div class="flex items-center space-x-4">
-                                        <span class="bg-white/20 px-4 py-2 rounded-full font-bold">Días 1-30</span>
-                                        <span>Configuración y primeros contenidos</span>
-                                    </div>
-                                    <div class="flex items-center space-x-4">
-                                        <span class="bg-white/20 px-4 py-2 rounded-full font-bold">Días 31-60</span>
-                                        <span>Optimización y escalado</span>
-                                    </div>
-                                    <div class="flex items-center space-x-4">
-                                        <span class="bg-white/20 px-4 py-2 rounded-full font-bold">Días 61-90</span>
-                                        <span>Diversificación y automatización</span>
-                                    </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fab fa-youtube text-red-500 text-2xl"></i>
                                 </div>
+                                <h4 class="font-bold">YouTube</h4>
+                                <p class="text-sm text-gray-600">Contenido detallado</p>
                             </div>
-                            
-                            <div class="space-y-6">
-                                <div class="bg-gradient-to-r from-yellow/20 to-coral/20 p-6 rounded-2xl">
-                                    <h4 class="font-bold text-gray-800 mb-3 text-xl flex items-center">
-                                        <i class="fas fa-bullseye mr-3 text-yellow"></i>
-                                        Enfoque en Nichos Específicos
-                                    </h4>
-                                    <p class="text-gray-600 text-lg">Especialízate en 1-2 nichos máximo para construir autoridad real.</p>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fab fa-instagram text-blue-500 text-2xl"></i>
                                 </div>
-                                
-                                <div class="bg-gradient-to-r from-sky/20 to-turquoise/20 p-6 rounded-2xl">
-                                    <h4 class="font-bold text-gray-800 mb-3 text-xl flex items-center">
-                                        <i class="fas fa-chart-bar mr-3 text-sky"></i>
-                                        Data-Driven Decisions
-                                    </h4>
-                                    <p class="text-gray-600 text-lg">Basa todas las decisiones en datos reales, no en suposiciones.</p>
+                                <h4 class="font-bold">Instagram</h4>
+                                <p class="text-sm text-gray-600">Historias y posts</p>
+                            </div>
+                            <div class="text-center">
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-envelope text-green-500 text-2xl"></i>
                                 </div>
-                                
-                                <div class="bg-gradient-to-r from-mint/20 to-turquoise/20 p-6 rounded-2xl">
-                                    <h4 class="font-bold text-gray-800 mb-3 text-xl flex items-center">
-                                        <i class="fas fa-handshake mr-3 text-mint"></i>
-                                        Relaciones a Largo Plazo
-                                    </h4>
-                                    <p class="text-gray-600 text-lg">Construye relaciones duraderas con productores y audiencia.</p>
-                                </div>
+                                <h4 class="font-bold">Email</h4>
+                                <p class="text-sm text-gray-600">Comunicación directa</p>
                             </div>
                         </div>
                     </div>
@@ -1470,21 +1193,21 @@
             </section>
 
             <!-- Footer -->
-            <footer class="rainbow-gradient text-white p-12 rounded-3xl text-center shadow-2xl">
-                <h2 class="text-3xl font-bold mb-6 sparkle">🎉 ¡Comienza tu Viaje en el Marketing de Afiliados Hoy! 🎉</h2>
-                <p class="text-xl mb-10">Con las estrategias y herramientas que has aprendido, estás listo para generar ingresos como afiliado profesional.</p>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-white/20 p-8 rounded-2xl card-hover">
-                        <i class="fas fa-rocket text-5xl mb-4 icon-bounce"></i>
-                        <p class="font-bold text-xl">Implementa las estrategias</p>
+            <footer class="gradient-bg text-white py-12">
+                <div class="container mx-auto px-6 text-center">
+                    <div class="mb-8">
+                        <h2 class="text-3xl font-bold mb-4">
+                            <i class="fas fa-rocket mr-3"></i>
+                            ¡Comienza tu Transformación Hoy!
+                        </h2>
+                        <p class="text-xl mb-6">Transforma tu carrera en marketing de afiliados con estrategias probadas</p>
+                        <div class="bg-white bg-opacity-20 rounded-2xl p-6 max-w-2xl mx-auto">
+                            <p class="text-lg font-medium">Diseñado específicamente para principiantes que desean generar ingresos sin inversión inicial</p>
+                        </div>
                     </div>
-                    <div class="bg-white/20 p-8 rounded-2xl card-hover">
-                        <i class="fas fa-chart-line text-5xl mb-4 icon-bounce"></i>
-                        <p class="font-bold text-xl">Mide y optimiza</p>
-                    </div>
-                    <div class="bg-white/20 p-8 rounded-2xl card-hover">
-                        <i class="fas fa-trophy text-5xl mb-4 icon-bounce"></i>
-                        <p class="font-bold text-xl">Escala tus resultados</p>
+                    
+                    <div class="border-t border-white border-opacity-20 pt-8">
+                        <p class="text-orange-200">&copy; 2024 Guía Definitiva Hotmart Marketing de Afiliados. Todos los derechos reservados.</p>
                     </div>
                 </div>
             </footer>
@@ -1492,6 +1215,12 @@
     </div>
 
     <script>
+        // Progress bar
+        window.addEventListener('scroll', () => {
+            const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+            document.getElementById('progressBar').style.width = scrolled + '%';
+        });
+
         // Smooth scrolling for navigation links
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -1506,133 +1235,33 @@
             });
         });
 
-        // Performance Chart
-        const ctx1 = document.getElementById('performanceChart').getContext('2d');
-        new Chart(ctx1, {
-            type: 'line',
-            data: {
-                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
-                datasets: [{
-                    label: 'Conversiones',
-                    data: [12, 19, 25, 32, 45, 58],
-                    borderColor: 'rgba(255, 255, 255, 0.9)',
-                    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointBackgroundColor: 'rgba(255, 255, 255, 1)',
-                    pointBorderColor: 'rgba(255, 107, 107, 1)',
-                    pointBorderWidth: 3,
-                    pointRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: 'white',
-                            font: {
-                                size: 14,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        ticks: {
-                            color: 'white',
-                            font: {
-                                weight: 'bold'
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.3)'
-                        }
-                    },
-                    x: {
-                        ticks: {
-                            color: 'white',
-                            font: {
-                                weight: 'bold'
-                            }
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.3)'
-                        }
-                    }
-                }
-            }
-        });
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-        // KPI Chart
-        const ctx2 = document.getElementById('kpiChart').getContext('2d');
-        new Chart(ctx2, {
-            type: 'doughnut',
-            data: {
-                labels: ['Conversiones', 'Clics', 'Impresiones', 'Engagement'],
-                datasets: [{
-                    data: [25, 35, 20, 20],
-                    backgroundColor: [
-                        '#FF6B6B',
-                        '#4ECDC4',
-                        '#9B59B6',
-                        '#98FB98'
-                    ],
-                    borderWidth: 3,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            font: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            padding: 20
-                        }
-                    }
-                }
-            }
-        });
-
-        // Active navigation highlighting
-        window.addEventListener('scroll', () => {
-            const sections = document.querySelectorAll('section[id]');
-            const navLinks = document.querySelectorAll('.sidebar a[href^="#"]');
-            
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop - 150;
-                if (scrollY >= sectionTop) {
-                    current = section.getAttribute('id');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
                 }
             });
+        }, observerOptions);
 
-            navLinks.forEach(link => {
-                link.classList.remove('bg-gradient-to-r', 'from-coral', 'to-turquoise', 'text-white');
-                if (link.getAttribute('href') === `#${current}`) {
-                    link.classList.add('bg-gradient-to-r', 'from-coral', 'to-turquoise', 'text-white');
-                }
-            });
+        document.querySelectorAll('.section-fade').forEach(section => {
+            observer.observe(section);
         });
 
-        // Add sparkle effect to random elements
-        setInterval(() => {
-            const sparkleElements = document.querySelectorAll('.sparkle');
-            sparkleElements.forEach(element => {
-                if (Math.random() > 0.7) {
-                    element.style.transform = 'scale(1.05)';
-                    setTimeout(() => {
-                        element.style.transform = 'scale(1)';
-                    }, 200);
-                }
+        // Mobile menu toggle (if needed)
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
             });
-        }, 3000);
+        }
     </script>
 </body>
 </html>
