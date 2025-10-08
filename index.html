@@ -1,381 +1,10 @@
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Guía de Internacionalización Web en un Solo Archivo HTML</title>
-<style>.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 24px 40px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    }
-.chart-container {
-    position: relative;
-    margin: 3em auto;
-    max-width: 700px;
-    min-height: 200px;
-    max-height: 400px;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-    }
-img {
-    display: block;
-    overflow: hidden;
-    max-width: 100%;
-    max-height: 280px;
-    margin: 1em auto;
-    border-radius: 8px;
-    }
-h5 {
-    font-size: 16px;
-    }
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-    line-height: 1.8;
-    font-size: 16px;
-    color: #333;
-    background-color: #fafafa;
-    margin: 0 24px 0 24px;
-    padding: 0;
-    max-width: None;
-    }
-h1, h2, h3, h4 {
-    font-family: "Georgia", "Times New Roman", serif;
-    color: #111;
-    line-height: 1.3;
-    font-size: 28px;
-    margin-top: 24px;
-    margin-bottom: 20px;
-    }
-h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    text-align: center;
-    margin-top: 24px;
-    }
-h2 {
-    font-size: 22px;
-    margin-top: 2em;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 0.3em;
-    }
-h3 {
-    font-size: 20px;
-    margin-top: 1.8em;
-    }
-p {
-    margin-bottom: 1.2em;
-    }
-a {
-    color: #1a0dab;
-    text-decoration: none;
-    }
-a:hover {
-    text-decoration: underline;
-    }
-blockquote {
-    border-left: 3px solid #ccc;
-    padding-left: 20px;
-    margin-left: 0;
-    font-style: italic;
-    color: #666;
-    }
-ul, ol {
-    padding-left: 25px;
-    }
-li {
-    margin-bottom: 0.8em;
-    }
-strong {
-    font-weight: 700;
-    }
-code {
-    font-family: "Menlo", "Monaco", "Consolas", "Courier New", monospace;
-    background-color: #f4f4f4;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-size: 0.9em;
-    }
-pre {
-    background-color: #2d2d2d;
-    color: #f8f8f2;
-    padding: 20px;
-    border-radius: 8px;
-    overflow-x: auto;
-    font-size: 14px;
-    line-height: 1.5;
-    }
-pre code {
-    background-color: transparent;
-    padding: 0;
-    color: inherit;
-    }
-.toc {
-    background: #f9f9f9;
-    border: 1px solid #e0e0e0;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 2em;
-    }
-.toc h3 {
-    margin-top: 0;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 10px;
-    }
-.toc ul {
-    list-style-type: none;
-    padding-left: 0;
-    }
-.toc ul ul {
-    padding-left: 20px;
-    }
-.toc li {
-    margin-bottom: 10px;
-    }
-@media only screen and (max-device-width: 768px) {
-            body {
-                padding: 0;
-                margin: 0;
-                font-family: PingFang SC;
-                font-size: 15px;
-                line-height: 1.5;
-            }
-
-            .container {
-                padding: 0;
-                margin: 16px 20px 30px;
-                box-shadow: none;
-            }
-
-            h1,
-            h2,
-            h3,
-            h4 {
-                font-family: PingFang SC;
-            }
-
-            h1 {
-                font-size: 1.87em;
-                line-height: 1.6;
-                margin-bottom: 0.5em;
-                text-align: center;
-            }
-
-            h2 {
-                font-size: 1.6em;
-                font-weight: 600;
-                margin-top: 1.3em;
-                margin-bottom: 0.8em;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 0.5em;
-            }
-
-            h3 {
-                font-size: 1.2em;
-                font-weight: 600;
-                margin-top: 1em;
-                margin-bottom: 0.6em;
-            }
-
-            h4 {
-                font-size: 1.1em;
-                font-weight: 500;
-                margin-top: 1em;
-                margin-bottom: 0.5em;
-                font-style: normal;
-            }
-
-            h5 {
-                font-size: 1em;
-                font-weight: 500;
-                margin-bottom: 1.2em;
-            }
-
-            ul,
-            ol {
-                font-size: 1em; /* Equivalent to 17.6px if base is 16px */
-                font-weight: 400;
-                margin-bottom: 1.2em;
-                line-height: 1.8;
-            }
-
-            p {
-                font-size: 1em;
-                line-height: 1.8; /* Equivalent to 17.6px if base is 16px */
-                font-weight: 400;
-                margin-top: 0.8em;
-                margin-bottom: 0.8em;
-            }
-
-            blockquote {
-                padding: 1em 1.2em;
-
-            p {
-                margin: 0;
-            }
-        }
-
-        figcaption {
-            margin-top: 0.5em;
-            font-size: 0.8em; /* Equivalent to 17.6px if base is 16px */
-            font-weight: 400;
-            text-align: center;
-            font-style: normal;
-            color: #7F8896;
-        }
-
-        img {
-            display: block;
-            overflow: hidden;
-            max-width: 100%;
-            max-height: 335px;
-            margin: 1em auto;
-            border-radius: 8px;
-        }
-        }</style>
-</head>
-<body>
-<div class="container">
-<h1 id="section-1">Guía Completa para Internacionalizar una Página Web Estática en un Único Archivo HTML</h1>
-<div class="toc">
-<h3 id="section-0-1">Índice de Contenidos</h3>
-<ul>
-<li><a href="#section-analisis-desafio">1. Análisis del Desafío: Internacionalización en un Solo Archivo</a></li>
-<li><a href="#section-estrategia-javascript">2. La Estrategia: Atributos de Datos y JavaScript Embebido</a></li>
-<li>
-<a href="#section-implementacion-paso-a-paso">3. Implementación Paso a Paso: El Código Completo</a>
-<ul>
-<li><a href="#section-estructura-html-modificada">3.1. Estructura HTML Modificada</a></li>
-<li><a href="#section-diccionario-traducciones">3.2. El "Diccionario" de Traducciones en JavaScript</a></li>
-<li><a href="#section-logica-cambio-idioma">3.3. La Lógica de Cambio de Idioma y Persistencia</a></li>
-</ul>
-</li>
-<li><a href="#section-consideraciones-ux">4. Consideraciones de Diseño y Experiencia de Usuario (UX)</a></li>
-<li><a href="#section-ventajas-limitaciones">5. Ventajas y Limitaciones de la Solución "Todo en Uno"</a></li>
-<li><a href="#section-codigo-final">6. Código Final y Demostración</a></li>
-</ul>
-</div>
-<h2 id="section-analisis-desafio">1. Análisis del Desafío: Internacionalización en un Solo Archivo</h2>
-<p>El requerimiento principal es adaptar una página web estática existente, el "Curso Inicial FDM - Bambu Lab A1", para que su contenido pueda ser visualizado en cuatro idiomas: español, inglés, portugués y japonés. La restricción más importante es que <strong>toda la solución debe estar contenida en un único archivo HTML</strong>. Esto implica que no se pueden utilizar archivos externos de JavaScript (<code>.js</code>) o de traducciones (<code>.json</code>).</p>
-<p>Este enfoque es común en proyectos sencillos, landing pages o documentación donde se quiere evitar la complejidad de un sistema de compilación (build system) o la gestión de múltiples archivos. Sin embargo, presenta desafíos únicos:</p>
-<ul>
-<li><strong>Mantenibilidad:</strong> A medida que el contenido crece, gestionar todas las traducciones dentro del mismo archivo puede volverse complejo.</li>
-<li><strong>Separación de responsabilidades:</strong> El contenido (traducciones), la estructura (HTML) y la lógica (JavaScript) se encuentran mezclados, lo cual va en contra de las prácticas de desarrollo modernas.</li>
-<li><strong>Rendimiento:</strong> El navegador debe cargar y procesar todas las traducciones de todos los idiomas, aunque el usuario solo vaya a visualizar uno.</li>
-</ul>
-<p>A pesar de estos inconvenientes, para un sitio de tamaño limitado como el del curso, esta solución es viable, rápida de implementar y extremadamente portátil.</p>
-<h2 id="section-estrategia-javascript">2. La Estrategia: Atributos de Datos y JavaScript Embebido</h2>
-<p>Para cumplir con el requisito de un único archivo, la estrategia más efectiva es combinar el poder de los atributos de datos de HTML5 con la flexibilidad de JavaScript embebido. El flujo de trabajo es el siguiente:</p>
-<ol>
-<li><strong>Marcar el contenido traducible:</strong> En el HTML, en lugar de escribir el texto directamente, se utilizan etiquetas vacías con un atributo de datos personalizado, como <code>data-key</code>. Este atributo contendrá una clave única que identifica cada cadena de texto (ej: <code>data-key="main_title"</code>).</li>
-<li><strong>Crear un "diccionario" de traducciones:</strong> Dentro de una etiqueta <code>&lt;script&gt;</code>, se define un objeto de JavaScript. Este objeto actuará como un diccionario centralizado, conteniendo todas las traducciones organizadas por idioma y por clave.</li>
-<li><strong>Implementar la lógica de cambio:</strong> Se escribe una función de JavaScript que, al seleccionar un nuevo idioma:
-                <ul>
-<li>Recorre todos los elementos del DOM que tengan el atributo <code>data-key</code>.</li>
-<li>Para cada elemento, obtiene el valor de su clave.</li>
-<li>Busca la traducción correspondiente a esa clave en el idioma seleccionado dentro del objeto de traducciones.</li>
-<li>Actualiza el contenido del elemento (<code>textContent</code>) con la traducción encontrada.</li>
-</ul>
-</li>
-<li><strong>Añadir persistencia:</strong> Para mejorar la experiencia de usuario, se utiliza la API <code>localStorage</code> del navegador para guardar el idioma seleccionado. De esta forma, si el usuario recarga la página o vuelve a visitarla, se mostrará directamente en su idioma preferido.</li>
-</ol>
-<blockquote>Esta técnica permite desacoplar el texto de la estructura HTML sin necesidad de archivos externos, centralizando toda la lógica y el contenido multilingüe en un solo lugar dentro del documento.</blockquote>
-<h2 id="section-implementacion-paso-a-paso">3. Implementación Paso a Paso: El Código Completo</h2>
-<p>A continuación, se detalla cómo se aplica esta estrategia al contenido del curso de impresión 3D.</p>
-<h3 id="section-estructura-html-modificada">3.1. Estructura HTML Modificada</h3>
-<p>Primero, se añade un menú desplegable (<code>&lt;select&gt;</code>) en la cabecera para que el usuario pueda elegir el idioma. Luego, cada texto del cuerpo del documento se reemplaza por una etiqueta con un atributo <code>data-key</code>.</p>
-<p>Por ejemplo, la estructura original:</p>
-<pre><code>&lt;h1&gt;Introducción a la Impresión 3D FDM&lt;/h1&gt;
-&lt;p&gt;La Fabricación por Deposición Fundida (FDM) es una tecnología...&lt;/p&gt;</code></pre>
-<p>Se transforma en:</p>
-<pre><code>&lt;!-- Selector de Idioma en la cabecera --&gt;
-&lt;div&gt;
-    &lt;label for="language-selector" data-key="language_label"&gt;Idioma:&lt;/label&gt;
-    &lt;select id="language-selector"&gt;
-        &lt;option value="es"&gt;Español&lt;/option&gt;
-        &lt;option value="en"&gt;English&lt;/option&gt;
-        &lt;option value="pt"&gt;Português&lt;/option&gt;
-        &lt;option value="ja"&gt;日本語&lt;/option&gt;
-    &lt;/select&gt;
-&lt;/div&gt;
-
-&lt;!-- Contenido con claves de traducción --&gt;
-&lt;h1 data-key="main_title"&gt;&lt;/h1&gt;
-&lt;p data-key="fdm_intro_p1"&gt;&lt;/p&gt;</code></pre>
-<h3 id="section-diccionario-traducciones">3.2. El "Diccionario" de Traducciones en JavaScript</h3>
-<p>Dentro de la etiqueta <code>&lt;script&gt;</code>, se crea el objeto <code>translations</code>. Su estructura es un objeto principal cuyas claves son los códigos de idioma (<code>es</code>, <code>en</code>, <code>pt</code>, <code>ja</code>). Cada uno de estos contiene a su vez un objeto con las claves de traducción y su valor correspondiente en ese idioma.</p>
-<pre><code>const translations = {
-    "es": {
-        "main_title": "Introducción a la Impresión 3D FDM",
-        "fdm_what_is_it_title": "¿Qué es la Impresión 3D FDM?",
-        "fdm_intro_p1": "La Fabricación por Deposición Fundida (FDM) es una tecnología de impresión 3D que construye objetos capa por capa mediante la extrusión de material termoplástico fundido a través de una boquilla calentada.",
-        // ... resto de traducciones en español
-    },
-    "en": {
-        "main_title": "Introduction to FDM 3D Printing",
-        "fdm_what_is_it_title": "What is FDM 3D Printing?",
-        "fdm_intro_p1": "Fused Deposition Modeling (FDM) is a 3D printing technology that builds objects layer-by-layer by extruding molten thermoplastic material through a heated nozzle.",
-        // ... rest of English translations
-    },
-    "pt": {
-        "main_title": "Introdução à Impressão 3D FDM",
-        "fdm_what_is_it_title": "O que é a Impressão 3D FDM?",
-        "fdm_intro_p1": "A Modelagem por Deposição Fundida (FDM) é uma tecnologia de impressão 3D que constrói objetos camada por camada através da extrusão de material termoplástico derretido por um bico aquecido.",
-        // ... resto das traduções em português
-    },
-    "ja": {
-        "main_title": "FDM 3Dプリンティング入門",
-        "fdm_what_is_it_title": "FDM 3Dプリンティングとは？",
-        "fdm_intro_p1": "熱溶解積層法（FDM）は、加熱されたノズルから溶融した熱可塑性材料を押し出して、オブジェクトを一層ずつ構築する3Dプリンティング技術です。",
-        // ... 残りの日本語翻訳
-    }
-};</code></pre>
-<h3 id="section-logica-cambio-idioma">3.3. La Lógica de Cambio de Idioma y Persistencia</h3>
-<p>El núcleo funcional reside en el código JavaScript. La función <code>changeLanguage</code> se encarga de aplicar las traducciones. Adicionalmente, un detector de eventos se asegura de que la página se cargue en el idioma correcto desde el principio.</p>
-<ul>
-<li><strong><code>changeLanguage(lang)</code>:</strong> Esta función recibe un código de idioma (ej. "en"). Itera sobre todos los elementos con <code>[data-key]</code> y actualiza su contenido. También guarda el idioma seleccionado en <code>localStorage</code>.</li>
-<li><strong><code>languageSelector.addEventListener('change', ...)</code>:</strong> Escucha los cambios en el menú desplegable y llama a <code>changeLanguage</code> con el nuevo valor.</li>
-<li><strong><code>document.addEventListener('DOMContentLoaded', ...)</code>:</strong> Se ejecuta cuando la página ha cargado. Comprueba si hay un idioma guardado en <code>localStorage</code>. Si no, intenta detectar el idioma del navegador. Como última opción, usa "es" (español) como idioma por defecto.</li>
-</ul>
-<h2 id="section-consideraciones-ux">4. Consideraciones de Diseño y Experiencia de Usuario (UX)</h2>
-<p>Una buena implementación técnica debe ir acompañada de una buena experiencia de usuario. Para ello, se han tenido en cuenta varias prácticas recomendadas:</p>
-<ul>
-<li><strong>Ubicación Intuitiva:</strong> El selector de idioma se coloca en la cabecera, una ubicación estándar y fácilmente localizable por los usuarios.</li>
-<li><strong>Nombres Nativos:</strong> En el menú desplegable, cada idioma se muestra en su propio nombre (ej. "日本語" en lugar de "Japanese"), lo cual es una práctica recomendada para la accesibilidad global.</li>
-<li><strong>Persistencia:</strong> Al recordar la elección del usuario, se evita la frustración de tener que seleccionar el idioma en cada visita.</li>
-<li><strong>Accesibilidad y SEO:</strong> La función de JavaScript no solo cambia el texto visible, sino que también actualiza el atributo <code>lang</code> de la etiqueta <code>&lt;html&gt;</code> (<code>document.documentElement.lang = language</code>). Según el <a href="https://www.w3.org/International/questions/qa-html-language-declarations" target="_blank">World Wide Web Consortium (W3C)</a>, esto es crucial para que los lectores de pantalla y los motores de búsqueda interpreten correctamente el idioma del contenido.</li>
-</ul>
-<h2 id="section-ventajas-limitaciones">5. Ventajas y Limitaciones de la Solución "Todo en Uno"</h2>
-<p>Si bien esta solución es perfecta para el caso de uso solicitado, es importante entender su contexto y sus límites.</p>
-<blockquote>
-<p>La elección de una arquitectura de software siempre implica un compromiso. En este caso, se prioriza la simplicidad y la portabilidad sobre la escalabilidad y la separación de responsabilidades.</p>
-</blockquote>
-<h4>Ventajas</h4>
-<ul>
-<li><strong>Simplicidad Extrema:</strong> No requiere herramientas de compilación, servidores o configuración compleja. Es un solo archivo que funciona en cualquier lugar.</li>
-<li><strong>Portabilidad Total:</strong> El sitio web completo puede ser enviado por correo electrónico, alojado en cualquier servicio de hosting estático (como GitHub Pages) o incluso abierto localmente desde el disco duro sin problemas.</li>
-<li><strong>Cero Dependencias:</strong> Funciona con JavaScript puro, sin necesidad de cargar librerías externas, lo que optimiza el tiempo de carga inicial.</li>
-</ul>
-<h4>Limitaciones</h4>
-<ul>
-<li><strong>Escalabilidad Reducida:</strong> Si el sitio creciera a cientos de páginas o miles de líneas de texto, el objeto <code>translations</code> se volvería inmanejable.</li>
-<li><strong>Flujo de Trabajo para Traductores:</strong> Los traductores profesionales no suelen trabajar con archivos de código. Entregarles un archivo HTML con un objeto JavaScript gigante para editar es propenso a errores y poco eficiente.</li>
-<li><strong>Carga Inicial:</strong> Aunque no hay dependencias externas, el navegador debe cargar y analizar el objeto JavaScript completo con todas las traducciones al iniciar, lo que podría impactar el rendimiento en sitios muy grandes.</li>
-</ul>
-<h2 id="section-codigo-final">6. Código Final y Demostración</h2>
-<p>A continuación se presenta el código HTML completo y funcional. Este archivo único integra la estructura del curso, el selector de idiomas, los estilos CSS y toda la lógica de JavaScript necesaria para la internacionalización.</p>
-<pre><code>&lt;!DOCTYPE html&gt;
-&lt;html lang="es"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title data-key="page_title"&gt;Introducción a la Impresión 3D FDM&lt;/title&gt;
-    &lt;style&gt;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-key="page_title">Introducción a la Impresión 3D FDM</title>
+    <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 2em auto; padding: 0 1em; background-color: #fdfdfd; }
         header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 1em; margin-bottom: 2em; }
         h1, h2, h3 { font-family: "Georgia", serif; color: #111; }
@@ -389,78 +18,78 @@ pre code {
         li { margin-bottom: 0.5em; }
         code { background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px; font-family: monospace; }
         #lang-selector-container { display: flex; align-items: center; gap: 10px; }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
+    </style>
+</head>
+<body>
 
-    &lt;header&gt;
-        &lt;h1 data-key="main_title"&gt;&lt;/h1&gt;
-        &lt;div id="lang-selector-container"&gt;
-            &lt;label for="language-selector" data-key="language_label"&gt;&lt;/label&gt;
-            &lt;select id="language-selector"&gt;
-                &lt;option value="es"&gt;Español&lt;/option&gt;
-                &lt;option value="en"&gt;English&lt;/option&gt;
-                &lt;option value="pt"&gt;Português&lt;/option&gt;
-                &lt;option value="ja"&gt;日本語&lt;/option&gt;
-            &lt;/select&gt;
-        &lt;/div&gt;
-    &lt;/header&gt;
+    <header>
+        <h1 data-key="main_title"></h1>
+        <div id="lang-selector-container">
+            <label for="language-selector" data-key="language_label"></label>
+            <select id="language-selector">
+                <option value="es">Español</option>
+                <option value="en">English</option>
+                <option value="pt">Português</option>
+                <option value="ja">日本語</option>
+            </select>
+        </div>
+    </header>
 
-    &lt;main&gt;
-        &lt;h2 data-key="fdm_what_is_it_title"&gt;&lt;/h2&gt;
-        &lt;p data-key="fdm_intro_p1"&gt;&lt;/p&gt;
-        &lt;ul&gt;
-            &lt;li data-key="fdm_intro_li1"&gt;&lt;/li&gt;
-            &lt;li data-key="fdm_intro_li2"&gt;&lt;/li&gt;
-            &lt;li data-key="fdm_intro_li3"&gt;&lt;/li&gt;
-            &lt;li data-key="fdm_intro_li4"&gt;&lt;/li&gt;
-        &lt;/ul&gt;
+    <main>
+        <h2 data-key="fdm_what_is_it_title"></h2>
+        <p data-key="fdm_intro_p1"></p>
+        <ul>
+            <li data-key="fdm_intro_li1"></li>
+            <li data-key="fdm_intro_li2"></li>
+            <li data-key="fdm_intro_li3"></li>
+            <li data-key="fdm_intro_li4"></li>
+        </ul>
 
-        &lt;h2 data-key="advantages_title"&gt;&lt;/h2&gt;
-        &lt;h3 data-key="advantages_h3_1"&gt;&lt;/h3&gt;
-        &lt;p data-key="advantages_p1"&gt;&lt;/p&gt;
-        &lt;h3 data-key="advantages_h3_2"&gt;&lt;/h3&gt;
-        &lt;p data-key="advantages_p2"&gt;&lt;/p&gt;
-        &lt;h3 data-key="advantages_h3_3"&gt;&lt;/h3&gt;
-        &lt;p data-key="advantages_p3"&gt;&lt;/p&gt;
+        <h2 data-key="advantages_title"></h2>
+        <h3 data-key="advantages_h3_1"></h3>
+        <p data-key="advantages_p1"></p>
+        <h3 data-key="advantages_h3_2"></h3>
+        <p data-key="advantages_p2"></p>
+        <h3 data-key="advantages_h3_3"></h3>
+        <p data-key="advantages_p3"></p>
 
-        &lt;h2 data-key="why_bambu_title"&gt;&lt;/h2&gt;
-        &lt;p data-key="why_bambu_p1"&gt;&lt;/p&gt;
+        <h2 data-key="why_bambu_title"></h2>
+        <p data-key="why_bambu_p1"></p>
 
-        &lt;h2 data-key="materials_title"&gt;&lt;/h2&gt;
-        &lt;h3 data-key="compatible_filaments_title"&gt;&lt;/h3&gt;
-        &lt;p data-key="compatible_filaments_p1"&gt;&lt;/p&gt;
-        &lt;p&gt;&lt;strong data-key="beginner_recommendation_title"&gt;&lt;/strong&gt; &lt;span data-key="beginner_recommendation_p1"&gt;&lt;/span&gt;&lt;/p&gt;
+        <h2 data-key="materials_title"></h2>
+        <h3 data-key="compatible_filaments_title"></h3>
+        <p data-key="compatible_filaments_p1"></p>
+        <p><strong data-key="beginner_recommendation_title"></strong> <span data-key="beginner_recommendation_p1"></span></p>
         
-        &lt;h3&gt;PLA&lt;/h3&gt;
-        &lt;ul&gt;
-            &lt;li&gt;&lt;strong data-key="extruder_temp"&gt;&lt;/strong&gt;: 190-220°C&lt;/li&gt;
-            &lt;li&gt;&lt;strong data-key="bed_temp"&gt;&lt;/strong&gt;: 0-60°C&lt;/li&gt;
-            &lt;li&gt;&lt;strong data-key="difficulty"&gt;&lt;/strong&gt;: &lt;span data-key="difficulty_easy"&gt;&lt;/span&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;strong data-key="advantages"&gt;&lt;/strong&gt;:
-                &lt;ul&gt;
-                    &lt;li data-key="pla_adv_1"&gt;&lt;/li&gt;
-                    &lt;li data-key="pla_adv_2"&gt;&lt;/li&gt;
-                    &lt;li data-key="pla_adv_3"&gt;&lt;/li&gt;
-                    &lt;li data-key="pla_adv_4"&gt;&lt;/li&gt;
-                &lt;/ul&gt;
-            &lt;/li&gt;
-            &lt;li&gt;&lt;strong data-key="applications"&gt;&lt;/strong&gt;: &lt;span data-key="pla_apps"&gt;&lt;/span&gt;&lt;/li&gt;
-        &lt;/ul&gt;
+        <h3>PLA</h3>
+        <ul>
+            <li><strong data-key="extruder_temp"></strong>: 190-220°C</li>
+            <li><strong data-key="bed_temp"></strong>: 0-60°C</li>
+            <li><strong data-key="difficulty"></strong>: <span data-key="difficulty_easy"></span></li>
+            <li><strong data-key="advantages"></strong>:
+                <ul>
+                    <li data-key="pla_adv_1"></li>
+                    <li data-key="pla_adv_2"></li>
+                    <li data-key="pla_adv_3"></li>
+                    <li data-key="pla_adv_4"></li>
+                </ul>
+            </li>
+            <li><strong data-key="applications"></strong>: <span data-key="pla_apps"></span></li>
+        </ul>
 
-        &lt;h2 data-key="software_title"&gt;&lt;/h2&gt;
-        &lt;h3 data-key="what_is_bambu_studio_title"&gt;&lt;/h3&gt;
-        &lt;p data-key="what_is_bambu_studio_p1"&gt;&lt;/p&gt;
+        <h2 data-key="software_title"></h2>
+        <h3 data-key="what_is_bambu_studio_title"></h3>
+        <p data-key="what_is_bambu_studio_p1"></p>
 
-        &lt;h2 data-key="troubleshooting_title"&gt;&lt;/h2&gt;
-        &lt;p data-key="troubleshooting_intro"&gt;&lt;/p&gt;
-        &lt;h3&gt;1. &lt;span data-key="warping_title"&gt;&lt;/span&gt;&lt;/h3&gt;
-        &lt;p&gt;&lt;strong data-key="symptoms"&gt;&lt;/strong&gt;: &lt;span data-key="warping_symptoms"&gt;&lt;/span&gt;&lt;/p&gt;
-        &lt;p&gt;&lt;strong data-key="causes"&gt;&lt;/strong&gt;: &lt;span data-key="warping_causes"&gt;&lt;/span&gt;&lt;/p&gt;
-        &lt;p&gt;&lt;strong data-key="solutions"&gt;&lt;/strong&gt;: &lt;span data-key="warping_solutions"&gt;&lt;/span&gt;&lt;/p&gt;
-    &lt;/main&gt;
+        <h2 data-key="troubleshooting_title"></h2>
+        <p data-key="troubleshooting_intro"></p>
+        <h3>1. <span data-key="warping_title"></span></h3>
+        <p><strong data-key="symptoms"></strong>: <span data-key="warping_symptoms"></span></p>
+        <p><strong data-key="causes"></strong>: <span data-key="warping_causes"></span></p>
+        <p><strong data-key="solutions"></strong>: <span data-key="warping_solutions"></span></p>
+    </main>
 
-    &lt;script&gt;
+    <script>
         const translations = {
             "es": {
                 "page_title": "Introducción a la Impresión 3D FDM",
@@ -659,34 +288,34 @@ pre code {
         const languageSelector = document.getElementById('language-selector');
         const pageTitleElement = document.querySelector('title');
 
-        const changeLanguage = (language) =&gt; {
+        const changeLanguage = (language) => {
             localStorage.setItem('selectedLanguage', language);
             document.documentElement.lang = language;
 
-            document.querySelectorAll('[data-key]').forEach(element =&gt; {
+            document.querySelectorAll('[data-key]').forEach(element => {
                 const key = element.getAttribute('data-key');
-                if (translations[language] &amp;&amp; translations[language][key]) {
+                if (translations[language] && translations[language][key]) {
                     element.textContent = translations[language][key];
                 }
             });
             
             // Update page title
-            if (pageTitleElement &amp;&amp; translations[language] &amp;&amp; translations[language]['page_title']) {
+            if (pageTitleElement && translations[language] && translations[language]['page_title']) {
                 pageTitleElement.textContent = translations[language]['page_title'];
             }
         };
 
-        languageSelector.addEventListener('change', (event) =&gt; {
+        languageSelector.addEventListener('change', (event) => {
             changeLanguage(event.target.value);
         });
 
-        document.addEventListener('DOMContentLoaded', () =&gt; {
+        document.addEventListener('DOMContentLoaded', () => {
             const savedLanguage = localStorage.getItem('selectedLanguage');
             const browserLanguage = navigator.language.split('-')[0];
             
             let initialLanguage = 'es'; // Default language
 
-            if (savedLanguage &amp;&amp; translations[savedLanguage]) {
+            if (savedLanguage && translations[savedLanguage]) {
                 initialLanguage = savedLanguage;
             } else if (translations[browserLanguage]) {
                 initialLanguage = browserLanguage;
@@ -695,11 +324,7 @@ pre code {
             languageSelector.value = initialLanguage;
             changeLanguage(initialLanguage);
         });
-    &lt;/script&gt;
+    </script>
 
-&lt;/body&gt;
-&lt;/html&gt;
-</code></pre>
-</div>
 </body>
 </html>
