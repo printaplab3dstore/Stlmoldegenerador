@@ -1,1139 +1,303 @@
-
-```html
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Cortantes de Galletas 3D - Versión Final</title>
-    <style>
-        :root {
-            --primary: #6a11cb;
-            --secondary: #2575fc;
-            --accent: #00c9ff;
-            --dark: #0f0c29;
-            --darker: #090717;
-            --light: #f0f0f0;
-            --success: #00cc66;
-            --warning: #ffcc00;
-            --error: #ff3333;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--darker), var(--dark));
-            color: var(--light);
-            min-height: 100vh;
-            padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(106, 17, 203, 0.1) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(37, 117, 252, 0.1) 0%, transparent 20%);
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        header {
-            text-align: center;
-            padding: 30px 0;
-            margin-bottom: 30px;
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            margin-bottom: 10px;
-            background: linear-gradient(to right, var(--accent), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(0, 201, 255, 0.3);
-        }
-
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-title i {
-            color: var(--accent);
-        }
-
-        .upload-area {
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 15px;
-            padding: 40px 20px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .upload-area:hover {
-            border-color: var(--accent);
-            background: rgba(0, 201, 255, 0.05);
-        }
-
-        .upload-area.active {
-            border-color: var(--success);
-            background: rgba(0, 204, 102, 0.05);
-        }
-
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
-
-        .upload-text {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-        }
-
-        .upload-hint {
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-
-        #file-input {
-            display: none;
-        }
-
-        .preview-container {
-            display: none;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .preview-image {
-            max-width: 100%;
-            max-height: 300px;
-            display: block;
-            margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .contour-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .contour-canvas {
-            max-width: 100%;
-            max-height: 300px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.2);
-        }
-
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .setting-item {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 8px;
-            border-radius: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: var(--accent);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 201, 255, 0.5);
-        }
-
-        .value-display {
-            display: inline-block;
-            width: 50px;
-            text-align: right;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .btn {
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.4);
-        }
-
-        .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(37, 117, 252, 0.6);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-        }
-
-        .btn:disabled {
-            background: rgba(255, 255, 255, 0.1);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-process {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.2rem;
-            margin: 20px 0;
-        }
-
-        .progress-container {
-            display: none;
-            margin: 30px 0;
-        }
-
-        .progress-bar {
-            height: 12px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--accent));
-            width: 0%;
-            border-radius: 6px;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .download-section {
-            display: none;
-            text-align: center;
-            padding: 30px;
-        }
-
-        .download-icon {
-            font-size: 5rem;
-            color: var(--success);
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .result-info {
-            background: rgba(0, 204, 102, 0.1);
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        footer {
-            text-align: center;
-            padding: 30px 0;
-            opacity: 0.7;
-            font-size: 0.9rem;
-        }
-
-        .notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-left: 4px solid var(--accent);
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-        }
-
-        .notification.show {
-            transform: translateX(0);
-        }
-
-        .notification.success {
-            border-left-color: var(--success);
-        }
-
-        .notification.error {
-            border-left-color: var(--error);
-        }
-
-        @media (max-width: 768px) {
-            .card {
-                padding: 20px;
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Análisis de Cookiecad: De la URL a la Impresión 3D</title>
+<style>.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 24px 40px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    }
+.chart-container {
+    position: relative;
+    margin: 3em auto;
+    max-width: 700px;
+    min-height: 200px;
+    max-height: 400px;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+    }
+h5 {
+    font-size: 16px;
+    }
+body {
+    font-family: "Georgia", "Times New Roman", Times, serif;
+    line-height: 1.8;
+    font-size: 16px;
+    color: #333;
+    background-color: #fafafa;
+    margin: 0 24px 0 24px;
+    padding: 0;
+    max-width: None;
+    }
+h1, h2, h3, h4 {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    line-height: 1.3;
+    font-weight: 700;
+    font-size: 28px;
+    margin-top: 24px;
+    margin-bottom: 20px;
+    }
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+    margin-top: 24px;
+    }
+h2 {
+    font-size: 22px;
+    margin-top: 2em;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.3em;
+    }
+h3 {
+    font-size: 20px;
+    margin-top: 1.5em;
+    }
+p {
+    margin-bottom: 1.2em;
+    }
+a {
+    color: #1a0dab;
+    text-decoration: none;
+    }
+a:hover {
+    text-decoration: underline;
+    }
+blockquote {
+    border-left: 3px solid #ccc;
+    padding-left: 20px;
+    margin-left: 0;
+    font-style: italic;
+    color: #666;
+    }
+figure {
+    margin: 2em 0;
+    text-align: center;
+    }
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+    overflow: hidden;
+    max-height: 280px;
+    margin: 1em auto;
+    }
+figcaption {
+    font-size: 0.9em;
+    color: #777;
+    margin-top: 0.5em;
+    font-style: italic;
+    }
+ul, ol {
+    padding-left: 20px;
+    }
+strong {
+    font-weight: bold;
+    }
+#toc {
+    border: 1px solid #e0e0e0;
+    background-color: #f9f9f9;
+    padding: 15px 20px;
+    margin-bottom: 2em;
+    border-radius: 5px;
+    }
+#toc h3 {
+    margin-top: 0;
+    }
+#toc ul {
+    list-style-type: none;
+    padding-left: 0;
+    }
+#toc ul li {
+    margin-bottom: 0.5em;
+    }
+#toc ul ul {
+    padding-left: 20px;
+    margin-top: 0.5em;
+    }
+@media only screen and (max-device-width: 768px) {
+            body {
+                padding: 0;
+                margin: 0;
+                font-family: PingFang SC;
+                font-size: 15px;
+                line-height: 1.5;
             }
-            
+
+            .container {
+                padding: 0;
+                margin: 16px 20px 30px;
+                box-shadow: none;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4 {
+                font-family: PingFang SC;
+            }
+
             h1 {
-                font-size: 2rem;
+                font-size: 1.87em;
+                line-height: 1.6;
+                margin-bottom: 0.5em;
+                text-align: center;
             }
-            
-            .settings-grid {
-                grid-template-columns: 1fr;
+
+            h2 {
+                font-size: 1.6em;
+                font-weight: 600;
+                margin-top: 1.3em;
+                margin-bottom: 0.8em;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 0.5em;
+            }
+
+            h3 {
+                font-size: 1.2em;
+                font-weight: 600;
+                margin-top: 1em;
+                margin-bottom: 0.6em;
+            }
+
+            h4 {
+                font-size: 1.1em;
+                font-weight: 500;
+                margin-top: 1em;
+                margin-bottom: 0.5em;
+                font-style: normal;
+            }
+
+            h5 {
+                font-size: 1em;
+                font-weight: 500;
+                margin-bottom: 1.2em;
+            }
+
+            ul,
+            ol {
+                font-size: 1em; /* Equivalent to 17.6px if base is 16px */
+                font-weight: 400;
+                margin-bottom: 1.2em;
+                line-height: 1.8;
+            }
+
+            p {
+                font-size: 1em;
+                line-height: 1.8; /* Equivalent to 17.6px if base is 16px */
+                font-weight: 400;
+                margin-top: 0.8em;
+                margin-bottom: 0.8em;
+            }
+
+            blockquote {
+                padding: 1em 1.2em;
+
+            p {
+                margin: 0;
             }
         }
 
-        /* Animation for futuristic feel */
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
+        figcaption {
+            margin-top: 0.5em;
+            font-size: 0.8em; /* Equivalent to 17.6px if base is 16px */
+            font-weight: 400;
+            text-align: center;
+            font-style: normal;
+            color: #7F8896;
         }
 
-        .floating {
-            animation: float 3s ease-in-out infinite;
+        img {
+            display: block;
+            overflow: hidden;
+            max-width: 100%;
+            max-height: 335px;
+            margin: 1em auto;
+            border-radius: 8px;
         }
-
-        /* Hidden canvases for image processing */
-        #processing-canvas, #contour-canvas {
-            display: none;
-        }
-    </style>
+        }</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Generador de Cortantes de Galletas 3D</h1>
-            <p class="subtitle">Convierte cualquier imagen en un cortante de galletas personalizado en formato STL para impresión 3D</p>
-        </header>
-
-        <main>
-            <div class="card">
-                <h2 class="card-title">📤 Subir Imagen</h2>
-                <div class="upload-area" id="upload-area">
-                    <div class="upload-icon floating">📁</div>
-                    <p class="upload-text">Haz clic aquí o arrastra una imagen</p>
-                    <p class="upload-hint">Formatos aceptados: JPG, PNG (Máx. 5MB)</p>
-                    <input type="file" id="file-input" accept=".jpg,.jpeg,.png">
-                </div>
-                
-                <div class="preview-container" id="preview-container">
-                    <img id="preview-image" class="preview-image" alt="Vista previa de la imagen">
-                </div>
-                
-                <div class="contour-container" id="contour-container" style="display: none;">
-                    <h3 class="card-title">🔍 Contorno Detectado</h3>
-                    <canvas id="contour-display" class="contour-canvas"></canvas>
-                </div>
-            </div>
-
-            <div class="card">
-                <h2 class="card-title">⚙️ Configuración del Cortante</h2>
-                <div class="settings-grid">
-                    <div class="setting-item">
-                        <label for="depth">Profundidad del Cortante: <span id="depth-value" class="value-display">1.0</span> cm</label>
-                        <input type="range" id="depth" min="0.5" max="1.5" step="0.1" value="1.0">
-                    </div>
-                    
-                    <div class="setting-item">
-                        <label for="size">Tamaño Máximo: <span id="size-value" class="value-display">5.0</span> cm</label>
-                        <input type="range" id="size" min="3.0" max="7.0" step="0.5" value="5.0">
-                    </div>
-                </div>
-                
-                <button id="process-btn" class="btn btn-process" disabled>
-                    <span>🪄 Convertir a Cortante 3D</span>
-                </button>
-            </div>
-
-            <div class="progress-container" id="progress-container">
-                <h2 class="card-title">🔄 Procesando...</h2>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="progress-fill"></div>
-                </div>
-                <p class="progress-text" id="progress-text">Preparando imagen...</p>
-            </div>
-
-            <div class="download-section" id="download-section">
-                <div class="download-icon">🍪</div>
-                <h2 class="card-title">¡Listo! Tu Cortante 3D está Listo</h2>
-                
-                <div class="result-info">
-                    <p>El cortante ha sido generado con éxito manteniendo la silueta perfecta de tu imagen.</p>
-                    <p><strong>Especificaciones:</strong> Profundidad de <span id="result-depth">1.0</span> cm | Largo máximo ajustado a <span id="result-size">5.0</span> cm</p>
-                </div>
-                
-                <button id="download-btn" class="btn">
-                    <span>📥 Descargar Archivo STL</span>
-                </button>
-            </div>
-        </main>
-
-        <footer>
-            <p>Generador de Cortantes de Galletas 3D | Diseñado para impresoras 3D</p>
-        </footer>
-    </div>
-
-    <!-- Hidden canvases for image processing -->
-    <canvas id="processing-canvas"></canvas>
-    <canvas id="contour-canvas"></canvas>
-
-    <div class="notification" id="notification"></div>
-
-    <script>
-        // DOM Elements
-        const uploadArea = document.getElementById('upload-area');
-        const fileInput = document.getElementById('file-input');
-        const previewContainer = document.getElementById('preview-container');
-        const previewImage = document.getElementById('preview-image');
-        const contourContainer = document.getElementById('contour-container');
-        const contourDisplay = document.getElementById('contour-display');
-        const processBtn = document.getElementById('process-btn');
-        const progressContainer = document.getElementById('progress-container');
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
-        const downloadSection = document.getElementById('download-section');
-        const downloadBtn = document.getElementById('download-btn');
-        const notification = document.getElementById('notification');
-        const processingCanvas = document.getElementById('processing-canvas');
-        const contourCanvas = document.getElementById('contour-canvas');
-        const resultDepth = document.getElementById('result-depth');
-        const resultSize = document.getElementById('result-size');
-        
-        // Settings elements
-        const depthSlider = document.getElementById('depth');
-        const sizeSlider = document.getElementById('size');
-        const depthValue = document.getElementById('depth-value');
-        const sizeValue = document.getElementById('size-value');
-        
-        // State variables
-        let originalImage = null;
-        let stlData = null;
-        let contourPoints = [];
-        
-        // Event Listeners
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFileSelect);
-        uploadArea.addEventListener('dragover', handleDragOver);
-        uploadArea.addEventListener('drop', handleDrop);
-        processBtn.addEventListener('click', processImage);
-        downloadBtn.addEventListener('click', downloadSTL);
-        
-        // Slider event listeners
-        depthSlider.addEventListener('input', () => {
-            depthValue.textContent = depthSlider.value;
-        });
-        
-        sizeSlider.addEventListener('input', () => {
-            sizeValue.textContent = sizeSlider.value;
-        });
-        
-        // Functions
-        function handleDragOver(e) {
-            e.preventDefault();
-            uploadArea.classList.add('active');
-        }
-        
-        function handleDrop(e) {
-            e.preventDefault();
-            uploadArea.classList.remove('active');
-            
-            if (e.dataTransfer.files.length) {
-                handleFiles(e.dataTransfer.files);
-            }
-        }
-        
-        function handleFileSelect(e) {
-            if (e.target.files.length) {
-                handleFiles(e.target.files);
-            }
-        }
-        
-        function handleFiles(files) {
-            const file = files[0];
-            if (!file) return;
-            
-            // Check file type
-            if (!file.type.match('image.*')) {
-                showNotification('Por favor selecciona un archivo de imagen válido (JPG o PNG)', 'error');
-                return;
-            }
-            
-            // Check file size (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showNotification('La imagen es demasiado grande. El tamaño máximo es 5MB', 'error');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                previewContainer.style.display = 'block';
-                contourContainer.style.display = 'none';
-                processBtn.disabled = false;
-                originalImage = new Image();
-                originalImage.src = e.target.result;
-                originalImage.onload = function() {
-                    showNotification('Imagen cargada correctamente', 'success');
-                };
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        function showNotification(message, type) {
-            notification.textContent = message;
-            notification.className = 'notification ' + type;
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-        
-        function updateProgress(percent, message) {
-            progressFill.style.width = percent + '%';
-            progressText.textContent = message;
-        }
-        
-        // Image processing functions
-        function getImageData(image) {
-            const canvas = processingCanvas;
-            const ctx = canvas.getContext('2d');
-            
-            // Set canvas dimensions to match image
-            canvas.width = image.width;
-            canvas.height = image.height;
-            
-            // Draw image on canvas
-            ctx.drawImage(image, 0, 0);
-            
-            // Get image data
-            return ctx.getImageData(0, 0, canvas.width, canvas.height);
-        }
-        
-        function grayscale(data) {
-            const pixels = data.data;
-            for (let i = 0; i < pixels.length; i += 4) {
-                const r = pixels[i];
-                const g = pixels[i + 1];
-                const b = pixels[i + 2];
-                // Convert to grayscale using luminance formula
-                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                pixels[i] = gray;
-                pixels[i + 1] = gray;
-                pixels[i + 2] = gray;
-            }
-            return data;
-        }
-        
-        function gaussianBlur(data, width, height, sigma = 1) {
-            const pixels = data.data;
-            const output = new Uint8ClampedArray(pixels.length);
-            
-            // Create Gaussian kernel
-            const kernelSize = Math.ceil(sigma * 3) * 2 + 1;
-            const kernel = new Array(kernelSize);
-            const half = Math.floor(kernelSize / 2);
-            let sum = 0;
-            
-            // Generate kernel
-            for (let i = 0; i < kernelSize; i++) {
-                const x = i - half;
-                const value = Math.exp(-(x * x) / (2 * sigma * sigma));
-                kernel[i] = value;
-                sum += value;
-            }
-            
-            // Normalize kernel
-            for (let i = 0; i < kernelSize; i++) {
-                kernel[i] /= sum;
-            }
-            
-            // Apply horizontal blur
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    let r = 0, g = 0, b = 0;
-                    
-                    for (let k = 0; k < kernelSize; k++) {
-                        const px = x + k - half;
-                        if (px >= 0 && px < width) {
-                            const idx = (y * width + px) * 4;
-                            r += pixels[idx] * kernel[k];
-                            g += pixels[idx + 1] * kernel[k];
-                            b += pixels[idx + 2] * kernel[k];
-                        }
-                    }
-                    
-                    const idx = (y * width + x) * 4;
-                    output[idx] = r;
-                    output[idx + 1] = g;
-                    output[idx + 2] = b;
-                    output[idx + 3] = pixels[idx + 3];
-                }
-            }
-            
-            // Apply vertical blur
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    let r = 0, g = 0, b = 0;
-                    
-                    for (let k = 0; k < kernelSize; k++) {
-                        const py = y + k - half;
-                        if (py >= 0 && py < height) {
-                            const idx = (py * width + x) * 4;
-                            r += output[idx] * kernel[k];
-                            g += output[idx + 1] * kernel[k];
-                            b += output[idx + 2] * kernel[k];
-                        }
-                    }
-                    
-                    const idx = (y * width + x) * 4;
-                    pixels[idx] = r;
-                    pixels[idx + 1] = g;
-                    pixels[idx + 2] = b;
-                }
-            }
-            
-            return data;
-        }
-        
-        function sobelEdgeDetection(data, width, height) {
-            const pixels = data.data;
-            const output = new Uint8ClampedArray(pixels.length);
-            
-            // Sobel kernels
-            const Gx = [
-                [-1, 0, 1],
-                [-2, 0, 2],
-                [-1, 0, 1]
-            ];
-            
-            const Gy = [
-                [-1, -2, -1],
-                [ 0,  0,  0],
-                [ 1,  2,  1]
-            ];
-            
-            // Apply Sobel operator
-            for (let y = 1; y < height - 1; y++) {
-                for (let x = 1; x < width - 1; x++) {
-                    let gx = 0;
-                    let gy = 0;
-                    
-                    for (let ky = -1; ky <= 1; ky++) {
-                        for (let kx = -1; kx <= 1; kx++) {
-                            const idx = ((y + ky) * width + (x + kx)) * 4;
-                            const pixel = pixels[idx];
-                            gx += pixel * Gx[ky + 1][kx + 1];
-                            gy += pixel * Gy[ky + 1][kx + 1];
-                        }
-                    }
-                    
-                    // Calculate gradient magnitude
-                    const magnitude = Math.sqrt(gx * gx + gy * gy);
-                    const idx = (y * width + x) * 4;
-                    output[idx] = magnitude;
-                    output[idx + 1] = magnitude;
-                    output[idx + 2] = magnitude;
-                    output[idx + 3] = 255;
-                }
-            }
-            
-            // Copy output to data
-            for (let i = 0; i < pixels.length; i++) {
-                pixels[i] = output[i];
-            }
-            
-            return data;
-        }
-        
-        function threshold(data, thresholdValue = 100) {
-            const pixels = data.data;
-            for (let i = 0; i < pixels.length; i += 4) {
-                const value = pixels[i];
-                const binary = value > thresholdValue ? 255 : 0;
-                pixels[i] = binary;
-                pixels[i + 1] = binary;
-                pixels[i + 2] = binary;
-            }
-            return data;
-        }
-        
-        function findOuterContour(data, width, height) {
-            const pixels = data.data;
-            const contour = [];
-            
-            // Find the first black pixel (part of the shape)
-            let startX = -1, startY = -1;
-            for (let y = 0; y < height && startX === -1; y++) {
-                for (let x = 0; x < width && startX === -1; x++) {
-                    const idx = (y * width + x) * 4;
-                    if (pixels[idx] === 0) { // Black pixel
-                        startX = x;
-                        startY = y;
-                        break;
-                    }
-                }
-            }
-            
-            if (startX === -1) return contour;
-            
-            // Moore neighborhood (8-connected)
-            const directions = [
-                [1, 0], [1, 1], [0, 1], [-1, 1],
-                [-1, 0], [-1, -1], [0, -1], [1, -1]
-            ];
-            
-            // Start contour tracing
-            let x = startX, y = startY;
-            let previousDir = 7; // Start looking left
-            let startFound = false;
-            
-            while (!startFound || (x !== startX || y !== startY)) {
-                contour.push({x, y});
-                
-                // Search for next boundary pixel
-                let found = false;
-                for (let i = 0; i < 8; i++) {
-                    const dirIndex = (previousDir + i) % 8;
-                    const [dx, dy] = directions[dirIndex];
-                    const nx = x + dx;
-                    const ny = y + dy;
-                    
-                    // Check bounds
-                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
-                        const idx = (ny * width + nx) * 4;
-                        if (pixels[idx] === 0) { // Black pixel (part of shape)
-                            x = nx;
-                            y = ny;
-                            previousDir = (dirIndex + 5) % 8; // Next search direction
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-                
-                if (!found) break;
-                
-                if (contour.length > 1 && x === startX && y === startY) {
-                    startFound = true;
-                }
-                
-                // Safety break to prevent infinite loops
-                if (contour.length > width * height) break;
-            }
-            
-            return contour;
-        }
-        
-        function simplifyContour(points, epsilon) {
-            if (points.length < 3) return points;
-            
-            // Find the point with maximum distance
-            let maxDist = 0;
-            let maxIndex = 0;
-            
-            const first = points[0];
-            const last = points[points.length - 1];
-            
-            for (let i = 1; i < points.length - 1; i++) {
-                const dist = pointToLineDistance(points[i], first, last);
-                if (dist > maxDist) {
-                    maxDist = dist;
-                    maxIndex = i;
-                }
-            }
-            
-            // If max distance is greater than epsilon, recursively simplify
-            if (maxDist > epsilon) {
-                const left = points.slice(0, maxIndex + 1);
-                const right = points.slice(maxIndex);
-                
-                const leftSimplified = simplifyContour(left, epsilon);
-                const rightSimplified = simplifyContour(right, epsilon);
-                
-                return leftSimplified.slice(0, -1).concat(rightSimplified);
-            } else {
-                // Return line segment
-                return [first, last];
-            }
-        }
-        
-        function pointToLineDistance(point, lineStart, lineEnd) {
-            const A = point.x - lineStart.x;
-            const B = point.y - lineStart.y;
-            const C = lineEnd.x - lineStart.x;
-            const D = lineEnd.y - lineStart.y;
-            
-            const dot = A * C + B * D;
-            const lenSq = C * C + D * D;
-            
-            let param = -1;
-            if (lenSq !== 0) {
-                param = dot / lenSq;
-            }
-            
-            let xx, yy;
-            if (param < 0) {
-                xx = lineStart.x;
-                yy = lineStart.y;
-            } else if (param > 1) {
-                xx = lineEnd.x;
-                yy = lineEnd.y;
-            } else {
-                xx = lineStart.x + param * C;
-                yy = lineStart.y + param * D;
-            }
-            
-            const dx = point.x - xx;
-            const dy = point.y - yy;
-            return Math.sqrt(dx * dx + dy * dy);
-        }
-        
-        function scaleAndCenterContour(contours, width, height, maxSizeCm) {
-            // Convert maxSize from cm to pixels (assuming 96 DPI)
-            const maxSizePx = (maxSizeCm / 2.54) * 96;
-            
-            // Find bounding box
-            let minX = Infinity, minY = Infinity;
-            let maxX = -Infinity, maxY = -Infinity;
-            
-            for (const point of contours) {
-                minX = Math.min(minX, point.x);
-                minY = Math.min(minY, point.y);
-                maxX = Math.max(maxX, point.x);
-                maxY = Math.max(maxY, point.y);
-            }
-            
-            // Calculate scale factor (maintain aspect ratio)
-            const widthPx = maxX - minX;
-            const heightPx = maxY - minY;
-            const maxDimension = Math.max(widthPx, heightPx);
-            const scaleFactor = maxSizePx / maxDimension;
-            
-            // Scale and center contours
-            const centerX = (minX + maxX) / 2;
-            const centerY = (minY + maxY) / 2;
-            
-            const scaledContours = contours.map(point => ({
-                x: (point.x - centerX) * scaleFactor,
-                y: (point.y - centerY) * scaleFactor
-            }));
-            
-            return scaledContours;
-        }
-        
-        function drawContour(contours) {
-            if (contours.length === 0) return;
-            
-            // Set canvas size
-            const padding = 20;
-            let minX = Infinity, minY = Infinity;
-            let maxX = -Infinity, maxY = -Infinity;
-            
-            for (const point of contours) {
-                minX = Math.min(minX, point.x);
-                minY = Math.min(minY, point.y);
-                maxX = Math.max(maxX, point.x);
-                maxY = Math.max(maxY, point.y);
-            }
-            
-            const width = maxX - minX + padding * 2;
-            const height = maxY - minY + padding * 2;
-            
-            contourDisplay.width = width;
-            contourDisplay.height = height;
-            contourDisplay.style.display = 'block';
-            
-            const ctx = contourDisplay.getContext('2d');
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = '#00c9ff';
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-            
-            // Draw contour
-            ctx.moveTo(contours[0].x - minX + padding, contours[0].y - minY + padding);
-            for (let i = 1; i < contours.length; i++) {
-                ctx.lineTo(contours[i].x - minX + padding, contours[i].y - minY + padding);
-            }
-            ctx.closePath();
-            ctx.stroke();
-        }
-        
-        async function processImage() {
-            if (!originalImage) return;
-            
-            // Show progress
-            progressContainer.style.display = 'block';
-            downloadSection.style.display = 'none';
-            processBtn.disabled = true;
-            
-            try {
-                updateProgress(10, 'Cargando imagen...');
-                await sleep(200);
-                
-                // Get image data
-                updateProgress(20, 'Procesando imagen...');
-                const imageData = getImageData(originalImage);
-                const width = imageData.width;
-                const height = imageData.height;
-                
-                updateProgress(30, 'Convirtiendo a escala de grises...');
-                const grayData = grayscale({...imageData});
-                await sleep(300);
-                
-                updateProgress(40, 'Aplicando filtro gaussiano...');
-                const blurredData = gaussianBlur({...grayData}, width, height, 1);
-                await sleep(300);
-                
-                updateProgress(50, 'Detectando bordes...');
-                const edgeData = sobelEdgeDetection({...blurredData}, width, height);
-                await sleep(400);
-                
-                updateProgress(60, 'Aplicando umbral...');
-                const thresholdData = threshold({...edgeData}, 50);
-                await sleep(300);
-                
-                updateProgress(70, 'Extrayendo contorno...');
-                contourPoints = findOuterContour({...thresholdData}, width, height);
-                await sleep(400);
-                
-                if (contourPoints.length < 3) {
-                    throw new Error('No se pudo detectar un contorno válido en la imagen');
-                }
-                
-                updateProgress(75, 'Simplificando contorno...');
-                contourPoints = simplifyContour(contourPoints, 1);
-                await sleep(300);
-                
-                updateProgress(80, 'Escalando contorno...');
-                const maxSize = parseFloat(sizeSlider.value);
-                contourPoints = scaleAndCenterContour(contourPoints, width, height, maxSize);
-                await sleep(300);
-                
-                // Draw contour for visualization
-                drawContour(contourPoints);
-                contourContainer.style.display = 'block';
-                
-                updateProgress(90, 'Generando archivo STL...');
-                const depth = parseFloat(depthSlider.value);
-                stlData = generateSTL(contourPoints, depth);
-                await sleep(300);
-                
-                updateProgress(100, '¡Proceso completado!');
-                await sleep(200);
-                
-                // Update result info
-                resultDepth.textContent = depth.toFixed(1);
-                resultSize.textContent = maxSize.toFixed(1);
-                
-                // Show download section
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    downloadSection.style.display = 'block';
-                }, 500);
-                
-                showNotification('¡Cortante 3D generado exitosamente!', 'success');
-            } catch (error) {
-                console.error('Error processing image:', error);
-                showNotification('Error al procesar la imagen: ' + error.message, 'error');
-                progressContainer.style.display = 'none';
-                processBtn.disabled = false;
-            }
-        }
-        
-        function generateSTL(contours, depth) {
-            if (contours.length < 3) return '';
-            
-            // Convert depth from cm to mm
-            const depthMm = depth * 10;
-            
-            // Create vertices for top and bottom faces
-            const topVertices = contours.map(point => ({
-                x: point.x,
-                y: point.y,
-                z: 0
-            }));
-            
-            const bottomVertices = contours.map(point => ({
-                x: point.x,
-                y: point.y,
-                z: -depthMm
-            }));
-            
-            // Generate STL content
-            let stl = 'solid cookie_cutter\n';
-            
-            // Top face (triangulate using fan method)
-            for (let i = 1; i < topVertices.length - 1; i++) {
-                const v1 = topVertices[0];
-                const v2 = topVertices[i];
-                const v3 = topVertices[i + 1];
-                
-                stl += 'facet normal 0 0 1\n';
-                stl += '  outer loop\n';
-                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
-                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                stl += '  endloop\n';
-                stl += 'endfacet\n';
-            }
-            
-            // Bottom face (reverse order for correct normal)
-            for (let i = bottomVertices.length - 2; i > 0; i--) {
-                const v1 = bottomVertices[0];
-                const v2 = bottomVertices[i];
-                const v3 = bottomVertices[i + 1];
-                
-                stl += 'facet normal 0 0 -1\n';
-                stl += '  outer loop\n';
-                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
-                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                stl += '  endloop\n';
-                stl += 'endfacet\n';
-            }
-            
-            // Side walls
-            for (let i = 0; i < contours.length; i++) {
-                const next = (i + 1) % contours.length;
-                
-                const v1 = topVertices[i];
-                const v2 = topVertices[next];
-                const v3 = bottomVertices[next];
-                const v4 = bottomVertices[i];
-                
-                // Calculate normal for side face
-                const dx = v2.x - v1.x;
-                const dy = v2.y - v1.y;
-                const length = Math.sqrt(dx * dx + dy * dy);
-                const nx = -dy / length;
-                const ny = dx / length;
-                
-                // First triangle
-                stl += `facet normal ${nx} ${ny} 0\n`;
-                stl += '  outer loop\n';
-                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
-                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                stl += '  endloop\n';
-                stl += 'endfacet\n';
-                
-                // Second triangle
-                stl += `facet normal ${nx} ${ny} 0\n`;
-                stl += '  outer loop\n';
-                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                stl += `    vertex ${v4.x} ${v4.y} ${v4.z}\n`;
-                stl += '  endloop\n';
-                stl += 'endfacet\n';
-            }
-            
-            stl += 'endsolid cookie_cutter\n';
-            return stl;
-        }
-        
-        function downloadSTL() {
-            if (!stlData) return;
-            
-            const blob = new Blob([stlData], { type: 'application/sla' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'cortante-galletas.stl';
-            document.body.appendChild(a);
-            a.click();
-            
-            // Clean up
-            setTimeout(() => {
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification('Descargando cortante STL...', 'success');
-        }
-        
-        function sleep(ms) {
-            return new Promise(resolve => setTimeout(resolve, ms));
-        }
-        
-        // Initialize slider values
-        depthValue.textContent = depthSlider.value;
-        sizeValue.textContent = sizeSlider.value;
-    </script>
+<div class="container">
+<h1 id="section-1">Análisis de Cookiecad: De la URL a la Impresión 3D</h1>
+<nav id="toc">
+<h3 id="section-0-1">Índice de Contenidos</h3>
+<ul>
+<li><a href="#section-introduccion">Introducción: ¿Es Posible Clonar una Aplicación Web Compleja?</a></li>
+<li><a href="#section-parametros-url">Descifrando la URL: ¿Qué son los Parámetros y Cómo los Usa Cookiecad?</a></li>
+<li><a href="#section-que-es-cookiecad">¿Qué es Cookiecad? La Herramienta que Transforma Imágenes en Objetos 3D</a></li>
+<li><a href="#section-caracteristicas-clave">Características Clave de Cookiecad Designer</a>
+<ul>
+<li><a href="#section-conversion-imagen">Conversión de Imagen a Cortador</a></li>
+<li><a href="#section-ajustes-cuchilla">Ajustes de la Cuchilla y Estructura</a></li>
+<li><a href="#section-impresion-sello">Funciones de Impresión (Imprint) y Sello</a></li>
+<li><a href="#section-compartir-diseno">Compartir y Colaborar Mediante Enlaces</a></li>
+</ul>
+</li>
+<li><a href="#section-guia-practica">Guía Práctica: Creando tu Primer Cortador de Galletas</a></li>
+<li><a href="#section-comunidad-soporte">Comunidad y Soporte: El Ecosistema de Cookiecad</a></li>
+<li><a href="#section-conclusion">Conclusión</a></li>
+</ul>
+</nav>
+<h2 id="section-introduccion">Introducción: ¿Es Posible Clonar una Aplicación Web Compleja?</h2>
+<p>La solicitud de clonar una página web como Cookiecad a partir de una URL es comprensible, pero es importante aclarar la naturaleza de esta tarea. Una aplicación web moderna como Cookiecad no es un simple documento HTML. Es un sistema complejo que incluye código de interfaz de usuario (frontend), lógica de servidor (backend) para procesar datos y generar modelos 3D, y bases de datos. La larga URL que proporcionaste es una brillante demostración de su funcionamiento: no contiene la aplicación en sí, sino un conjunto de instrucciones (parámetros) que le dicen a la aplicación existente cómo configurar un diseño específico.</p>
+<p>Clonar esta funcionalidad requeriría un equipo de desarrolladores y meses de trabajo. Sin embargo, este informe tiene como objetivo ofrecer algo igualmente valioso: un análisis profundo de cómo funciona Cookiecad, qué significan esos parámetros en la URL y cómo puedes utilizar todas sus potentes herramientas para dar vida a tus propias creaciones. En lugar de un clon, te proporcionaremos el conocimiento para dominar el original.</p>
+<h2 id="section-parametros-url">Descifrando la URL: ¿Qué son los Parámetros y Cómo los Usa Cookiecad?</h2>
+<p>Los <strong>parámetros de URL</strong> son fragmentos de información que se añaden al final de una URL para enviar datos a una página web. Comienzan con un signo de interrogación (`?`) y se estructuran como pares de `clave=valor`, separados por un ampersand (`&amp;`). Por ejemplo, en `http://ejemplo.com?producto=1234&amp;origen=google`, los parámetros son `producto` y `origen`.</p>
+<p>Estos parámetros se utilizan comúnmente para rastrear campañas de marketing, filtrar resultados de búsqueda o personalizar el contenido de una página. En el mundo del desarrollo web, a menudo se utilizan cookies para almacenar estos valores y recordarlos en futuras visitas, una técnica útil para, por ejemplo, rastrear la fuente de un cliente potencial (<a href="https://thespotforpardot.com/2015/08/06/how-to-use-cookies-to-capture-url-parameters/" target="_blank">The Spot for Pardot</a>).</p>
+<p>Cookiecad lleva este concepto a otro nivel. La URL que compartiste utiliza un único y extenso parámetro llamado `settings`. El valor de este parámetro es un objeto JSON que contiene todas y cada una de las configuraciones de tu diseño: el grosor de la cuchilla, la profundidad de la impresión, el tamaño del cortador, la forma del mango y mucho más. </p>
+<blockquote>Al codificar todo el estado del diseño en la URL, Cookiecad permite una de sus funciones más potentes: compartir un diseño completo y editable con solo copiar y pegar un enlace.</blockquote>
+<h2 id="section-que-es-cookiecad">¿Qué es Cookiecad? La Herramienta que Transforma Imágenes en Objetos 3D</h2>
+<p><strong>Cookiecad</strong> es una innovadora plataforma en línea, fundada por Nathan Apter y la chef de pastelería Melissa Kaye, diseñada para democratizar la creación de objetos 3D. Su principal producto, <a href="https://cookiecad.com/" target="_blank">Cookiecad Designer</a>, es una herramienta gratuita que permite a cualquier persona convertir una imagen 2D (como un dibujo, un logo o una foto) en un modelo 3D (un archivo STL) listo para ser impreso en una impresora 3D.</p>
+<p>Aunque su nombre sugiere un enfoque en cortadores de galletas, la aplicación es versátil y se utiliza para crear sellos para arcilla, plantillas (stencils), adornos para pasteles y otros objetos personalizados. Su gran ventaja es que elimina la necesidad de aprender software de diseño asistido por computadora (CAD), que suele ser complejo y costoso, abriendo las puertas de la impresión 3D a artistas, pasteleros, artesanos y aficionados.</p>
+<figure>
+<img alt="Cortadores de galletas y galletas horneadas" src="https://agents-download.skywork.ai/image/rt/e4171d8059cc564fe289341372d5210f.jpg" style="max-height: 280px; max-width: 100%;"/>
+<figcaption>Ejemplos de galletas horneadas junto a los cortadores 3D personalizados creados con Cookiecad</figcaption>
+</figure>
+<h2 id="section-caracteristicas-clave">Características Clave de Cookiecad Designer</h2>
+<p>Cookiecad Designer está repleto de funciones que ofrecen un control detallado sobre el modelo 3D final. A continuación, se detallan algunas de las más importantes, según la <a href="https://docs.cookiecad.com/cookiecad-designer/features-overview/" target="_blank">documentación oficial</a> y las discusiones de la comunidad.</p>
+<h3 id="section-conversion-imagen">Conversión de Imagen a Cortador</h3>
+<p>El núcleo de Cookiecad es su capacidad para interpretar imágenes. La herramienta funciona mejor con imágenes de alto contraste y bordes bien definidos, como dibujos lineales, siluetas o arte de estilo "página para colorear" (<a href="https://www.youtube.com/watch?v=f21swP3QJco" target="_blank">Cookiecad Basics - YouTube</a>). El usuario simplemente sube una imagen y la aplicación traza los contornos para generar la forma del cortador. Funciones como <strong>Edge Trace</strong> permiten crear bordes a partir de formas sólidas, mientras que <strong>Imprint</strong> se usa para dibujos lineales.</p>
+<h3 id="section-ajustes-cuchilla">Ajustes de la Cuchilla y Estructura</h3>
+<p>Una vez que se tiene la forma base, se pueden ajustar numerosos parámetros para perfeccionar el cortador:</p>
+<ul>
+<li><strong>Blade Thickness (Grosor de la cuchilla):</strong> Controla el grosor de la pared de corte. Los usuarios de la comunidad recomiendan valores como 0.4mm o 0.5mm para cortadores de arcilla finos (<a href="http://community.cookiecad.com/t/clay-cutter-settings/712" target="_blank">Cookiecad Community - Clay Cutter Settings</a>).</li>
+<li><strong>Extra Blade (Cuchilla de soporte):</strong> Añade una segunda pared exterior más corta para dar mayor resistencia al cortador. Se puede desactivar estableciendo su valor en 0.</li>
+<li><strong>Center Bar (Barra central):</strong> Proporciona estabilidad a cortadores grandes o conecta partes internas "flotantes" de un diseño (como el centro de una letra 'A' o un donut), ahorrando plástico y tiempo de impresión.</li>
+</ul>
+<h3 id="section-impresion-sello">Funciones de Impresión (Imprint) y Sello</h3>
+<p>Además de cortar, Cookiecad puede crear diseños que se imprimen sobre la masa o la arcilla.</p>
+<ul>
+<li><strong>Imprint Depth (Profundidad de impresión):</strong> Ajusta la altura de los detalles internos. Una profundidad mayor es para masas gruesas, mientras que una menor es ideal para fondant o pastas finas. Si se establece en 0, los detalles internos cortarán a la misma altura que la cuchilla principal, útil para formas como donuts (<a href="http://community.cookiecad.com/t/how-to-create-a-3d-printed-doughnut-cutter-with-center-cut-out-using-cookiecad/88" target="_blank">Cookiecad Community Guide</a>).</li>
+</ul>
+<figure>
+<img alt="Uso de un sello de galletas personalizado" src="https://agents-download.skywork.ai/image/rt/8eb8b5242a4e9bb122aef23b7743417a.jpg" style="max-height: 280px; max-width: 100%;"/>
+<figcaption>Demostración del uso de un sello personalizado para imprimir texto y diseños sobre la masa antes de hornear</figcaption>
+</figure>
+<h3 id="section-compartir-diseno">Compartir y Colaborar Mediante Enlaces</h3>
+<p>El botón <strong>Share</strong> es una de las funciones más destacadas. Al hacer clic, genera un enlace único que contiene todas las configuraciones del diseño actual. Este enlace se puede guardar como marcador o compartir con otros. Cualquiera que tenga el enlace puede ver el modelo, modificarlo y descargar el archivo STL. Esta característica es fundamental para la colaboración y para pedir ayuda en la comunidad, ya que permite a otros usuarios ver exactamente la configuración que está causando problemas (<a href="http://community.cookiecad.com/" target="_blank">Cookiecad Community</a>).</p>
+<h2 id="section-guia-practica">Guía Práctica: Creando tu Primer Cortador de Galletas</h2>
+<p>Crear un cortador personalizado es un proceso sorprendentemente sencillo. Basado en las guías oficiales de Cookiecad, los pasos generales son los siguientes:</p>
+<ol>
+<li><strong>Preparar la imagen:</strong> Elige o crea una imagen de dos colores (monocromática) con bordes claros. Puedes usar editores de imágenes gratuitos como Paint.net (Windows) o Pinta (Mac) para simplificar una foto o añadir un borde (<a href="https://docs.cookiecad.com/cookiecad-designer/how-to-guides/turn-a-photo-into-a-cutter/" target="_blank">Cookiecad Help Center Guide</a>). Evita detalles muy pequeños que puedan ser difíciles de imprimir en 3D.</li>
+<li><strong>Subir la imagen a Cookiecad:</strong> Ve a cookiecad.com y sube tu archivo de imagen.</li>
+<li><strong>Seleccionar el modo y ajustar:</strong> Elige si quieres un cortador simple, con impresión (imprint) o un sello. Ajusta parámetros como el tamaño, el grosor de la cuchilla y la profundidad de la impresión hasta que la vista previa se vea como deseas.</li>
+<li><strong>Añadir soportes si es necesario:</strong> Si tu diseño tiene partes internas desconectadas, usa la función "Center Bar" para unirlas.</li>
+<li><strong>Descargar el archivo STL:</strong> Una vez satisfecho con el diseño, puedes descargar el archivo STL de forma gratuita (requiere una cuenta). Este archivo se puede abrir en un software "slicer" (como Cura o PrusaSlicer) que lo preparará para tu impresora 3D.</li>
+</ol>
+<h2 id="section-comunidad-soporte">Comunidad y Soporte: El Ecosistema de Cookiecad</h2>
+<p>Cookiecad no es solo una herramienta, sino también una comunidad activa. Los <a href="http://community.cookiecad.com/" target="_blank">foros de la comunidad de Cookiecad</a> son un recurso invaluable donde los usuarios, desde principiantes hasta expertos, comparten sus diseños, piden ayuda para solucionar problemas de impresión y discuten los mejores ajustes para diferentes materiales como masa de galletas o arcilla polimérica.</p>
+<p>Cuando un usuario tiene un problema, como un error en el diseño o una impresión de mala calidad, los miembros de la comunidad y los propios desarrolladores a menudo piden que se comparta el enlace del diseño. Esto permite a otros cargar la configuración exacta y diagnosticar el problema de manera eficiente, demostrando el poder del sistema de compartición basado en URL.</p>
+<h2 id="section-conclusion">Conclusión</h2>
+<p>Si bien la clonación directa de una aplicación como Cookiecad es una tarea monumental, comprender su funcionamiento interno ofrece un poder similar. La URL que inicialmente parecía un simple enlace es, en realidad, la clave de la flexibilidad y el espíritu colaborativo de la plataforma, encapsulando un diseño completo en una cadena de texto.</p>
+<p>Cookiecad ha logrado simplificar un proceso complejo, permitiendo que la creatividad fluya sin las barreras del software técnico. Al entender sus características principales, desde los ajustes de la cuchilla hasta la función de compartir, cualquier persona puede transformar una simple idea o un dibujo en un objeto físico y funcional. Te animamos a explorar la herramienta, experimentar con sus ajustes y unirte a su vibrante comunidad para llevar tus proyectos de impresión 3D al siguiente nivel.</p>
+</div>
 </body>
 </html>
-```
