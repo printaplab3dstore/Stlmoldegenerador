@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Cortantes de Galletas 3D - Mejorado</title>
+    <title>Generador de Cortantes de Galletas 3D - Versión Final</title>
     <style>
         :root {
             --primary: #6a11cb;
@@ -156,6 +156,19 @@
             margin: 0 auto;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .contour-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .contour-canvas {
+            max-width: 100%;
+            max-height: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .settings-grid {
@@ -353,8 +366,8 @@
             animation: float 3s ease-in-out infinite;
         }
 
-        /* Hidden canvas for image processing */
-        #processing-canvas {
+        /* Hidden canvases for image processing */
+        #processing-canvas, #contour-canvas {
             display: none;
         }
     </style>
@@ -378,6 +391,11 @@
                 
                 <div class="preview-container" id="preview-container">
                     <img id="preview-image" class="preview-image" alt="Vista previa de la imagen">
+                </div>
+                
+                <div class="contour-container" id="contour-container" style="display: none;">
+                    <h3 class="card-title">🔍 Contorno Detectado</h3>
+                    <canvas id="contour-display" class="contour-canvas"></canvas>
                 </div>
             </div>
 
@@ -428,8 +446,9 @@
         </footer>
     </div>
 
-    <!-- Hidden canvas for image processing -->
+    <!-- Hidden canvases for image processing -->
     <canvas id="processing-canvas"></canvas>
+    <canvas id="contour-canvas"></canvas>
 
     <div class="notification" id="notification"></div>
 
@@ -439,6 +458,8 @@
         const fileInput = document.getElementById('file-input');
         const previewContainer = document.getElementById('preview-container');
         const previewImage = document.getElementById('preview-image');
+        const contourContainer = document.getElementById('contour-container');
+        const contourDisplay = document.getElementById('contour-display');
         const processBtn = document.getElementById('process-btn');
         const progressContainer = document.getElementById('progress-container');
         const progressFill = document.getElementById('progress-fill');
@@ -447,6 +468,7 @@
         const downloadBtn = document.getElementById('download-btn');
         const notification = document.getElementById('notification');
         const processingCanvas = document.getElementById('processing-canvas');
+        const contourCanvas = document.getElementById('contour-canvas');
         const resultDepth = document.getElementById('result-depth');
         const resultSize = document.getElementById('result-size');
         
@@ -519,6 +541,7 @@
             reader.onload = function(e) {
                 previewImage.src = e.target.result;
                 previewContainer.style.display = 'block';
+                contourContainer.style.display = 'none';
                 processBtn.disabled = false;
                 originalImage = new Image();
                 originalImage.src = e.target.result;
@@ -708,42 +731,71 @@
             return data;
         }
         
-        function findContours(data, width, height) {
+        function findOuterContour(data, width, height) {
             const pixels = data.data;
-            const visited = new Array(width * height).fill(false);
-            const contours = [];
+            const contour = [];
             
-            // Find contour points
-            for (let y = 1; y < height - 1; y++) {
-                for (let x = 1; x < width - 1; x++) {
-                    const idx = y * width + x;
-                    if (visited[idx]) continue;
-                    
-                    // Check if it's a contour point (black pixel with white neighbor)
-                    if (pixels[idx * 4] === 0) {
-                        for (let dy = -1; dy <= 1; dy++) {
-                            for (let dx = -1; dx <= 1; dx++) {
-                                if (dx === 0 && dy === 0) continue;
-                                const nIdx = (y + dy) * width + (x + dx);
-                                if (pixels[nIdx * 4] === 255) {
-                                    // Found contour point
-                                    contours.push({x, y});
-                                    visited[idx] = true;
-                                    break;
-                                }
-                            }
-                            if (visited[idx]) break;
-                        }
+            // Find the first black pixel (part of the shape)
+            let startX = -1, startY = -1;
+            for (let y = 0; y < height && startX === -1; y++) {
+                for (let x = 0; x < width && startX === -1; x++) {
+                    const idx = (y * width + x) * 4;
+                    if (pixels[idx] === 0) { // Black pixel
+                        startX = x;
+                        startY = y;
+                        break;
                     }
                 }
             }
             
-            // Simplify contour using Ramer-Douglas-Peucker algorithm
-            if (contours.length > 100) {
-                return simplifyContour(contours, 2);
+            if (startX === -1) return contour;
+            
+            // Moore neighborhood (8-connected)
+            const directions = [
+                [1, 0], [1, 1], [0, 1], [-1, 1],
+                [-1, 0], [-1, -1], [0, -1], [1, -1]
+            ];
+            
+            // Start contour tracing
+            let x = startX, y = startY;
+            let previousDir = 7; // Start looking left
+            let startFound = false;
+            
+            while (!startFound || (x !== startX || y !== startY)) {
+                contour.push({x, y});
+                
+                // Search for next boundary pixel
+                let found = false;
+                for (let i = 0; i < 8; i++) {
+                    const dirIndex = (previousDir + i) % 8;
+                    const [dx, dy] = directions[dirIndex];
+                    const nx = x + dx;
+                    const ny = y + dy;
+                    
+                    // Check bounds
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height) {
+                        const idx = (ny * width + nx) * 4;
+                        if (pixels[idx] === 0) { // Black pixel (part of shape)
+                            x = nx;
+                            y = ny;
+                            previousDir = (dirIndex + 5) % 8; // Next search direction
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!found) break;
+                
+                if (contour.length > 1 && x === startX && y === startY) {
+                    startFound = true;
+                }
+                
+                // Safety break to prevent infinite loops
+                if (contour.length > width * height) break;
             }
             
-            return contours;
+            return contour;
         }
         
         function simplifyContour(points, epsilon) {
@@ -810,7 +862,7 @@
             return Math.sqrt(dx * dx + dy * dy);
         }
         
-        function scaleContour(contours, width, height, maxSizeCm) {
+        function scaleAndCenterContour(contours, width, height, maxSizeCm) {
             // Convert maxSize from cm to pixels (assuming 96 DPI)
             const maxSizePx = (maxSizeCm / 2.54) * 96;
             
@@ -825,7 +877,7 @@
                 maxY = Math.max(maxY, point.y);
             }
             
-            // Calculate scale factor
+            // Calculate scale factor (maintain aspect ratio)
             const widthPx = maxX - minX;
             const heightPx = maxY - minY;
             const maxDimension = Math.max(widthPx, heightPx);
@@ -841,6 +893,43 @@
             }));
             
             return scaledContours;
+        }
+        
+        function drawContour(contours) {
+            if (contours.length === 0) return;
+            
+            // Set canvas size
+            const padding = 20;
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+            
+            for (const point of contours) {
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+                maxX = Math.max(maxX, point.x);
+                maxY = Math.max(maxY, point.y);
+            }
+            
+            const width = maxX - minX + padding * 2;
+            const height = maxY - minY + padding * 2;
+            
+            contourDisplay.width = width;
+            contourDisplay.height = height;
+            contourDisplay.style.display = 'block';
+            
+            const ctx = contourDisplay.getContext('2d');
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = '#00c9ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            // Draw contour
+            ctx.moveTo(contours[0].x - minX + padding, contours[0].y - minY + padding);
+            for (let i = 1; i < contours.length; i++) {
+                ctx.lineTo(contours[i].x - minX + padding, contours[i].y - minY + padding);
+            }
+            ctx.closePath();
+            ctx.stroke();
         }
         
         async function processImage() {
@@ -877,18 +966,26 @@
                 const thresholdData = threshold({...edgeData}, 50);
                 await sleep(300);
                 
-                updateProgress(70, 'Extrayendo contornos...');
-                contourPoints = findContours({...thresholdData}, width, height);
+                updateProgress(70, 'Extrayendo contorno...');
+                contourPoints = findOuterContour({...thresholdData}, width, height);
                 await sleep(400);
                 
                 if (contourPoints.length < 3) {
-                    throw new Error('No se pudieron detectar contornos suficientes en la imagen');
+                    throw new Error('No se pudo detectar un contorno válido en la imagen');
                 }
                 
-                updateProgress(80, 'Escalando contornos...');
-                const maxSize = parseFloat(sizeSlider.value);
-                contourPoints = scaleContour(contourPoints, width, height, maxSize);
+                updateProgress(75, 'Simplificando contorno...');
+                contourPoints = simplifyContour(contourPoints, 1);
                 await sleep(300);
+                
+                updateProgress(80, 'Escalando contorno...');
+                const maxSize = parseFloat(sizeSlider.value);
+                contourPoints = scaleAndCenterContour(contourPoints, width, height, maxSize);
+                await sleep(300);
+                
+                // Draw contour for visualization
+                drawContour(contourPoints);
+                contourContainer.style.display = 'block';
                 
                 updateProgress(90, 'Generando archivo STL...');
                 const depth = parseFloat(depthSlider.value);
@@ -918,6 +1015,11 @@
         }
         
         function generateSTL(contours, depth) {
+            if (contours.length < 3) return '';
+            
+            // Convert depth from cm to mm
+            const depthMm = depth * 10;
+            
             // Create vertices for top and bottom faces
             const topVertices = contours.map(point => ({
                 x: point.x,
@@ -928,52 +1030,40 @@
             const bottomVertices = contours.map(point => ({
                 x: point.x,
                 y: point.y,
-                z: -depth * 10  // Convert cm to mm
+                z: -depthMm
             }));
             
             // Generate STL content
             let stl = 'solid cookie_cutter\n';
             
-            // Top face (assuming contours form a closed shape)
-            if (topVertices.length >= 3) {
-                // Triangulate the top face using fan triangulation
-                for (let i = 1; i < topVertices.length - 1; i++) {
-                    const v1 = topVertices[0];
-                    const v2 = topVertices[i];
-                    const v3 = topVertices[i + 1];
-                    
-                    // Calculate normal (simplified)
-                    const normal = {x: 0, y: 0, z: 1};
-                    
-                    stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
-                    stl += '  outer loop\n';
-                    stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                    stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
-                    stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                    stl += '  endloop\n';
-                    stl += 'endfacet\n';
-                }
+            // Top face (triangulate using fan method)
+            for (let i = 1; i < topVertices.length - 1; i++) {
+                const v1 = topVertices[0];
+                const v2 = topVertices[i];
+                const v3 = topVertices[i + 1];
+                
+                stl += 'facet normal 0 0 1\n';
+                stl += '  outer loop\n';
+                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
+                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                stl += '  endloop\n';
+                stl += 'endfacet\n';
             }
             
-            // Bottom face
-            if (bottomVertices.length >= 3) {
-                // Triangulate the bottom face (reverse order for correct normal)
-                for (let i = bottomVertices.length - 2; i > 0; i--) {
-                    const v1 = bottomVertices[0];
-                    const v2 = bottomVertices[i];
-                    const v3 = bottomVertices[i + 1];
-                    
-                    // Calculate normal (simplified)
-                    const normal = {x: 0, y: 0, z: -1};
-                    
-                    stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
-                    stl += '  outer loop\n';
-                    stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
-                    stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
-                    stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
-                    stl += '  endloop\n';
-                    stl += 'endfacet\n';
-                }
+            // Bottom face (reverse order for correct normal)
+            for (let i = bottomVertices.length - 2; i > 0; i--) {
+                const v1 = bottomVertices[0];
+                const v2 = bottomVertices[i];
+                const v3 = bottomVertices[i + 1];
+                
+                stl += 'facet normal 0 0 -1\n';
+                stl += '  outer loop\n';
+                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
+                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                stl += '  endloop\n';
+                stl += 'endfacet\n';
             }
             
             // Side walls
@@ -985,16 +1075,15 @@
                 const v3 = bottomVertices[next];
                 const v4 = bottomVertices[i];
                 
-                // Calculate normal for side face (simplified)
+                // Calculate normal for side face
                 const dx = v2.x - v1.x;
                 const dy = v2.y - v1.y;
                 const length = Math.sqrt(dx * dx + dy * dy);
                 const nx = -dy / length;
                 const ny = dx / length;
-                const normal = {x: nx, y: ny, z: 0};
                 
                 // First triangle
-                stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                stl += `facet normal ${nx} ${ny} 0\n`;
                 stl += '  outer loop\n';
                 stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
                 stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
@@ -1003,7 +1092,7 @@
                 stl += 'endfacet\n';
                 
                 // Second triangle
-                stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                stl += `facet normal ${nx} ${ny} 0\n`;
                 stl += '  outer loop\n';
                 stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
                 stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
