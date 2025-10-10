@@ -1,12 +1,11 @@
 
-
 ```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Cortantes de Galletas 3D</title>
+    <title>Generador de Cortantes de Galletas 3D - Mejorado</title>
     <style>
         :root {
             --primary: #6a11cb;
@@ -147,6 +146,7 @@
         .preview-container {
             display: none;
             margin-top: 20px;
+            text-align: center;
         }
 
         .preview-image {
@@ -352,6 +352,11 @@
         .floating {
             animation: float 3s ease-in-out infinite;
         }
+
+        /* Hidden canvas for image processing */
+        #processing-canvas {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -409,7 +414,7 @@
                 
                 <div class="result-info">
                     <p>El cortante ha sido generado con éxito manteniendo la silueta perfecta de tu imagen.</p>
-                    <p><strong>Especificaciones:</strong> Profundidad de 1 cm | Largo máximo ajustado a 5 cm</p>
+                    <p><strong>Especificaciones:</strong> Profundidad de <span id="result-depth">1.0</span> cm | Largo máximo ajustado a <span id="result-size">5.0</span> cm</p>
                 </div>
                 
                 <button id="download-btn" class="btn">
@@ -422,6 +427,9 @@
             <p>Generador de Cortantes de Galletas 3D | Diseñado para impresoras 3D</p>
         </footer>
     </div>
+
+    <!-- Hidden canvas for image processing -->
+    <canvas id="processing-canvas"></canvas>
 
     <div class="notification" id="notification"></div>
 
@@ -438,6 +446,9 @@
         const downloadSection = document.getElementById('download-section');
         const downloadBtn = document.getElementById('download-btn');
         const notification = document.getElementById('notification');
+        const processingCanvas = document.getElementById('processing-canvas');
+        const resultDepth = document.getElementById('result-depth');
+        const resultSize = document.getElementById('result-size');
         
         // Settings elements
         const depthSlider = document.getElementById('depth');
@@ -448,6 +459,7 @@
         // State variables
         let originalImage = null;
         let stlData = null;
+        let contourPoints = [];
         
         // Event Listeners
         uploadArea.addEventListener('click', () => fileInput.click());
@@ -510,7 +522,9 @@
                 processBtn.disabled = false;
                 originalImage = new Image();
                 originalImage.src = e.target.result;
-                showNotification('Imagen cargada correctamente', 'success');
+                originalImage.onload = function() {
+                    showNotification('Imagen cargada correctamente', 'success');
+                };
             };
             reader.readAsDataURL(file);
         }
@@ -530,6 +544,305 @@
             progressText.textContent = message;
         }
         
+        // Image processing functions
+        function getImageData(image) {
+            const canvas = processingCanvas;
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas dimensions to match image
+            canvas.width = image.width;
+            canvas.height = image.height;
+            
+            // Draw image on canvas
+            ctx.drawImage(image, 0, 0);
+            
+            // Get image data
+            return ctx.getImageData(0, 0, canvas.width, canvas.height);
+        }
+        
+        function grayscale(data) {
+            const pixels = data.data;
+            for (let i = 0; i < pixels.length; i += 4) {
+                const r = pixels[i];
+                const g = pixels[i + 1];
+                const b = pixels[i + 2];
+                // Convert to grayscale using luminance formula
+                const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                pixels[i] = gray;
+                pixels[i + 1] = gray;
+                pixels[i + 2] = gray;
+            }
+            return data;
+        }
+        
+        function gaussianBlur(data, width, height, sigma = 1) {
+            const pixels = data.data;
+            const output = new Uint8ClampedArray(pixels.length);
+            
+            // Create Gaussian kernel
+            const kernelSize = Math.ceil(sigma * 3) * 2 + 1;
+            const kernel = new Array(kernelSize);
+            const half = Math.floor(kernelSize / 2);
+            let sum = 0;
+            
+            // Generate kernel
+            for (let i = 0; i < kernelSize; i++) {
+                const x = i - half;
+                const value = Math.exp(-(x * x) / (2 * sigma * sigma));
+                kernel[i] = value;
+                sum += value;
+            }
+            
+            // Normalize kernel
+            for (let i = 0; i < kernelSize; i++) {
+                kernel[i] /= sum;
+            }
+            
+            // Apply horizontal blur
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let r = 0, g = 0, b = 0;
+                    
+                    for (let k = 0; k < kernelSize; k++) {
+                        const px = x + k - half;
+                        if (px >= 0 && px < width) {
+                            const idx = (y * width + px) * 4;
+                            r += pixels[idx] * kernel[k];
+                            g += pixels[idx + 1] * kernel[k];
+                            b += pixels[idx + 2] * kernel[k];
+                        }
+                    }
+                    
+                    const idx = (y * width + x) * 4;
+                    output[idx] = r;
+                    output[idx + 1] = g;
+                    output[idx + 2] = b;
+                    output[idx + 3] = pixels[idx + 3];
+                }
+            }
+            
+            // Apply vertical blur
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let r = 0, g = 0, b = 0;
+                    
+                    for (let k = 0; k < kernelSize; k++) {
+                        const py = y + k - half;
+                        if (py >= 0 && py < height) {
+                            const idx = (py * width + x) * 4;
+                            r += output[idx] * kernel[k];
+                            g += output[idx + 1] * kernel[k];
+                            b += output[idx + 2] * kernel[k];
+                        }
+                    }
+                    
+                    const idx = (y * width + x) * 4;
+                    pixels[idx] = r;
+                    pixels[idx + 1] = g;
+                    pixels[idx + 2] = b;
+                }
+            }
+            
+            return data;
+        }
+        
+        function sobelEdgeDetection(data, width, height) {
+            const pixels = data.data;
+            const output = new Uint8ClampedArray(pixels.length);
+            
+            // Sobel kernels
+            const Gx = [
+                [-1, 0, 1],
+                [-2, 0, 2],
+                [-1, 0, 1]
+            ];
+            
+            const Gy = [
+                [-1, -2, -1],
+                [ 0,  0,  0],
+                [ 1,  2,  1]
+            ];
+            
+            // Apply Sobel operator
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    let gx = 0;
+                    let gy = 0;
+                    
+                    for (let ky = -1; ky <= 1; ky++) {
+                        for (let kx = -1; kx <= 1; kx++) {
+                            const idx = ((y + ky) * width + (x + kx)) * 4;
+                            const pixel = pixels[idx];
+                            gx += pixel * Gx[ky + 1][kx + 1];
+                            gy += pixel * Gy[ky + 1][kx + 1];
+                        }
+                    }
+                    
+                    // Calculate gradient magnitude
+                    const magnitude = Math.sqrt(gx * gx + gy * gy);
+                    const idx = (y * width + x) * 4;
+                    output[idx] = magnitude;
+                    output[idx + 1] = magnitude;
+                    output[idx + 2] = magnitude;
+                    output[idx + 3] = 255;
+                }
+            }
+            
+            // Copy output to data
+            for (let i = 0; i < pixels.length; i++) {
+                pixels[i] = output[i];
+            }
+            
+            return data;
+        }
+        
+        function threshold(data, thresholdValue = 100) {
+            const pixels = data.data;
+            for (let i = 0; i < pixels.length; i += 4) {
+                const value = pixels[i];
+                const binary = value > thresholdValue ? 255 : 0;
+                pixels[i] = binary;
+                pixels[i + 1] = binary;
+                pixels[i + 2] = binary;
+            }
+            return data;
+        }
+        
+        function findContours(data, width, height) {
+            const pixels = data.data;
+            const visited = new Array(width * height).fill(false);
+            const contours = [];
+            
+            // Find contour points
+            for (let y = 1; y < height - 1; y++) {
+                for (let x = 1; x < width - 1; x++) {
+                    const idx = y * width + x;
+                    if (visited[idx]) continue;
+                    
+                    // Check if it's a contour point (black pixel with white neighbor)
+                    if (pixels[idx * 4] === 0) {
+                        for (let dy = -1; dy <= 1; dy++) {
+                            for (let dx = -1; dx <= 1; dx++) {
+                                if (dx === 0 && dy === 0) continue;
+                                const nIdx = (y + dy) * width + (x + dx);
+                                if (pixels[nIdx * 4] === 255) {
+                                    // Found contour point
+                                    contours.push({x, y});
+                                    visited[idx] = true;
+                                    break;
+                                }
+                            }
+                            if (visited[idx]) break;
+                        }
+                    }
+                }
+            }
+            
+            // Simplify contour using Ramer-Douglas-Peucker algorithm
+            if (contours.length > 100) {
+                return simplifyContour(contours, 2);
+            }
+            
+            return contours;
+        }
+        
+        function simplifyContour(points, epsilon) {
+            if (points.length < 3) return points;
+            
+            // Find the point with maximum distance
+            let maxDist = 0;
+            let maxIndex = 0;
+            
+            const first = points[0];
+            const last = points[points.length - 1];
+            
+            for (let i = 1; i < points.length - 1; i++) {
+                const dist = pointToLineDistance(points[i], first, last);
+                if (dist > maxDist) {
+                    maxDist = dist;
+                    maxIndex = i;
+                }
+            }
+            
+            // If max distance is greater than epsilon, recursively simplify
+            if (maxDist > epsilon) {
+                const left = points.slice(0, maxIndex + 1);
+                const right = points.slice(maxIndex);
+                
+                const leftSimplified = simplifyContour(left, epsilon);
+                const rightSimplified = simplifyContour(right, epsilon);
+                
+                return leftSimplified.slice(0, -1).concat(rightSimplified);
+            } else {
+                // Return line segment
+                return [first, last];
+            }
+        }
+        
+        function pointToLineDistance(point, lineStart, lineEnd) {
+            const A = point.x - lineStart.x;
+            const B = point.y - lineStart.y;
+            const C = lineEnd.x - lineStart.x;
+            const D = lineEnd.y - lineStart.y;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            
+            let param = -1;
+            if (lenSq !== 0) {
+                param = dot / lenSq;
+            }
+            
+            let xx, yy;
+            if (param < 0) {
+                xx = lineStart.x;
+                yy = lineStart.y;
+            } else if (param > 1) {
+                xx = lineEnd.x;
+                yy = lineEnd.y;
+            } else {
+                xx = lineStart.x + param * C;
+                yy = lineStart.y + param * D;
+            }
+            
+            const dx = point.x - xx;
+            const dy = point.y - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function scaleContour(contours, width, height, maxSizeCm) {
+            // Convert maxSize from cm to pixels (assuming 96 DPI)
+            const maxSizePx = (maxSizeCm / 2.54) * 96;
+            
+            // Find bounding box
+            let minX = Infinity, minY = Infinity;
+            let maxX = -Infinity, maxY = -Infinity;
+            
+            for (const point of contours) {
+                minX = Math.min(minX, point.x);
+                minY = Math.min(minY, point.y);
+                maxX = Math.max(maxX, point.x);
+                maxY = Math.max(maxY, point.y);
+            }
+            
+            // Calculate scale factor
+            const widthPx = maxX - minX;
+            const heightPx = maxY - minY;
+            const maxDimension = Math.max(widthPx, heightPx);
+            const scaleFactor = maxSizePx / maxDimension;
+            
+            // Scale and center contours
+            const centerX = (minX + maxX) / 2;
+            const centerY = (minY + maxY) / 2;
+            
+            const scaledContours = contours.map(point => ({
+                x: (point.x - centerX) * scaleFactor,
+                y: (point.y - centerY) * scaleFactor
+            }));
+            
+            return scaledContours;
+        }
+        
         async function processImage() {
             if (!originalImage) return;
             
@@ -539,24 +852,55 @@
             processBtn.disabled = true;
             
             try {
-                // Simulate processing steps
-                updateProgress(20, 'Analizando bordes de la imagen...');
-                await sleep(800);
+                updateProgress(10, 'Cargando imagen...');
+                await sleep(200);
                 
-                updateProgress(40, 'Extrayendo silueta...');
-                await sleep(800);
+                // Get image data
+                updateProgress(20, 'Procesando imagen...');
+                const imageData = getImageData(originalImage);
+                const width = imageData.width;
+                const height = imageData.height;
                 
-                updateProgress(60, 'Generando geometría 3D...');
-                await sleep(1000);
-                
-                updateProgress(80, 'Creando archivo STL...');
-                await sleep(800);
-                
-                updateProgress(100, '¡Proceso completado!');
+                updateProgress(30, 'Convirtiendo a escala de grises...');
+                const grayData = grayscale({...imageData});
                 await sleep(300);
                 
-                // Generate mock STL data
-                stlData = generateMockSTL();
+                updateProgress(40, 'Aplicando filtro gaussiano...');
+                const blurredData = gaussianBlur({...grayData}, width, height, 1);
+                await sleep(300);
+                
+                updateProgress(50, 'Detectando bordes...');
+                const edgeData = sobelEdgeDetection({...blurredData}, width, height);
+                await sleep(400);
+                
+                updateProgress(60, 'Aplicando umbral...');
+                const thresholdData = threshold({...edgeData}, 50);
+                await sleep(300);
+                
+                updateProgress(70, 'Extrayendo contornos...');
+                contourPoints = findContours({...thresholdData}, width, height);
+                await sleep(400);
+                
+                if (contourPoints.length < 3) {
+                    throw new Error('No se pudieron detectar contornos suficientes en la imagen');
+                }
+                
+                updateProgress(80, 'Escalando contornos...');
+                const maxSize = parseFloat(sizeSlider.value);
+                contourPoints = scaleContour(contourPoints, width, height, maxSize);
+                await sleep(300);
+                
+                updateProgress(90, 'Generando archivo STL...');
+                const depth = parseFloat(depthSlider.value);
+                stlData = generateSTL(contourPoints, depth);
+                await sleep(300);
+                
+                updateProgress(100, '¡Proceso completado!');
+                await sleep(200);
+                
+                // Update result info
+                resultDepth.textContent = depth.toFixed(1);
+                resultSize.textContent = maxSize.toFixed(1);
                 
                 // Show download section
                 setTimeout(() => {
@@ -567,33 +911,109 @@
                 showNotification('¡Cortante 3D generado exitosamente!', 'success');
             } catch (error) {
                 console.error('Error processing image:', error);
-                showNotification('Error al procesar la imagen. Inténtalo de nuevo.', 'error');
+                showNotification('Error al procesar la imagen: ' + error.message, 'error');
                 progressContainer.style.display = 'none';
                 processBtn.disabled = false;
             }
         }
         
-        function generateMockSTL() {
-            // In a real implementation, this would generate actual STL data
-            // based on image processing and 3D extrusion
+        function generateSTL(contours, depth) {
+            // Create vertices for top and bottom faces
+            const topVertices = contours.map(point => ({
+                x: point.x,
+                y: point.y,
+                z: 0
+            }));
             
-            // For this demo, we'll create a simple placeholder STL
-            return `solid cookie_cutter
-facet normal 0 0 -1
-  outer loop
-    vertex 0 0 0
-    vertex 50 0 0
-    vertex 50 50 0
-  endloop
-endfacet
-facet normal 0 0 -1
-  outer loop
-    vertex 0 0 0
-    vertex 50 50 0
-    vertex 0 50 0
-  endloop
-endfacet
-endsolid cookie_cutter`;
+            const bottomVertices = contours.map(point => ({
+                x: point.x,
+                y: point.y,
+                z: -depth * 10  // Convert cm to mm
+            }));
+            
+            // Generate STL content
+            let stl = 'solid cookie_cutter\n';
+            
+            // Top face (assuming contours form a closed shape)
+            if (topVertices.length >= 3) {
+                // Triangulate the top face using fan triangulation
+                for (let i = 1; i < topVertices.length - 1; i++) {
+                    const v1 = topVertices[0];
+                    const v2 = topVertices[i];
+                    const v3 = topVertices[i + 1];
+                    
+                    // Calculate normal (simplified)
+                    const normal = {x: 0, y: 0, z: 1};
+                    
+                    stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                    stl += '  outer loop\n';
+                    stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                    stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
+                    stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                    stl += '  endloop\n';
+                    stl += 'endfacet\n';
+                }
+            }
+            
+            // Bottom face
+            if (bottomVertices.length >= 3) {
+                // Triangulate the bottom face (reverse order for correct normal)
+                for (let i = bottomVertices.length - 2; i > 0; i--) {
+                    const v1 = bottomVertices[0];
+                    const v2 = bottomVertices[i];
+                    const v3 = bottomVertices[i + 1];
+                    
+                    // Calculate normal (simplified)
+                    const normal = {x: 0, y: 0, z: -1};
+                    
+                    stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                    stl += '  outer loop\n';
+                    stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                    stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
+                    stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                    stl += '  endloop\n';
+                    stl += 'endfacet\n';
+                }
+            }
+            
+            // Side walls
+            for (let i = 0; i < contours.length; i++) {
+                const next = (i + 1) % contours.length;
+                
+                const v1 = topVertices[i];
+                const v2 = topVertices[next];
+                const v3 = bottomVertices[next];
+                const v4 = bottomVertices[i];
+                
+                // Calculate normal for side face (simplified)
+                const dx = v2.x - v1.x;
+                const dy = v2.y - v1.y;
+                const length = Math.sqrt(dx * dx + dy * dy);
+                const nx = -dy / length;
+                const ny = dx / length;
+                const normal = {x: nx, y: ny, z: 0};
+                
+                // First triangle
+                stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                stl += '  outer loop\n';
+                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                stl += `    vertex ${v2.x} ${v2.y} ${v2.z}\n`;
+                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                stl += '  endloop\n';
+                stl += 'endfacet\n';
+                
+                // Second triangle
+                stl += `facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                stl += '  outer loop\n';
+                stl += `    vertex ${v1.x} ${v1.y} ${v1.z}\n`;
+                stl += `    vertex ${v3.x} ${v3.y} ${v3.z}\n`;
+                stl += `    vertex ${v4.x} ${v4.y} ${v4.z}\n`;
+                stl += '  endloop\n';
+                stl += 'endfacet\n';
+            }
+            
+            stl += 'endsolid cookie_cutter\n';
+            return stl;
         }
         
         function downloadSTL() {
