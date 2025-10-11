@@ -253,6 +253,213 @@
             margin: 0 auto 2rem;
         }
 
+        /* Carousel Section */
+        .carousel-section {
+            margin-bottom: 4rem;
+            padding: 2rem 0;
+        }
+
+        .carousel-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .carousel-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+            font-size: 1.125rem;
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            border-radius: 24px;
+            padding: 2rem;
+            overflow: hidden;
+        }
+
+        .carousel-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0.4;
+            animation: borderGlow 4s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .carousel-track {
+            display: flex;
+            width: 300%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .carousel-slide {
+            width: 33.333%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-slide:hover img {
+            transform: scale(1.05);
+        }
+
+        .carousel-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 2rem;
+            color: white;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .carousel-slide:hover .carousel-overlay {
+            transform: translateY(0);
+        }
+
+        .carousel-overlay h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .carousel-overlay p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .carousel-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .carousel-link:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Carousel Controls */
+        .carousel-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .carousel-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--text-primary);
+            font-size: 1.2rem;
+        }
+
+        .carousel-btn:hover {
+            background: var(--bg-card);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .carousel-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .carousel-indicators {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .carousel-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--border-primary);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+
+        .carousel-indicator.active {
+            background: var(--primary);
+            transform: scale(1.2);
+        }
+
+        .carousel-indicator:hover {
+            background: var(--secondary);
+        }
+
+        /* Auto-play indicator */
+        .carousel-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 3px;
+            background: var(--primary);
+            transition: width 0.1s linear;
+            border-radius: 0 0 16px 16px;
+        }
+
         /* Social Links */
         .social-section {
             margin-bottom: 4rem;
@@ -430,11 +637,6 @@
             z-index: -1;
             opacity: 0.5;
             animation: borderGlow 4s linear infinite;
-        }
-
-        @keyframes borderGlow {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.7; }
         }
 
         .calculator-header {
@@ -803,6 +1005,19 @@
             .result-actions {
                 flex-direction: column;
             }
+
+            .carousel-wrapper {
+                height: 300px;
+            }
+
+            .carousel-container {
+                padding: 1rem;
+            }
+
+            .carousel-controls {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
         }
 
         /* Animations */
@@ -881,6 +1096,68 @@
                 Tu tienda de impresión 3D de confianza. Calculadora profesional de costos FDM 
                 y recursos para makers.
             </p>
+        </section>
+
+        <!-- Carousel Section -->
+        <section class="carousel-section">
+            <h2 class="carousel-title">🏆 Nuestros Mejores Diseños</h2>
+            <p class="carousel-subtitle">Descubre nuestras creaciones más populares en Cults3D</p>
+            
+            <div class="carousel-container">
+                <div class="carousel-wrapper">
+                    <div class="carousel-track" id="carouselTrack">
+                        <div class="carousel-slide">
+                            <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/arte-funcional.jpg" alt="Pack Coquí Macho y Hembra" loading="lazy">
+                            <div class="carousel-overlay">
+                                <h3>🐸 Pack Coquí Articulado</h3>
+                                <p>Figuras articuladas de coquí macho y hembra, símbolo de Puerto Rico. Diseño sin soportes y completamente funcional.</p>
+                                <a href="https://cults3d.com/es/modelo-3d/variado/pack-coqui-macho-y-hembra-figuras-articuladas-en-3d" target="_blank" class="carousel-link">
+                                    Ver en Cults3D →
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-slide">
+                            <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/combo-cocina.jpg" alt="Combo Cocina Boricua" loading="lazy">
+                            <div class="carousel-overlay">
+                                <h3>🍽️ Combo Cocina Boricua</h3>
+                                <p>Set completo de cocina puertorriqueña: cafetera italiana, olla arrocera y más. Perfecto para la cocina tradicional.</p>
+                                <a href="https://cults3d.com/es/modelo-3d/variado/combo-cocina-boricua-con-patitas-cafetera-italiana-olla-arrocera" target="_blank" class="carousel-link">
+                                    Ver en Cults3D →
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="carousel-slide">
+                            <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/coqui-lampara.jpg" alt="Lámpara Coquí Puertorriqueño" loading="lazy">
+                            <div class="carousel-overlay">
+                                <h3>💡 Lámpara Coquí LED</h3>
+                                <p>Lámpara decorativa con diseño de coquí puertorriqueño. Articulado y sin necesidad de soportes para impresión.</p>
+                                <a href="https://cults3d.com/es/modelo-3d/variado/lampara-coqui-puertorriqueno-diseno-articulado-y-sin-soportes" target="_blank" class="carousel-link">
+                                    Ver en Cults3D →
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-progress" id="carouselProgress"></div>
+                </div>
+                
+                <div class="carousel-controls">
+                    <button class="carousel-btn" id="prevBtn" onclick="previousSlide()" aria-label="Anterior">
+                        ←
+                    </button>
+                    
+                    <div class="carousel-indicators">
+                        <div class="carousel-indicator active" onclick="goToSlide(0)"></div>
+                        <div class="carousel-indicator" onclick="goToSlide(1)"></div>
+                        <div class="carousel-indicator" onclick="goToSlide(2)"></div>
+                    </div>
+                    
+                    <button class="carousel-btn" id="nextBtn" onclick="nextSlide()" aria-label="Siguiente">
+                        →
+                    </button>
+                </div>
+            </div>
         </section>
 
         <section class="social-section">
@@ -1088,6 +1365,13 @@
         let currentTheme = 'dark';
         let lastCalculation = null;
 
+        // Variables del carrusel
+        let currentSlide = 0;
+        let carouselInterval;
+        let progressInterval;
+        const totalSlides = 3;
+        const autoPlayDuration = 5000; // 5 segundos
+
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
             initializeFloatingElements();
@@ -1095,6 +1379,7 @@
             loadSavedTheme();
             loadSavedConfiguration();
             addScrollAnimations();
+            initializeCarousel();
         });
 
         // Elementos flotantes
@@ -1111,6 +1396,74 @@
                 container.appendChild(element);
             }
         }
+
+        // Funciones del carrusel
+        function initializeCarousel() {
+            startAutoPlay();
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            const track = document.getElementById('carouselTrack');
+            const indicators = document.querySelectorAll('.carousel-indicator');
+            
+            // Mover el track
+            track.style.transform = `translateX(-${currentSlide * 33.333}%)`;
+            
+            // Actualizar indicadores
+            indicators.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === currentSlide);
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateCarousel();
+            resetAutoPlay();
+        }
+
+        function startAutoPlay() {
+            let progress = 0;
+            const progressBar = document.getElementById('carouselProgress');
+            
+            carouselInterval = setInterval(() => {
+                nextSlide();
+                progress = 0;
+                progressBar.style.width = '0%';
+            }, autoPlayDuration);
+
+            // Barra de progreso
+            progressInterval = setInterval(() => {
+                progress += 100 / (autoPlayDuration / 100);
+                progressBar.style.width = Math.min(progress, 100) + '%';
+            }, 100);
+        }
+
+        function stopAutoPlay() {
+            clearInterval(carouselInterval);
+            clearInterval(progressInterval);
+        }
+
+        function resetAutoPlay() {
+            stopAutoPlay();
+            startAutoPlay();
+        }
+
+        // Pausar autoplay al hacer hover
+        document.querySelector('.carousel-container').addEventListener('mouseenter', stopAutoPlay);
+        document.querySelector('.carousel-container').addEventListener('mouseleave', startAutoPlay);
 
         // Toggle de tema mejorado
         function toggleTheme() {
@@ -1525,7 +1878,7 @@ Calculadora de Costos FDM v2.0
                 });
             }, { threshold: 0.1 });
 
-            document.querySelectorAll('.social-card, .calculator-section').forEach(el => {
+            document.querySelectorAll('.social-card, .calculator-section, .carousel-section').forEach(el => {
                 observer.observe(el);
             });
         }
@@ -1534,6 +1887,13 @@ Calculadora de Costos FDM v2.0
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
                 document.getElementById('result').classList.remove('show');
+            }
+            
+            // Navegación del carrusel con teclado
+            if (e.key === 'ArrowLeft') {
+                previousSlide();
+            } else if (e.key === 'ArrowRight') {
+                nextSlide();
             }
             
             if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
@@ -1570,6 +1930,32 @@ Calculadora de Costos FDM v2.0
                 }
             });
         });
+
+        // Soporte para gestos táctiles en el carrusel
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.querySelector('.carousel-wrapper').addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        document.querySelector('.carousel-wrapper').addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleGesture();
+        });
+
+        function handleGesture() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    nextSlide(); // Swipe left - next slide
+                } else {
+                    previousSlide(); // Swipe right - previous slide
+                }
+            }
+        }
     </script>
 </body>
 </html>
