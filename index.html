@@ -1,303 +1,1575 @@
-<!DOCTYPE html>
 
+<!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Análisis de Cookiecad: De la URL a la Impresión 3D</title>
-<style>.container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 24px 40px;
-    background-color: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    }
-.chart-container {
-    position: relative;
-    margin: 3em auto;
-    max-width: 700px;
-    min-height: 200px;
-    max-height: 400px;
-    width: 100%;
-    height: auto;
-    overflow: visible;
-    }
-h5 {
-    font-size: 16px;
-    }
-body {
-    font-family: "Georgia", "Times New Roman", Times, serif;
-    line-height: 1.8;
-    font-size: 16px;
-    color: #333;
-    background-color: #fafafa;
-    margin: 0 24px 0 24px;
-    padding: 0;
-    max-width: None;
-    }
-h1, h2, h3, h4 {
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    line-height: 1.3;
-    font-weight: 700;
-    font-size: 28px;
-    margin-top: 24px;
-    margin-bottom: 20px;
-    }
-h1 {
-    font-size: 28px;
-    margin-bottom: 20px;
-    margin-top: 24px;
-    }
-h2 {
-    font-size: 22px;
-    margin-top: 2em;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 0.3em;
-    }
-h3 {
-    font-size: 20px;
-    margin-top: 1.5em;
-    }
-p {
-    margin-bottom: 1.2em;
-    }
-a {
-    color: #1a0dab;
-    text-decoration: none;
-    }
-a:hover {
-    text-decoration: underline;
-    }
-blockquote {
-    border-left: 3px solid #ccc;
-    padding-left: 20px;
-    margin-left: 0;
-    font-style: italic;
-    color: #666;
-    }
-figure {
-    margin: 2em 0;
-    text-align: center;
-    }
-img {
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    display: block;
-    overflow: hidden;
-    max-height: 280px;
-    margin: 1em auto;
-    }
-figcaption {
-    font-size: 0.9em;
-    color: #777;
-    margin-top: 0.5em;
-    font-style: italic;
-    }
-ul, ol {
-    padding-left: 20px;
-    }
-strong {
-    font-weight: bold;
-    }
-#toc {
-    border: 1px solid #e0e0e0;
-    background-color: #f9f9f9;
-    padding: 15px 20px;
-    margin-bottom: 2em;
-    border-radius: 5px;
-    }
-#toc h3 {
-    margin-top: 0;
-    }
-#toc ul {
-    list-style-type: none;
-    padding-left: 0;
-    }
-#toc ul li {
-    margin-bottom: 0.5em;
-    }
-#toc ul ul {
-    padding-left: 20px;
-    margin-top: 0.5em;
-    }
-@media only screen and (max-device-width: 768px) {
-            body {
-                padding: 0;
-                margin: 0;
-                font-family: PingFang SC;
-                font-size: 15px;
-                line-height: 1.5;
-            }
-
-            .container {
-                padding: 0;
-                margin: 16px 20px 30px;
-                box-shadow: none;
-            }
-
-            h1,
-            h2,
-            h3,
-            h4 {
-                font-family: PingFang SC;
-            }
-
-            h1 {
-                font-size: 1.87em;
-                line-height: 1.6;
-                margin-bottom: 0.5em;
-                text-align: center;
-            }
-
-            h2 {
-                font-size: 1.6em;
-                font-weight: 600;
-                margin-top: 1.3em;
-                margin-bottom: 0.8em;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 0.5em;
-            }
-
-            h3 {
-                font-size: 1.2em;
-                font-weight: 600;
-                margin-top: 1em;
-                margin-bottom: 0.6em;
-            }
-
-            h4 {
-                font-size: 1.1em;
-                font-weight: 500;
-                margin-top: 1em;
-                margin-bottom: 0.5em;
-                font-style: normal;
-            }
-
-            h5 {
-                font-size: 1em;
-                font-weight: 500;
-                margin-bottom: 1.2em;
-            }
-
-            ul,
-            ol {
-                font-size: 1em; /* Equivalent to 17.6px if base is 16px */
-                font-weight: 400;
-                margin-bottom: 1.2em;
-                line-height: 1.8;
-            }
-
-            p {
-                font-size: 1em;
-                line-height: 1.8; /* Equivalent to 17.6px if base is 16px */
-                font-weight: 400;
-                margin-top: 0.8em;
-                margin-bottom: 0.8em;
-            }
-
-            blockquote {
-                padding: 1em 1.2em;
-
-            p {
-                margin: 0;
-            }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>PRINTAPLAB 3D STORE - Calculadora de Costos FDM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Colores principales */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            
+            /* Backgrounds */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #16213e;
+            --bg-card: rgba(255, 255, 255, 0.05);
+            --bg-glass: rgba(255, 255, 255, 0.08);
+            
+            /* Text colors */
+            --text-primary: #ffffff;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --text-accent: #38bdf8;
+            
+            /* Borders */
+            --border-primary: rgba(255, 255, 255, 0.1);
+            --border-accent: rgba(99, 102, 241, 0.3);
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.3);
+            
+            /* Transitions */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
         }
 
-        figcaption {
-            margin-top: 0.5em;
-            font-size: 0.8em; /* Equivalent to 17.6px if base is 16px */
-            font-weight: 400;
-            text-align: center;
-            font-style: normal;
-            color: #7F8896;
+        [data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f5f9;
+            --bg-card: rgba(255, 255, 255, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.9);
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #64748b;
+            --border-primary: rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
         }
 
-        img {
-            display: block;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+            transition: all var(--transition-normal);
+        }
+
+        /* Background Animation */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%, var(--bg-primary) 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* Floating Elements */
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
             overflow: hidden;
-            max-width: 100%;
-            max-height: 335px;
-            margin: 1em auto;
+        }
+
+        .floating-element {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 12s infinite linear;
+        }
+
+        .floating-element:nth-child(2n) { background: var(--secondary); animation-duration: 15s; }
+        .floating-element:nth-child(3n) { background: var(--accent); animation-duration: 18s; }
+        .floating-element:nth-child(4n) { background: var(--success); animation-duration: 10s; }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10%, 90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-primary);
+            padding: 1rem 0;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .logo-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 50px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-glass);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            margin-bottom: 3rem;
+        }
+
+        .hero-title {
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 20px rgba(99, 102, 241, 0.3)); }
+            100% { filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5)); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .hero-description {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Social Links */
+        .social-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2rem;
+        }
+
+        .social-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+            transition: all var(--transition-normal);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .social-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .social-card:hover::before {
+            left: 100%;
+        }
+
+        .social-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: var(--border-accent);
+        }
+
+        .social-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .social-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            transition: transform var(--transition-normal);
+        }
+
+        .social-card:hover .social-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .social-card.ciciai .social-icon { background: linear-gradient(135deg, #4caf50, #66bb6a); }
+        .social-card.cults3d .social-icon { background: linear-gradient(135deg, #ff9800, #ffb74d); }
+        .social-card.tiktok .social-icon { background: linear-gradient(135deg, #000000, #25f4ee); }
+        .social-card.instagram .social-icon { background: linear-gradient(135deg, #e91e63, #f44336, #9c27b0); }
+        .social-card.fdm-guide .social-icon { background: linear-gradient(135deg, #3f51b5, #673ab7); }
+
+        .social-card-title {
+            font-weight: 600;
+            font-size: 1.125rem;
+        }
+
+        .social-card-description {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Special Button */
+        .special-section {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .special-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            transition: all var(--transition-normal);
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .special-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--secondary), var(--accent));
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .special-button:hover::before {
+            opacity: 1;
+        }
+
+        .special-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .special-button-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .special-button-icon {
+            font-size: 1.5rem;
+            transition: transform var(--transition-normal);
+        }
+
+        .special-button:hover .special-button-icon {
+            transform: rotate(360deg);
+        }
+
+        /* Calculator Section */
+        .calculator-section {
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculator-section::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent), var(--primary));
+            border-radius: 24px;
+            z-index: -1;
+            opacity: 0.5;
+            animation: borderGlow 4s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.7; }
+        }
+
+        .calculator-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .calculator-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .calculator-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        .calculator-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-btn:hover {
+            background: var(--bg-card);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* Form Styles */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 0.875rem;
+        }
+
+        .tooltip {
+            cursor: help;
+            color: var(--text-accent);
+            position: relative;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: all var(--transition-normal);
+            z-index: 1000;
+            border: 1px solid var(--border-primary);
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-primary);
+            border-radius: 12px;
+            background: var(--bg-glass);
+            color: var(--text-primary);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all var(--transition-normal);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: var(--bg-card);
+        }
+
+        .form-input.error {
+            border-color: var(--error);
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
+
+        .form-input.success {
+            border-color: var(--success);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+
+        .error-message {
+            color: var(--error);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+            opacity: 0;
+            transition: opacity var(--transition-normal);
+        }
+
+        .error-message.show {
+            opacity: 1;
+        }
+
+        /* Calculate Button */
+        .calculate-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 1.25rem 3rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            display: block;
+            margin: 2rem auto 0;
+            box-shadow: var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .calculate-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .calculate-btn:hover::before {
+            left: 100%;
+        }
+
+        .calculate-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .calculate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Loading */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-primary);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Results */
+        .result {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-accent);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-top: 2rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all var(--transition-slow);
+        }
+
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .result-amount {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--success);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .result-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: 12px;
+            padding: 0.75rem 1.25rem;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-glass);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .cost-breakdown {
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-primary);
+        }
+
+        .cost-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--border-primary);
+            transition: all var(--transition-normal);
+        }
+
+        .cost-item:hover {
+            background: var(--bg-glass);
+            margin: 0 -0.75rem;
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
             border-radius: 8px;
         }
-        }</style>
+
+        .cost-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.125rem;
+            color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+            margin: 0.5rem -0.75rem -0.75rem;
+            padding: 1rem 0.75rem;
+            border-radius: 8px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-primary);
+            margin-top: 4rem;
+            color: var(--text-muted);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .footer-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header-content {
+                padding: 0 1rem;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 0;
+            }
+
+            .calculator-section {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .social-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calculator-controls {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .result-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Accessibility */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        *:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Success/Error States */
+        .success-state {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--success);
+        }
+
+        .error-state {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--error);
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-<h1 id="section-1">Análisis de Cookiecad: De la URL a la Impresión 3D</h1>
-<nav id="toc">
-<h3 id="section-0-1">Índice de Contenidos</h3>
-<ul>
-<li><a href="#section-introduccion">Introducción: ¿Es Posible Clonar una Aplicación Web Compleja?</a></li>
-<li><a href="#section-parametros-url">Descifrando la URL: ¿Qué son los Parámetros y Cómo los Usa Cookiecad?</a></li>
-<li><a href="#section-que-es-cookiecad">¿Qué es Cookiecad? La Herramienta que Transforma Imágenes en Objetos 3D</a></li>
-<li><a href="#section-caracteristicas-clave">Características Clave de Cookiecad Designer</a>
-<ul>
-<li><a href="#section-conversion-imagen">Conversión de Imagen a Cortador</a></li>
-<li><a href="#section-ajustes-cuchilla">Ajustes de la Cuchilla y Estructura</a></li>
-<li><a href="#section-impresion-sello">Funciones de Impresión (Imprint) y Sello</a></li>
-<li><a href="#section-compartir-diseno">Compartir y Colaborar Mediante Enlaces</a></li>
-</ul>
-</li>
-<li><a href="#section-guia-practica">Guía Práctica: Creando tu Primer Cortador de Galletas</a></li>
-<li><a href="#section-comunidad-soporte">Comunidad y Soporte: El Ecosistema de Cookiecad</a></li>
-<li><a href="#section-conclusion">Conclusión</a></li>
-</ul>
-</nav>
-<h2 id="section-introduccion">Introducción: ¿Es Posible Clonar una Aplicación Web Compleja?</h2>
-<p>La solicitud de clonar una página web como Cookiecad a partir de una URL es comprensible, pero es importante aclarar la naturaleza de esta tarea. Una aplicación web moderna como Cookiecad no es un simple documento HTML. Es un sistema complejo que incluye código de interfaz de usuario (frontend), lógica de servidor (backend) para procesar datos y generar modelos 3D, y bases de datos. La larga URL que proporcionaste es una brillante demostración de su funcionamiento: no contiene la aplicación en sí, sino un conjunto de instrucciones (parámetros) que le dicen a la aplicación existente cómo configurar un diseño específico.</p>
-<p>Clonar esta funcionalidad requeriría un equipo de desarrolladores y meses de trabajo. Sin embargo, este informe tiene como objetivo ofrecer algo igualmente valioso: un análisis profundo de cómo funciona Cookiecad, qué significan esos parámetros en la URL y cómo puedes utilizar todas sus potentes herramientas para dar vida a tus propias creaciones. En lugar de un clon, te proporcionaremos el conocimiento para dominar el original.</p>
-<h2 id="section-parametros-url">Descifrando la URL: ¿Qué son los Parámetros y Cómo los Usa Cookiecad?</h2>
-<p>Los <strong>parámetros de URL</strong> son fragmentos de información que se añaden al final de una URL para enviar datos a una página web. Comienzan con un signo de interrogación (`?`) y se estructuran como pares de `clave=valor`, separados por un ampersand (`&amp;`). Por ejemplo, en `http://ejemplo.com?producto=1234&amp;origen=google`, los parámetros son `producto` y `origen`.</p>
-<p>Estos parámetros se utilizan comúnmente para rastrear campañas de marketing, filtrar resultados de búsqueda o personalizar el contenido de una página. En el mundo del desarrollo web, a menudo se utilizan cookies para almacenar estos valores y recordarlos en futuras visitas, una técnica útil para, por ejemplo, rastrear la fuente de un cliente potencial (<a href="https://thespotforpardot.com/2015/08/06/how-to-use-cookies-to-capture-url-parameters/" target="_blank">The Spot for Pardot</a>).</p>
-<p>Cookiecad lleva este concepto a otro nivel. La URL que compartiste utiliza un único y extenso parámetro llamado `settings`. El valor de este parámetro es un objeto JSON que contiene todas y cada una de las configuraciones de tu diseño: el grosor de la cuchilla, la profundidad de la impresión, el tamaño del cortador, la forma del mango y mucho más. </p>
-<blockquote>Al codificar todo el estado del diseño en la URL, Cookiecad permite una de sus funciones más potentes: compartir un diseño completo y editable con solo copiar y pegar un enlace.</blockquote>
-<h2 id="section-que-es-cookiecad">¿Qué es Cookiecad? La Herramienta que Transforma Imágenes en Objetos 3D</h2>
-<p><strong>Cookiecad</strong> es una innovadora plataforma en línea, fundada por Nathan Apter y la chef de pastelería Melissa Kaye, diseñada para democratizar la creación de objetos 3D. Su principal producto, <a href="https://cookiecad.com/" target="_blank">Cookiecad Designer</a>, es una herramienta gratuita que permite a cualquier persona convertir una imagen 2D (como un dibujo, un logo o una foto) en un modelo 3D (un archivo STL) listo para ser impreso en una impresora 3D.</p>
-<p>Aunque su nombre sugiere un enfoque en cortadores de galletas, la aplicación es versátil y se utiliza para crear sellos para arcilla, plantillas (stencils), adornos para pasteles y otros objetos personalizados. Su gran ventaja es que elimina la necesidad de aprender software de diseño asistido por computadora (CAD), que suele ser complejo y costoso, abriendo las puertas de la impresión 3D a artistas, pasteleros, artesanos y aficionados.</p>
-<figure>
-<img alt="Cortadores de galletas y galletas horneadas" src="https://agents-download.skywork.ai/image/rt/e4171d8059cc564fe289341372d5210f.jpg" style="max-height: 280px; max-width: 100%;"/>
-<figcaption>Ejemplos de galletas horneadas junto a los cortadores 3D personalizados creados con Cookiecad</figcaption>
-</figure>
-<h2 id="section-caracteristicas-clave">Características Clave de Cookiecad Designer</h2>
-<p>Cookiecad Designer está repleto de funciones que ofrecen un control detallado sobre el modelo 3D final. A continuación, se detallan algunas de las más importantes, según la <a href="https://docs.cookiecad.com/cookiecad-designer/features-overview/" target="_blank">documentación oficial</a> y las discusiones de la comunidad.</p>
-<h3 id="section-conversion-imagen">Conversión de Imagen a Cortador</h3>
-<p>El núcleo de Cookiecad es su capacidad para interpretar imágenes. La herramienta funciona mejor con imágenes de alto contraste y bordes bien definidos, como dibujos lineales, siluetas o arte de estilo "página para colorear" (<a href="https://www.youtube.com/watch?v=f21swP3QJco" target="_blank">Cookiecad Basics - YouTube</a>). El usuario simplemente sube una imagen y la aplicación traza los contornos para generar la forma del cortador. Funciones como <strong>Edge Trace</strong> permiten crear bordes a partir de formas sólidas, mientras que <strong>Imprint</strong> se usa para dibujos lineales.</p>
-<h3 id="section-ajustes-cuchilla">Ajustes de la Cuchilla y Estructura</h3>
-<p>Una vez que se tiene la forma base, se pueden ajustar numerosos parámetros para perfeccionar el cortador:</p>
-<ul>
-<li><strong>Blade Thickness (Grosor de la cuchilla):</strong> Controla el grosor de la pared de corte. Los usuarios de la comunidad recomiendan valores como 0.4mm o 0.5mm para cortadores de arcilla finos (<a href="http://community.cookiecad.com/t/clay-cutter-settings/712" target="_blank">Cookiecad Community - Clay Cutter Settings</a>).</li>
-<li><strong>Extra Blade (Cuchilla de soporte):</strong> Añade una segunda pared exterior más corta para dar mayor resistencia al cortador. Se puede desactivar estableciendo su valor en 0.</li>
-<li><strong>Center Bar (Barra central):</strong> Proporciona estabilidad a cortadores grandes o conecta partes internas "flotantes" de un diseño (como el centro de una letra 'A' o un donut), ahorrando plástico y tiempo de impresión.</li>
-</ul>
-<h3 id="section-impresion-sello">Funciones de Impresión (Imprint) y Sello</h3>
-<p>Además de cortar, Cookiecad puede crear diseños que se imprimen sobre la masa o la arcilla.</p>
-<ul>
-<li><strong>Imprint Depth (Profundidad de impresión):</strong> Ajusta la altura de los detalles internos. Una profundidad mayor es para masas gruesas, mientras que una menor es ideal para fondant o pastas finas. Si se establece en 0, los detalles internos cortarán a la misma altura que la cuchilla principal, útil para formas como donuts (<a href="http://community.cookiecad.com/t/how-to-create-a-3d-printed-doughnut-cutter-with-center-cut-out-using-cookiecad/88" target="_blank">Cookiecad Community Guide</a>).</li>
-</ul>
-<figure>
-<img alt="Uso de un sello de galletas personalizado" src="https://agents-download.skywork.ai/image/rt/8eb8b5242a4e9bb122aef23b7743417a.jpg" style="max-height: 280px; max-width: 100%;"/>
-<figcaption>Demostración del uso de un sello personalizado para imprimir texto y diseños sobre la masa antes de hornear</figcaption>
-</figure>
-<h3 id="section-compartir-diseno">Compartir y Colaborar Mediante Enlaces</h3>
-<p>El botón <strong>Share</strong> es una de las funciones más destacadas. Al hacer clic, genera un enlace único que contiene todas las configuraciones del diseño actual. Este enlace se puede guardar como marcador o compartir con otros. Cualquiera que tenga el enlace puede ver el modelo, modificarlo y descargar el archivo STL. Esta característica es fundamental para la colaboración y para pedir ayuda en la comunidad, ya que permite a otros usuarios ver exactamente la configuración que está causando problemas (<a href="http://community.cookiecad.com/" target="_blank">Cookiecad Community</a>).</p>
-<h2 id="section-guia-practica">Guía Práctica: Creando tu Primer Cortador de Galletas</h2>
-<p>Crear un cortador personalizado es un proceso sorprendentemente sencillo. Basado en las guías oficiales de Cookiecad, los pasos generales son los siguientes:</p>
-<ol>
-<li><strong>Preparar la imagen:</strong> Elige o crea una imagen de dos colores (monocromática) con bordes claros. Puedes usar editores de imágenes gratuitos como Paint.net (Windows) o Pinta (Mac) para simplificar una foto o añadir un borde (<a href="https://docs.cookiecad.com/cookiecad-designer/how-to-guides/turn-a-photo-into-a-cutter/" target="_blank">Cookiecad Help Center Guide</a>). Evita detalles muy pequeños que puedan ser difíciles de imprimir en 3D.</li>
-<li><strong>Subir la imagen a Cookiecad:</strong> Ve a cookiecad.com y sube tu archivo de imagen.</li>
-<li><strong>Seleccionar el modo y ajustar:</strong> Elige si quieres un cortador simple, con impresión (imprint) o un sello. Ajusta parámetros como el tamaño, el grosor de la cuchilla y la profundidad de la impresión hasta que la vista previa se vea como deseas.</li>
-<li><strong>Añadir soportes si es necesario:</strong> Si tu diseño tiene partes internas desconectadas, usa la función "Center Bar" para unirlas.</li>
-<li><strong>Descargar el archivo STL:</strong> Una vez satisfecho con el diseño, puedes descargar el archivo STL de forma gratuita (requiere una cuenta). Este archivo se puede abrir en un software "slicer" (como Cura o PrusaSlicer) que lo preparará para tu impresora 3D.</li>
-</ol>
-<h2 id="section-comunidad-soporte">Comunidad y Soporte: El Ecosistema de Cookiecad</h2>
-<p>Cookiecad no es solo una herramienta, sino también una comunidad activa. Los <a href="http://community.cookiecad.com/" target="_blank">foros de la comunidad de Cookiecad</a> son un recurso invaluable donde los usuarios, desde principiantes hasta expertos, comparten sus diseños, piden ayuda para solucionar problemas de impresión y discuten los mejores ajustes para diferentes materiales como masa de galletas o arcilla polimérica.</p>
-<p>Cuando un usuario tiene un problema, como un error en el diseño o una impresión de mala calidad, los miembros de la comunidad y los propios desarrolladores a menudo piden que se comparta el enlace del diseño. Esto permite a otros cargar la configuración exacta y diagnosticar el problema de manera eficiente, demostrando el poder del sistema de compartición basado en URL.</p>
-<h2 id="section-conclusion">Conclusión</h2>
-<p>Si bien la clonación directa de una aplicación como Cookiecad es una tarea monumental, comprender su funcionamiento interno ofrece un poder similar. La URL que inicialmente parecía un simple enlace es, en realidad, la clave de la flexibilidad y el espíritu colaborativo de la plataforma, encapsulando un diseño completo en una cadena de texto.</p>
-<p>Cookiecad ha logrado simplificar un proceso complejo, permitiendo que la creatividad fluya sin las barreras del software técnico. Al entender sus características principales, desde los ajustes de la cuchilla hasta la función de compartir, cualquier persona puede transformar una simple idea o un dibujo en un objeto físico y funcional. Te animamos a explorar la herramienta, experimentar con sus ajustes y unirte a su vibrante comunidad para llevar tus proyectos de impresión 3D al siguiente nivel.</p>
-</div>
+    <div class="bg-gradient"></div>
+    
+    <div class="floating-elements" id="floatingElements">
+        <!-- Elementos flotantes generados dinámicamente -->
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">P3D</div>
+                <div class="logo-text">PRINTAPLAB</div>
+            </div>
+            <div class="header-controls">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Cambiar tema">
+                    <span id="theme-icon">🌙</span>
+                    <span id="theme-text">Modo Oscuro</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <section class="hero">
+            <h1 class="hero-title">PRINTAPLAB</h1>
+            <h2 class="hero-subtitle">3D STORE</h2>
+            <p class="hero-description">
+                Tu tienda de impresión 3D de confianza. Calculadora profesional de costos FDM 
+                y recursos para makers.
+            </p>
+        </section>
+
+        <section class="social-section">
+            <h2 class="section-title">🌐 Conecta con Nosotros</h2>
+            <div class="social-grid">
+                <a href="https://www.ciciai.com/bot/ucrGrdZW" target="_blank" class="social-card ciciai" aria-label="Visitar Ciciai Bot">
+                    <div class="social-card-header">
+                        <div class="social-icon">🤖</div>
+                        <div>
+                            <div class="social-card-title">Ciciai Bot</div>
+                            <div class="social-card-description">Asistente inteligente 24/7</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="social-card cults3d" aria-label="Ver modelos 3D en Cults3D">
+                    <div class="social-card-header">
+                        <div class="social-icon">🎯</div>
+                        <div>
+                            <div class="social-card-title">Modelos 3D</div>
+                            <div class="social-card-description">Diseños exclusivos en Cults3D</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://drive.google.com/file/d/1-VYizsQ_e9fKBXKvoOFlQsy6XFrV-S2G/view?usp=drivesdk" target="_blank" class="social-card fdm-guide" aria-label="Ver Guía de Introducción FDM">
+                    <div class="social-card-header">
+                        <div class="social-icon">📚</div>
+                        <div>
+                            <div class="social-card-title">Guía FDM</div>
+                            <div class="social-card-description">Introducción completa a FDM</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.tiktok.com/@printaplab3dstore" target="_blank" class="social-card tiktok" aria-label="Seguir en TikTok">
+                    <div class="social-card-header">
+                        <div class="social-icon">🎵</div>
+                        <div>
+                            <div class="social-card-title">TikTok</div>
+                            <div class="social-card-description">Contenido creativo y tips</div>
+                        </div>
+                    </div>
+                </a>
+
+                <a href="https://www.instagram.com/@printaplab3dstore" target="_blank" class="social-card instagram" aria-label="Seguir en Instagram">
+                    <div class="social-card-header">
+                        <div class="social-icon">📸</div>
+                        <div>
+                            <div class="social-card-title">Instagram</div>
+                            <div class="social-card-description">Proyectos y novedades</div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="special-section">
+            <a href="https://printaplab3dstore.github.io/funkos.html" target="_blank" class="special-button" aria-label="Ver Funkos Personalizados">
+                <div class="special-button-content">
+                    <span class="special-button-icon">🎭</span>
+                    <span>Funkos Personalizados</span>
+                </div>
+            </a>
+        </section>
+
+        <section class="calculator-section">
+            <div class="calculator-header">
+                <h1 class="calculator-title">Calculadora de Costos FDM</h1>
+                <p class="calculator-subtitle">Calcula el precio exacto de tus impresiones 3D</p>
+            </div>
+
+            <div class="calculator-controls">
+                <button class="control-btn" onclick="saveConfiguration()" aria-label="Guardar configuración">
+                    <span>💾</span> Guardar Config
+                </button>
+                <button class="control-btn" onclick="loadConfiguration()" aria-label="Cargar configuración">
+                    <span>📁</span> Cargar Config
+                </button>
+                <button class="control-btn" onclick="resetForm()" aria-label="Resetear formulario">
+                    <span>🔄</span> Resetear
+                </button>
+            </div>
+
+            <form id="calculatorForm" novalidate>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="materialCost">
+                            💰 Costo del Filamento (ARS/kg)
+                            <span class="tooltip" data-tooltip="Precio por kilogramo del filamento que usarás">ℹ️</span>
+                        </label>
+                        <input type="number" id="materialCost" class="form-input" value="25000" step="0.01" min="0" required aria-describedby="materialCost-error">
+                        <div class="error-message" id="materialCost-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="weight">
+                            ⚖️ Peso de la Pieza (gramos)
+                            <span class="tooltip" data-tooltip="Peso estimado de la pieza final en gramos">ℹ️</span>
+                        </label>
+                        <input type="number" id="weight" class="form-input" value="10" step="0.01" min="0" required aria-describedby="weight-error">
+                        <div class="error-message" id="weight-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="printTime">
+                            ⏱️ Tiempo de Impresión (horas)
+                            <span class="tooltip" data-tooltip="Tiempo total estimado de impresión">ℹ️</span>
+                        </label>
+                        <input type="number" id="printTime" class="form-input" value="1" step="0.01" min="0" required aria-describedby="printTime-error">
+                        <div class="error-message" id="printTime-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="powerCost">
+                            ⚡ Costo de Energía (ARS/kWh)
+                            <span class="tooltip" data-tooltip="Tarifa eléctrica por kilovatio hora">ℹ️</span>
+                        </label>
+                        <input type="number" id="powerCost" class="form-input" value="80" step="0.001" min="0" required aria-describedby="powerCost-error">
+                        <div class="error-message" id="powerCost-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="powerConsumption">
+                            🔌 Consumo de Impresora (watts)
+                            <span class="tooltip" data-tooltip="Potencia consumida por la impresora 3D">ℹ️</span>
+                        </label>
+                        <input type="number" id="powerConsumption" class="form-input" value="100" step="1" min="0" required aria-describedby="powerConsumption-error">
+                        <div class="error-message" id="powerConsumption-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="laborCostPerHour">
+                            👷 Costo Mano de Obra (ARS/hora)
+                            <span class="tooltip" data-tooltip="Valor de tu tiempo por hora de trabajo">ℹ️</span>
+                        </label>
+                        <input type="number" id="laborCostPerHour" class="form-input" value="1500" step="0.01" min="0" required aria-describedby="laborCostPerHour-error">
+                        <div class="error-message" id="laborCostPerHour-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="extraMaterialsCost">
+                            🔧 Costos Materiales Extra (ARS)
+                            <span class="tooltip" data-tooltip="Costos adicionales como soportes, adhesivos, etc.">ℹ️</span>
+                        </label>
+                        <input type="number" id="extraMaterialsCost" class="form-input" value="0" step="0.01" min="0" aria-describedby="extraMaterialsCost-error">
+                        <div class="error-message" id="extraMaterialsCost-error"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="markup">
+                            📈 Margen de Ganancia (%)
+                            <span class="tooltip" data-tooltip="Porcentaje de ganancia sobre el costo base">ℹ️</span>
+                        </label>
+                        <input type="number" id="markup" class="form-input" value="30" step="0.01" min="0" max="1000" required aria-describedby="markup-error">
+                        <div class="error-message" id="markup-error"></div>
+                    </div>
+                </div>
+
+                <button type="submit" class="calculate-btn" id="calculateBtn">
+                    🧮 Calcular Costo Total
+                </button>
+            </form>
+
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Procesando cálculos...</p>
+            </div>
+
+            <div id="result" class="result">
+                <div class="result-header">
+                    <h2 class="result-title">💎 Costo Total Calculado</h2>
+                    <div class="result-amount" id="totalCost">$0.00 ARS</div>
+                </div>
+                
+                <div class="result-actions">
+                    <button class="action-btn" onclick="exportToPDF()" aria-label="Exportar a PDF">
+                        <span>📄</span> Exportar PDF
+                    </button>
+                    <button class="action-btn" onclick="shareResult()" aria-label="Compartir resultado">
+                        <span>📤</span> Compartir
+                    </button>
+                    <button class="action-btn" onclick="copyToClipboard()" aria-label="Copiar al portapapeles">
+                        <span>📋</span> Copiar
+                    </button>
+                </div>
+
+                <div class="cost-breakdown" id="breakdown">
+                    <!-- El desglose se genera dinámicamente -->
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-title">PRINTAPLAB 3D STORE</div>
+            <p>© 2024 - Calculadora de Costos FDM</p>
+            <p>Desarrollado con ❤️ para la comunidad maker</p>
+        </div>
+    </footer>
+
+    <script>
+        // Variables globales
+        let currentTheme = 'dark';
+        let lastCalculation = null;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeFloatingElements();
+            setupFormValidation();
+            loadSavedTheme();
+            loadSavedConfiguration();
+            addScrollAnimations();
+        });
+
+        // Elementos flotantes
+        function initializeFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            const elementCount = window.innerWidth < 768 ? 20 : 30;
+            
+            for (let i = 0; i < elementCount; i++) {
+                const element = document.createElement('div');
+                element.className = 'floating-element';
+                element.style.left = Math.random() * 100 + '%';
+                element.style.animationDelay = Math.random() * 15 + 's';
+                element.style.animationDuration = (10 + Math.random() * 8) + 's';
+                container.appendChild(element);
+            }
+        }
+
+        // Toggle de tema mejorado
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (currentTheme === 'dark') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Modo Claro';
+                currentTheme = 'light';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Modo Oscuro';
+                currentTheme = 'dark';
+            }
+            
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        function loadSavedTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme && savedTheme !== currentTheme) {
+                toggleTheme();
+            }
+        }
+
+        // Validación de formularios mejorada
+        function setupFormValidation() {
+            const form = document.getElementById('calculatorForm');
+            const inputs = form.querySelectorAll('input[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', debounce(validateInput, 300));
+                input.addEventListener('blur', validateInput);
+            });
+            
+            form.addEventListener('submit', handleFormSubmit);
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function validateInput(event) {
+            const input = event.target;
+            const errorElement = document.getElementById(input.id + '-error');
+            let isValid = true;
+            let errorMessage = '';
+            
+            if (input.value === '') {
+                isValid = false;
+                errorMessage = 'Este campo es requerido';
+            } else if (parseFloat(input.value) < 0) {
+                isValid = false;
+                errorMessage = 'El valor debe ser positivo';
+            } else if (input.id === 'markup' && parseFloat(input.value) > 1000) {
+                isValid = false;
+                errorMessage = 'El margen no puede ser mayor a 1000%';
+            }
+            
+            updateInputState(input, errorElement, isValid, errorMessage);
+            return isValid;
+        }
+
+        function updateInputState(input, errorElement, isValid, errorMessage) {
+            if (isValid) {
+                input.classList.remove('error');
+                input.classList.add('success');
+                errorElement.textContent = '';
+                errorElement.classList.remove('show');
+            } else {
+                input.classList.remove('success');
+                input.classList.add('error');
+                errorElement.textContent = errorMessage;
+                errorElement.classList.add('show');
+            }
+        }
+
+        function handleFormSubmit(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const inputs = form.querySelectorAll('input[required]');
+            let isFormValid = true;
+            
+            inputs.forEach(input => {
+                if (!validateInput({ target: input })) {
+                    isFormValid = false;
+                }
+            });
+            
+            if (isFormValid) {
+                calculateCost();
+            } else {
+                showNotification('Por favor, corrige los errores en el formulario', 'error');
+            }
+        }
+
+        // Función principal de cálculo mejorada
+        function calculateCost() {
+            const loading = document.getElementById('loading');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const result = document.getElementById('result');
+            
+            loading.classList.add('show');
+            calculateBtn.disabled = true;
+            result.classList.remove('show');
+            
+            setTimeout(() => {
+                performCalculation();
+                loading.classList.remove('show');
+                calculateBtn.disabled = false;
+            }, 1200);
+        }
+
+        function performCalculation() {
+            const values = getFormValues();
+            const calculations = calculateCosts(values);
+            
+            lastCalculation = {
+                ...calculations,
+                timestamp: new Date().toISOString(),
+                inputs: values
+            };
+
+            displayResults(calculations);
+            showNotification('¡Cálculo completado exitosamente!', 'success');
+        }
+
+        function getFormValues() {
+            return {
+                materialCost: parseFloat(document.getElementById('materialCost').value) || 0,
+                weight: parseFloat(document.getElementById('weight').value) || 0,
+                printTime: parseFloat(document.getElementById('printTime').value) || 0,
+                powerCost: parseFloat(document.getElementById('powerCost').value) || 0,
+                powerConsumption: parseFloat(document.getElementById('powerConsumption').value) || 0,
+                laborCostPerHour: parseFloat(document.getElementById('laborCostPerHour').value) || 0,
+                extraMaterialsCost: parseFloat(document.getElementById('extraMaterialsCost').value) || 0,
+                markup: parseFloat(document.getElementById('markup').value) || 0
+            };
+        }
+
+        function calculateCosts(values) {
+            const materialCostTotal = (values.materialCost * values.weight) / 1000;
+            const energyCost = (values.powerConsumption / 1000) * values.printTime * values.powerCost;
+            const laborCost = values.laborCostPerHour * values.printTime;
+            const baseCost = materialCostTotal + energyCost + laborCost + values.extraMaterialsCost;
+            const markupAmount = baseCost * (values.markup / 100);
+            const finalCost = baseCost + markupAmount;
+
+            return {
+                materialCostTotal,
+                energyCost,
+                laborCost,
+                extraMaterialsCost: values.extraMaterialsCost,
+                baseCost,
+                markupAmount,
+                markup: values.markup,
+                finalCost
+            };
+        }
+
+        function displayResults(calculations) {
+            document.getElementById('totalCost').textContent = `$${calculations.finalCost.toFixed(2)} ARS`;
+            
+            document.getElementById('breakdown').innerHTML = `
+                <div class="cost-item">
+                    <span>💰 Costo Material</span>
+                    <span>$${calculations.materialCostTotal.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span>⚡ Costo Energía</span>
+                    <span>$${calculations.energyCost.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span>👷 Mano de Obra</span>
+                    <span>$${calculations.laborCost.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span>🔧 Materiales Extra</span>
+                    <span>$${calculations.extraMaterialsCost.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span>📊 Subtotal</span>
+                    <span>$${calculations.baseCost.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span>📈 Margen (${calculations.markup}%)</span>
+                    <span>$${calculations.markupAmount.toFixed(2)} ARS</span>
+                </div>
+                <div class="cost-item">
+                    <span><strong>🎯 TOTAL FINAL</strong></span>
+                    <span><strong>$${calculations.finalCost.toFixed(2)} ARS</strong></span>
+                </div>
+            `;
+
+            document.getElementById('result').classList.add('show');
+        }
+
+        // Funciones de configuración mejoradas
+        function saveConfiguration() {
+            const config = getFormValues();
+            localStorage.setItem('calculatorConfig', JSON.stringify(config));
+            showButtonFeedback(event.target, '✅ Guardado', 'success');
+        }
+
+        function loadConfiguration() {
+            const savedConfig = localStorage.getItem('calculatorConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                populateForm(config);
+                showButtonFeedback(event.target, '✅ Cargado', 'success');
+            } else {
+                showNotification('No hay configuración guardada', 'warning');
+            }
+        }
+
+        function loadSavedConfiguration() {
+            const savedConfig = localStorage.getItem('calculatorConfig');
+            if (savedConfig) {
+                const config = JSON.parse(savedConfig);
+                populateForm(config);
+            }
+        }
+
+        function populateForm(config) {
+            Object.keys(config).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = config[key];
+                }
+            });
+        }
+
+        function resetForm() {
+            document.getElementById('calculatorForm').reset();
+            document.getElementById('result').classList.remove('show');
+            clearValidationStates();
+            showNotification('Formulario reiniciado', 'info');
+        }
+
+        function clearValidationStates() {
+            const inputs = document.querySelectorAll('.form-input');
+            const errorMessages = document.querySelectorAll('.error-message');
+            
+            inputs.forEach(input => {
+                input.classList.remove('error', 'success');
+            });
+            
+            errorMessages.forEach(msg => {
+                msg.classList.remove('show');
+                msg.textContent = '';
+            });
+        }
+
+        // Funciones de exportación mejoradas
+        function exportToPDF() {
+            if (!lastCalculation) {
+                showNotification('No hay cálculos para exportar', 'warning');
+                return;
+            }
+            
+            const content = generateExportContent();
+            downloadFile(content, `cotizacion_printaplab_${new Date().toISOString().split('T')[0]}.txt`);
+            showButtonFeedback(event.target, '✅ Exportado', 'success');
+        }
+
+        function generateExportContent() {
+            const calc = lastCalculation;
+            return `
+PRINTAPLAB 3D STORE - COTIZACIÓN DETALLADA
+==========================================
+
+📅 Fecha: ${new Date(calc.timestamp).toLocaleString('es-AR')}
+
+📋 PARÁMETROS DE ENTRADA:
+• Material: $${calc.inputs.materialCost}/kg
+• Peso: ${calc.inputs.weight}g
+• Tiempo: ${calc.inputs.printTime}h
+• Energía: $${calc.inputs.powerCost}/kWh
+• Consumo: ${calc.inputs.powerConsumption}W
+• Mano de obra: $${calc.inputs.laborCostPerHour}/h
+• Extras: $${calc.inputs.extraMaterialsCost}
+• Margen: ${calc.inputs.markup}%
+
+💰 DESGLOSE DE COSTOS:
+• Costo Material: $${calc.materialCostTotal.toFixed(2)} ARS
+• Costo Energía: $${calc.energyCost.toFixed(2)} ARS
+• Mano de Obra: $${calc.laborCost.toFixed(2)} ARS
+• Materiales Extra: $${calc.extraMaterialsCost.toFixed(2)} ARS
+• Subtotal: $${calc.baseCost.toFixed(2)} ARS
+• Margen (${calc.markup}%): $${calc.markupAmount.toFixed(2)} ARS
+
+🎯 TOTAL FINAL: $${calc.finalCost.toFixed(2)} ARS
+
+---
+Generado por PRINTAPLAB 3D STORE
+Calculadora de Costos FDM v2.0
+            `;
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function shareResult() {
+            if (!lastCalculation) {
+                showNotification('No hay resultados para compartir', 'warning');
+                return;
+            }
+            
+            const text = `🎯 Cotización PRINTAPLAB 3D STORE\n💰 Total: $${lastCalculation.finalCost.toFixed(2)} ARS\n🔗 ${window.location.href}`;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Cotización PRINTAPLAB 3D',
+                    text: text,
+                    url: window.location.href
+                }).then(() => {
+                    showNotification('Compartido exitosamente', 'success');
+                });
+            } else {
+                copyToClipboard(text);
+            }
+        }
+
+        function copyToClipboard(customText = null) {
+            if (!lastCalculation && !customText) {
+                showNotification('No hay contenido para copiar', 'warning');
+                return;
+            }
+            
+            const text = customText || `Cotización PRINTAPLAB: $${lastCalculation.finalCost.toFixed(2)} ARS`;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                showButtonFeedback(event.target, '✅ Copiado', 'success');
+            }).catch(() => {
+                showNotification('Error al copiar', 'error');
+            });
+        }
+
+        // Utilidades de UI
+        function showButtonFeedback(button, text, type) {
+            const originalText = button.innerHTML;
+            button.innerHTML = text;
+            button.classList.add(`${type}-state`);
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove(`${type}-state`);
+            }, 2000);
+        }
+
+        function showNotification(message, type = 'info') {
+            // Crear notificación temporal
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--bg-card);
+                border: 1px solid var(--border-primary);
+                border-radius: 12px;
+                padding: 1rem 1.5rem;
+                color: var(--text-primary);
+                z-index: 10000;
+                backdrop-filter: blur(20px);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+            
+            if (type === 'success') notification.style.borderColor = 'var(--success)';
+            if (type === 'error') notification.style.borderColor = 'var(--error)';
+            if (type === 'warning') notification.style.borderColor = 'var(--warning)';
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.style.transform = 'translateX(0)', 100);
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => document.body.removeChild(notification), 300);
+            }, 3000);
+        }
+
+        // Animaciones de scroll
+        function addScrollAnimations() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('fade-in');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.social-card, .calculator-section').forEach(el => {
+                observer.observe(el);
+            });
+        }
+
+        // Eventos de teclado mejorados
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.getElementById('result').classList.remove('show');
+            }
+            
+            if (e.key === 'Enter' && e.target.classList.contains('form-input')) {
+                e.preventDefault();
+                const form = document.getElementById('calculatorForm');
+                const inputs = Array.from(form.querySelectorAll('.form-input'));
+                const currentIndex = inputs.indexOf(e.target);
+                
+                if (currentIndex < inputs.length - 1) {
+                    inputs[currentIndex + 1].focus();
+                } else {
+                    calculateCost();
+                }
+            }
+        });
+
+        // Optimización de rendimiento
+        let resizeTimeout;
+        window.addEventListener('resize', function() {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                const container = document.getElementById('floatingElements');
+                container.innerHTML = '';
+                initializeFloatingElements();
+            }, 250);
+        });
+
+        // Prevenir zoom en inputs en iOS
+        document.addEventListener('touchstart', function() {
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                if (parseFloat(input.style.fontSize) < 16) {
+                    input.style.fontSize = '16px';
+                }
+            });
+        });
+    </script>
 </body>
 </html>
