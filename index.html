@@ -733,7 +733,7 @@
             visibility: visible;
         }
 
-        .input-group input { 
+        .input-group input, .input-group select { 
             width: 100%; 
             padding: 18px 20px; 
             border: 2px solid var(--glass-border); 
@@ -746,7 +746,7 @@
             backdrop-filter: blur(10px); 
         }
 
-        .input-group input:focus { 
+        .input-group input:focus, .input-group select:focus { 
             outline: none; 
             border-color: var(--accent-cyan); 
             box-shadow: 0 0 25px rgba(0, 255, 255, 0.3); 
@@ -1258,11 +1258,30 @@
                 <div class="input-grid">
                     <div class="input-group">
                         <label for="materialCost">
-                            Costo del Filamento (ARS/kg)
+                            Costo del Filamento (por kg)
                             <span class="tooltip" data-tooltip="Precio por kilogramo del filamento que usarás">ℹ️</span>
                         </label>
                         <input type="number" id="materialCost" value="25000" step="0.01" min="0" required aria-describedby="materialCost-error">
                         <div class="error-message" id="materialCost-error"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="currency">
+                            Moneda
+                            <span class="tooltip" data-tooltip="Selecciona la moneda para los cálculos">ℹ️</span>
+                        </label>
+                        <select id="currency" required>
+                            <option value="ARS">ARS - Peso Argentino ($)</option>
+                            <option value="USD">USD - Dólar Estadounidense ($)</option>
+                            <option value="EUR">EUR - Euro (€)</option>
+                            <option value="MXN">MXN - Peso Mexicano ($)</option>
+                            <option value="COP">COP - Peso Colombiano ($)</option>
+                            <option value="PEN">PEN - Sol Peruano (S/)</option>
+                            <option value="CLP">CLP - Peso Chileno ($)</option>
+                            <option value="UYU">UYU - Peso Uruguayo ($)</option>
+                            <option value="BOB">BOB - Boliviano (Bs.)</option>
+                            <option value="CRC">CRC - Colón Costarricense (₡)</option>
+                        </select>
                     </div>
 
                     <div class="input-group">
@@ -1285,7 +1304,7 @@
 
                     <div class="input-group">
                         <label for="powerCost">
-                            Costo de Energía (ARS/kWh)
+                            Costo de Energía (por kWh)
                             <span class="tooltip" data-tooltip="Tarifa eléctrica por kilovatio hora">ℹ️</span>
                         </label>
                         <input type="number" id="powerCost" value="80" step="0.001" min="0" required aria-describedby="powerCost-error">
@@ -1303,7 +1322,7 @@
 
                     <div class="input-group">
                         <label for="laborCostPerHour">
-                            Costo Mano de Obra (ARS/hora)
+                            Costo Mano de Obra (por hora)
                             <span class="tooltip" data-tooltip="Valor de tu tiempo por hora de trabajo">ℹ️</span>
                         </label>
                         <input type="number" id="laborCostPerHour" value="1500" step="0.01" min="0" required aria-describedby="laborCostPerHour-error">
@@ -1312,7 +1331,7 @@
 
                     <div class="input-group">
                         <label for="extraMaterialsCost">
-                            Costos Materiales Extra (ARS)
+                            Costos Materiales Extra
                             <span class="tooltip" data-tooltip="Costos adicionales como soportes, adhesivos, etc.">ℹ️</span>
                         </label>
                         <input type="number" id="extraMaterialsCost" value="0" step="0.01" min="0" aria-describedby="extraMaterialsCost-error">
@@ -1341,7 +1360,7 @@
 
             <div id="result" class="result">
                 <h2>Costo Total</h2>
-                <p id="totalCost">$0.00 ARS</p>
+                <p id="totalCost">$0.00</p>
                 
                 <div class="result-actions">
                     <button class="action-btn" onclick="exportToPDF()" aria-label="Exportar a PDF">
@@ -1375,6 +1394,20 @@
         let totalSlides = 3;
         let autoplayInterval;
         let isAutoplayActive = true;
+        
+        // Información de monedas
+        const currencyInfo = {
+            'ARS': { symbol: '$', name: 'Peso Argentino' },
+            'USD': { symbol: '$', name: 'Dólar Estadounidense' },
+            'EUR': { symbol: '€', name: 'Euro' },
+            'MXN': { symbol: '$', name: 'Peso Mexicano' },
+            'COP': { symbol: '$', name: 'Peso Colombiano' },
+            'PEN': { symbol: 'S/', name: 'Sol Peruano' },
+            'CLP': { symbol: '$', name: 'Peso Chileno' },
+            'UYU': { symbol: '$', name: 'Peso Uruguayo' },
+            'BOB': { symbol: 'Bs.', name: 'Boliviano' },
+            'CRC': { symbol: '₡', name: 'Colón Costarricense' }
+        };
 
         // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
@@ -1634,6 +1667,7 @@
             const laborCostPerHour = parseFloat(document.getElementById('laborCostPerHour').value) || 0;
             const extraMaterialsCost = parseFloat(document.getElementById('extraMaterialsCost').value) || 0;
             const markup = parseFloat(document.getElementById('markup').value) || 0;
+            const currency = document.getElementById('currency').value;
 
             const materialCostTotal = (materialCost * weight) / 1000;
             const energyCost = (powerConsumption / 1000) * printTime * powerCost;
@@ -1650,20 +1684,22 @@
                 baseCost,
                 markup,
                 finalCost,
+                currency,
                 timestamp: new Date().toISOString()
             };
 
             // Mostrar resultados con animación
-            document.getElementById('totalCost').textContent = `$${finalCost.toFixed(2)} ARS`;
+            const currencySymbol = currencyInfo[currency].symbol;
+            document.getElementById('totalCost').textContent = `${currencySymbol}${finalCost.toFixed(2)} ${currency}`;
             
             document.getElementById('breakdown').innerHTML = `
-                <div class="cost-item"><span>💰 Costo Material:</span><span>$${materialCostTotal.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>⚡ Costo Energía:</span><span>$${energyCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>👷 Costo Mano de Obra:</span><span>$${laborCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>🔧 Materiales Extra:</span><span>$${extraMaterialsCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>📊 Subtotal:</span><span>$${baseCost.toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span>📈 Margen (${markup}%):</span><span>$${(finalCost - baseCost).toFixed(2)} ARS</span></div>
-                <div class="cost-item"><span><strong>🎯 TOTAL FINAL:</strong></span><span><strong>$${finalCost.toFixed(2)} ARS</strong></span></div>
+                <div class="cost-item"><span>💰 Costo Material:</span><span>${currencySymbol}${materialCostTotal.toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span>⚡ Costo Energía:</span><span>${currencySymbol}${energyCost.toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span>👷 Costo Mano de Obra:</span><span>${currencySymbol}${laborCost.toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span>🔧 Materiales Extra:</span><span>${currencySymbol}${extraMaterialsCost.toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span>📊 Subtotal:</span><span>${currencySymbol}${baseCost.toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span>📈 Margen (${markup}%):</span><span>${currencySymbol}${(finalCost - baseCost).toFixed(2)} ${currency}</span></div>
+                <div class="cost-item"><span><strong>🎯 TOTAL FINAL:</strong></span><span><strong>${currencySymbol}${finalCost.toFixed(2)} ${currency}</strong></span></div>
             `;
 
             document.getElementById('result').classList.add('show');
@@ -1679,7 +1715,8 @@
                 powerConsumption: document.getElementById('powerConsumption').value,
                 laborCostPerHour: document.getElementById('laborCostPerHour').value,
                 extraMaterialsCost: document.getElementById('extraMaterialsCost').value,
-                markup: document.getElementById('markup').value
+                markup: document.getElementById('markup').value,
+                currency: document.getElementById('currency').value
             };
             
             localStorage.setItem('calculatorConfig', JSON.stringify(config));
@@ -1756,21 +1793,25 @@
         function exportToPDF() {
             if (!lastCalculation) return;
             
+            const currencySymbol = currencyInfo[lastCalculation.currency].symbol;
+            const currencyName = currencyInfo[lastCalculation.currency].name;
+            
             const content = `
 PRINTAPLAB 3D STORE - Cotización
 ================================
 
 Fecha: ${new Date(lastCalculation.timestamp).toLocaleString()}
+Moneda: ${lastCalculation.currency} - ${currencyName}
 
 DESGLOSE DE COSTOS:
-• Costo Material: $${lastCalculation.materialCostTotal.toFixed(2)} ARS
-• Costo Energía: $${lastCalculation.energyCost.toFixed(2)} ARS
-• Costo Mano de Obra: $${lastCalculation.laborCost.toFixed(2)} ARS
-• Materiales Extra: $${lastCalculation.extraMaterialsCost.toFixed(2)} ARS
-• Subtotal: $${lastCalculation.baseCost.toFixed(2)} ARS
-• Margen (${lastCalculation.markup}%): $${(lastCalculation.finalCost - lastCalculation.baseCost).toFixed(2)} ARS
+• Costo Material: ${currencySymbol}${lastCalculation.materialCostTotal.toFixed(2)} ${lastCalculation.currency}
+• Costo Energía: ${currencySymbol}${lastCalculation.energyCost.toFixed(2)} ${lastCalculation.currency}
+• Costo Mano de Obra: ${currencySymbol}${lastCalculation.laborCost.toFixed(2)} ${lastCalculation.currency}
+• Materiales Extra: ${currencySymbol}${lastCalculation.extraMaterialsCost.toFixed(2)} ${lastCalculation.currency}
+• Subtotal: ${currencySymbol}${lastCalculation.baseCost.toFixed(2)} ${lastCalculation.currency}
+• Margen (${lastCalculation.markup}%): ${currencySymbol}${(lastCalculation.finalCost - lastCalculation.baseCost).toFixed(2)} ${lastCalculation.currency}
 
-TOTAL FINAL: $${lastCalculation.finalCost.toFixed(2)} ARS
+TOTAL FINAL: ${currencySymbol}${lastCalculation.finalCost.toFixed(2)} ${lastCalculation.currency}
 
 ---
 Generado por PRINTAPLAB 3D STORE
@@ -1789,7 +1830,8 @@ www.printaplab3dstore.com
         function shareResult() {
             if (!lastCalculation) return;
             
-            const text = `🎯 Cotización PRINTAPLAB 3D STORE\n💰 Total: $${lastCalculation.finalCost.toFixed(2)} ARS\n🔗 Calcula el tuyo: ${window.location.href}`;
+            const currencySymbol = currencyInfo[lastCalculation.currency].symbol;
+            const text = `🎯 Cotización PRINTAPLAB 3D STORE\n💰 Total: ${currencySymbol}${lastCalculation.finalCost.toFixed(2)} ${lastCalculation.currency}\n🔗 Calcula el tuyo: ${window.location.href}`;
             
             if (navigator.share) {
                 navigator.share({
@@ -1805,7 +1847,8 @@ www.printaplab3dstore.com
         function copyToClipboard(customText = null) {
             if (!lastCalculation && !customText) return;
             
-            const text = customText || `Cotización PRINTAPLAB 3D STORE - Total: $${lastCalculation.finalCost.toFixed(2)} ARS`;
+            const currencySymbol = currencyInfo[lastCalculation.currency].symbol;
+            const text = customText || `Cotización PRINTAPLAB 3D STORE - Total: ${currencySymbol}${lastCalculation.finalCost.toFixed(2)} ${lastCalculation.currency}`;
             
             navigator.clipboard.writeText(text).then(() => {
                 // Feedback visual
