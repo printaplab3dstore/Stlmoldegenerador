@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colección Premium de 200+ Prompts para Emprender, Escalar y Generar Riqueza</title>
+    <title>Colección Premium de Prompts para Emprender, Escalar y Generar Riqueza</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -14,27 +13,29 @@
             color: #333;
         }
         
-        .page-break {
-            page-break-after: always;
+        h1, h2, h3, h4 {
+            font-family: 'Playfair Display', serif;
         }
         
         .cover-bg {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
         }
         
-        .category-icon {
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            margin-bottom: 1rem;
+        .page-break {
+            page-break-before: always;
+        }
+        
+        .category-title {
+            border-left: 4px solid #3b82f6;
+            padding-left: 1rem;
         }
         
         .prompt-card {
-            break-inside: avoid;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             margin-bottom: 1.5rem;
+            page-break-inside: avoid;
         }
         
         @media print {
@@ -46,758 +47,621 @@
                 padding: 0;
                 margin: 0;
             }
+            
+            @page {
+                size: letter;
+                margin: 1in;
+            }
         }
         
-        .toc-category {
-            break-inside: avoid;
-            margin-bottom: 1rem;
+        .toc-entry {
+            padding: 0.25rem 0;
+            border-bottom: 1px dashed #cbd5e1;
+        }
+        
+        .toc-page::after {
+            content: target-counter(attr(href), page);
+            float: right;
         }
     </style>
 </head>
-<body class="bg-gray-50">
-    <!-- Cover Page -->
-    <div class="cover-bg min-h-screen flex flex-col items-center justify-center text-white p-8 page-break">
-        <div class="text-center max-w-4xl">
-            <div class="mb-6">
-                <i class="fas fa-rocket text-6xl mb-4"></i>
-            </div>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Portada -->
+    <div class="cover-bg text-white min-h-screen flex flex-col justify-center items-center p-8 text-center">
+        <div class="max-w-4xl">
             <h1 class="text-4xl md:text-6xl font-bold mb-6">COLECCIÓN PREMIUM</h1>
-            <h2 class="text-3xl md:text-5xl font-semibold mb-8">200+ PROMPTS PARA EMPRENDER, ESCALAR Y GENERAR RIQUEZA</h2>
-            <p class="text-xl mb-10 max-w-2xl mx-auto">Estrategias comprobadas para maximizar el potencial de IA en tu negocio</p>
+            <h2 class="text-3xl md:text-5xl font-bold mb-8 text-blue-300">PROMPTS PARA EMPRENDER, ESCALAR Y GENERAR RIQUEZA</h2>
+            <div class="w-32 h-1 bg-blue-500 mx-auto my-8"></div>
+            <p class="text-xl mb-12 max-w-2xl mx-auto">Herramientas especializadas para emprendedores que buscan iniciar negocios, escalar operaciones y generar riqueza sostenible con inteligencia artificial</p>
             <div class="flex flex-wrap justify-center gap-4 mt-8">
-                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">ChatGPT</span>
-                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">Claude</span>
-                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">Gemini</span>
-                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">Mistral</span>
-                <span class="bg-white bg-opacity-20 px-4 py-2 rounded-full">Llama</span>
+                <span class="bg-blue-600 px-4 py-2 rounded-full text-sm">NEGOCIOS</span>
+                <span class="bg-green-600 px-4 py-2 rounded-full text-sm">PRODUCTIVIDAD</span>
+                <span class="bg-purple-600 px-4 py-2 rounded-full text-sm">MARCA PERSONAL</span>
+                <span class="bg-red-600 px-4 py-2 rounded-full text-sm">VENTAS</span>
+                <span class="bg-yellow-600 px-4 py-2 rounded-full text-sm">INVERSIONES</span>
+                <span class="bg-indigo-600 px-4 py-2 rounded-full text-sm">MARKETING</span>
+                <span class="bg-pink-600 px-4 py-2 rounded-full text-sm">ESTRATEGIA</span>
+            </div>
+        </div>
+        <div class="absolute bottom-8 text-gray-300 text-sm">
+            Compatible con ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs
+        </div>
+    </div>
+
+    <!-- Página de copyright -->
+    <div class="page-break min-h-screen flex flex-col justify-center items-center p-8 text-center bg-white">
+        <div class="max-w-2xl">
+            <h3 class="text-2xl font-bold mb-6">© 2025 Colección Premium de Prompts para Emprendedores</h3>
+            <p class="mb-4">Todos los derechos reservados.</p>
+            <p class="text-gray-600 mb-8">Esta colección contiene información confidencial y propiedad intelectual. Queda prohibida la reproducción total o parcial sin autorización expresa.</p>
+            <div class="border-t border-gray-200 pt-4 mt-8">
+                <p class="text-sm text-gray-500">Documento optimizado para impresión y lectura digital</p>
+                <p class="text-sm text-gray-500 mt-2">Formato: 8.5" x 11"</p>
             </div>
         </div>
     </div>
 
-    <!-- Table of Contents -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">ÍNDICE</h2>
+    <!-- Índice -->
+    <div class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-8 pb-4 border-b-2 border-blue-500">ÍNDICE</h2>
+        <div class="space-y-4 text-lg">
+            <div class="toc-entry flex justify-between">
+                <a href="#introduccion" class="font-medium">INTRODUCCIÓN</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria1" class="font-medium">1. NEGOCIOS</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria2" class="font-medium">2. PRODUCTIVIDAD</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria3" class="font-medium">3. MARCA PERSONAL</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria4" class="font-medium">4. VENTAS</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria5" class="font-medium">5. INVERSIONES</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria6" class="font-medium">6. MARKETING</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#categoria7" class="font-medium">7. ESTRATEGIA</a>
+                <span class="toc-page"></span>
+            </div>
+            <div class="toc-entry flex justify-between">
+                <a href="#conclusion" class="font-medium">CONCLUSIÓN</a>
+                <span class="toc-page"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Introducción -->
+    <div id="introduccion" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">INTRODUCCIÓN</h2>
+        <div class="prose max-w-none">
+            <p class="text-lg mb-6 leading-relaxed">
+                Esta colección contiene prompts especializados diseñados para emprendedores que buscan iniciar negocios, escalar operaciones y generar riqueza sostenible. Todos los prompts están optimizados para obtener resultados efectivos con inteligencia artificial, incluyendo ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs principales.
+            </p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-blue-100 text-blue-600 mr-3">
-                            <i class="fas fa-building fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">NEGOCIOS</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Identificación de oportunidades</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Modelos de negocio innovadores</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Análisis de mercado</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Estrategias de entrada</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Planificación empresarial</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Gestión de riesgos</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Innovación disruptiva</li>
-                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Escalabilidad empresarial</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-green-100 text-green-600 mr-3">
-                            <i class="fas fa-bolt fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">PRODUCTIVIDAD</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Gestión del tiempo</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Priorización de tareas</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Automatización de procesos</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Eliminación de distracciones</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Rutinas eficientes</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Herramientas de productividad</li>
-                        <li class="flex items-start"><span class="text-green-500 mr-2">•</span> Gestión de energía</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-purple-100 text-purple-600 mr-3">
-                            <i class="fas fa-user-tie fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">MARCA PERSONAL</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Definición de identidad</li>
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Posicionamiento estratégico</li>
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Presencia digital</li>
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Networking efectivo</li>
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Autoridad de pensamiento</li>
-                        <li class="flex items-start"><span class="text-purple-500 mr-2">•</span> Narrativa personal</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-red-100 text-red-600 mr-3">
-                            <i class="fas fa-chart-line fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">VENTAS</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Persuasión y negociación</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Cierre de tratos</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Prospección de clientes</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Presentaciones impactantes</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Superación de objeciones</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Estrategias de retención</li>
-                        <li class="flex items-start"><span class="text-red-500 mr-2">•</span> Ventas automatizadas</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-yellow-100 text-yellow-600 mr-3">
-                            <i class="fas fa-coins fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">INVERSIONES</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-yellow-500 mr-2">•</span> Análisis financiero</li>
-                        <li class="flex items-start"><span class="text-yellow-500 mr-2">•</span> Diversificación de portafolio</li>
-                        <li class="flex items-start"><span class="text-yellow-500 mr-2">•</span> Evaluación de riesgos</li>
-                        <li class="flex items-start"><span class="text-yellow-500 mr-2">•</span> Oportunidades emergentes</li>
-                        <li class="flex items-start"><span class="text-yellow-500 mr-2">•</span> Estrategias de salida</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-indigo-100 text-indigo-600 mr-3">
-                            <i class="fas fa-bullhorn fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">MARKETING</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Estrategias de contenido</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Publicidad digital</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Marketing viral</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Email marketing</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Marketing de influencers</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Métricas y análisis</li>
-                        <li class="flex items-start"><span class="text-indigo-500 mr-2">•</span> Automatización de marketing</li>
-                    </ul>
-                </div>
-                
-                <div class="toc-category">
-                    <div class="flex items-center mb-4">
-                        <div class="category-icon bg-pink-100 text-pink-600 mr-3">
-                            <i class="fas fa-chess fa-lg"></i>
-                        </div>
-                        <h3 class="text-xl font-semibold text-gray-800">ESTRATEGIA</h3>
-                    </div>
-                    <ul class="space-y-2 ml-4">
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Planificación estratégica</li>
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Análisis competitivo</li>
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Innovación estratégica</li>
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Transformación digital</li>
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Escenarios futuros</li>
-                        <li class="flex items-start"><span class="text-pink-500 mr-2">•</span> Toma de decisiones</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Introduction -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <h2 class="text-3xl font-bold text-gray-800 mb-6">INTRODUCCIÓN</h2>
+            <h3 class="text-xl font-semibold mt-8 mb-4">CATEGORÍAS INCLUIDAS:</h3>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+                <li><strong>1. Negocios</strong> - Modelos de negocio, estrategias de lanzamiento, expansión internacional</li>
+                <li><strong>2. Productividad</strong> - Gestión del tiempo, sistemas de eficiencia, optimización personal</li>
+                <li><strong>3. Marca Personal</strong> - Posicionamiento, storytelling, construcción de autoridad</li>
+                <li><strong>4. Ventas</strong> - Técnicas de cierre, prospección, objection handling</li>
+                <li><strong>5. Inversiones</strong> - Análisis de oportunidades, portfolio management, due diligence</li>
+                <li><strong>6. Marketing</strong> - Campañas virales, customer journey, growth hacking</li>
+                <li><strong>7. Estrategia</strong> - Planificación, competitive intelligence, business model innovation</li>
+            </ul>
             
-            <div class="prose prose-lg max-w-none">
-                <p class="mb-4 text-gray-700">En la era de la inteligencia artificial, los emprendedores que saben aprovechar al máximo estas herramientas tienen una ventaja competitiva significativa. Esta colección de más de 200 prompts ha sido cuidadosamente diseñada para ayudarte a:</p>
-                
-                <ul class="list-disc pl-6 mb-6 space-y-2 text-gray-700">
-                    <li>Identificar oportunidades de negocio únicas</li>
-                    <li>Optimizar tu productividad personal y empresarial</li>
-                    <li>Construir una marca personal poderosa</li>
-                    <li>Dominar las artes de la venta y el marketing</li>
-                    <li>Tomar decisiones de inversión inteligentes</li>
-                    <li>Desarrollar estrategias ganadoras</li>
-                </ul>
-                
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">Cómo usar estos prompts:</h3>
-                
-                <ol class="list-decimal pl-6 mb-6 space-y-2 text-gray-700">
-                    <li><strong>Selecciona</strong> el prompt más relevante para tu situación actual</li>
-                    <li><strong>Copia</strong> el prompt exactamente como aparece</li>
-                    <li><strong>Pega</strong> en tu herramienta de IA preferida (ChatGPT, Claude, Gemini, etc.)</li>
-                    <li><strong>Ajusta</strong> según tus necesidades específicas</li>
-                    <li><strong>Ejecuta</strong> y analiza los resultados</li>
-                </ol>
-                
-                <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
-                    <p class="text-blue-800"><strong>Consejo profesional:</strong> No te limites a usar los prompts tal cual. Adáptalos a tu contexto específico, industria y objetivos personales para obtener resultados aún más precisos.</p>
-                </div>
-                
-                <p class="text-gray-700">Cada categoría contiene prompts especializados que abordan diferentes aspectos del emprendimiento moderno. Desde la concepción inicial de una idea hasta la escalabilidad global, estos prompts están diseñados para guiarte en cada etapa de tu viaje empresarial.</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- NEGOCIOS Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-blue-100 text-blue-600 mr-4">
-                    <i class="fas fa-building fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">NEGOCIOS</h2>
-            </div>
+            <h3 class="text-xl font-semibold mt-8 mb-4">CÓMO USAR ESTOS PROMPTS:</h3>
+            <ol class="list-decimal pl-6 space-y-2 mb-6">
+                <li><strong>Copia cualquier prompt</strong> de las secciones siguientes</li>
+                <li><strong>Pégalo en tu LLM preferido</strong> (ChatGPT, Claude, Gemini, etc.)</li>
+                <li><strong>Ajusta según tus necesidades específicas</strong> agregando contexto relevante</li>
+                <li><strong>Implementa las ideas generadas</strong> en tu negocio o estrategia personal</li>
+            </ol>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Identificación de Nichos de Mercado</h3>
-                    <p class="text-gray-600 mb-3">Como experto en análisis de mercado, identifica 10 nichos poco explotados en [INDUSTRIA ESPECÍFICA] que presenten alto potencial de crecimiento y baja competencia. Para cada nicho, proporciona: tamaño estimado del mercado, barreras de entrada, perfil demográfico del cliente ideal, y 3 ideas de productos/servicios innovadores.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Análisis</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Oportunidades</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Modelo de Negocio Canvas</h3>
-                    <p class="text-gray-600 mb-3">Diseña un modelo de negocio completo usando Business Model Canvas para una empresa que ofrece [DESCRIPCIÓN DEL SERVICIO/PRODUCTO]. Incluye: propuesta de valor única, segmentos de clientes, canales de distribución, relaciones con clientes, fuentes de ingresos, recursos clave, actividades clave, socios clave, y estructura de costos. Proporciona métricas KPI para cada componente.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Planificación</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Estructura</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Validación de Ideas de Negocio</h3>
-                    <p class="text-gray-600 mb-3">Actúa como un consultor de validación de startups. Evalúa la viabilidad de [IDEA DE NEGOCIO] mediante un análisis exhaustivo que incluya: TAM/SAM/SOM, análisis FODA, validación de hipótesis críticas, estudio de competidores directos e indirectos, análisis de tendencias del mercado, y riesgos potenciales. Proporciona un plan de validación MVP con métricas específicas.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Validación</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Análisis</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Estrategia de Entrada al Mercado</h3>
-                    <p class="text-gray-600 mb-3">Como estratega de expansión internacional, desarrolla una estrategia completa para ingresar [PRODUCTO/SERVICIO] al mercado de [PAÍS/REGIÓN]. Considera: análisis cultural, regulaciones locales, canales de distribución, socios estratégicos, adaptaciones necesarias del producto, estrategia de precios, y cronograma de implementación de 12 meses con hitos clave.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Expansión</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Internacional</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 5 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Análisis Competitivo Avanzado</h3>
-                    <p class="text-gray-600 mb-3">Realiza un análisis competitivo profundo de [EMPRESA COMPETIDORA] comparándola con [TU EMPRESA/TIPO DE EMPRESA]. Incluye: fortalezas/débilidades competitivas, estrategias de diferenciación, posicionamiento de marca, modelo de precios, canales de venta, servicio al cliente, innovación, y recomendaciones específicas para obtener ventaja competitiva sostenible.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Competencia</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Estrategia</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 6 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Plan de Escalabilidad</h3>
-                    <p class="text-gray-600 mb-3">Como arquitecto de escalabilidad empresarial, crea un plan detallado para escalar [TIPO DE NEGOCIO] de [TAMAÑO ACTUAL] a [OBJETIVO DE ESCALA] en [PERIODO DE TIEMPO]. Incluye: infraestructura necesaria, requerimientos de capital, estructura organizacional óptima, procesos automatizables, métricas de crecimiento, riesgos de escalabilidad, y plan de contingencia.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Crecimiento</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Escalabilidad</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 7 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Innovación Disruptiva</h3>
-                    <p class="text-gray-600 mb-3">Identifica oportunidades para aplicar principios de innovación disruptiva en [INDUSTRIA TRADICIONAL]. Analiza: puntos débiles de la industria actual, tecnologías emergentes aplicables, modelos de negocio alternativos, barreras para adoptar cambios, estrategias para desplazar incumbentes, y roadmap de implementación de 3-5 años.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Innovación</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Disrupción</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 8 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Gestión de Riesgos Empresariales</h3>
-                    <p class="text-gray-600 mb-3">Como director de riesgos corporativos, elabora un marco integral de gestión de riesgos para [TIPO DE EMPRESA EN SECTOR ESPECÍFICO]. Incluye: identificación de riesgos estratégicos, operacionales, financieros, regulatorios y reputacionales; matrices de impacto/probabilidad; estrategias de mitigación; planes de contingencia; indicadores de alerta temprana; y proceso de monitoreo continuo.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Riesgos</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Gestión</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 9 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Transformación Digital</h3>
-                    <p class="text-gray-600 mb-3">Diseña una estrategia de transformación digital completa para [EMPRESA TRADICIONAL]. Incluye: diagnóstico del estado actual de digitalización, roadmap de implementación de 3 años, tecnologías prioritarias (IA, IoT, blockchain, etc.), cambio organizacional requerido, inversión necesaria, KPIs de éxito, y plan de gestión del cambio.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Digitalización</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Tecnología</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 10 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-blue-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Ecosistema de Startups</h3>
-                    <p class="text-gray-600 mb-3">Analiza el ecosistema de emprendimiento en [CIUDAD/REGIÓN/PAÍS]. Incluye: actores clave (aceleradoras, incubadoras, inversores, corporaciones), políticas gubernamentales, infraestructura disponible, talento especializado, eventos relevantes, fortalezas/débilidades del ecosistema, y recomendaciones para mejorar la conectividad y colaboración entre los diferentes actores.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Ecosistema</span>
-                        <span class="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Startups</span>
-                    </div>
-                </div>
-                
-                <!-- Additional NEGOCIOS prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 40+ NEGOCIOS prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+40 prompts adicionales en esta categoría</p>
-                </div>
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 mt-8">
+                <p class="text-blue-800">
+                    <strong>Consejo Profesional:</strong> Para mejores resultados, proporciona contexto específico sobre tu situación actual, objetivos y restricciones al usar cada prompt.
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- PRODUCTIVIDAD Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-green-100 text-green-600 mr-4">
-                    <i class="fas fa-bolt fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">PRODUCTIVIDAD</h2>
+    <!-- Categoría 1: Negocios -->
+    <div id="categoria1" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">1. NEGOCIOS</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para desarrollar modelos de negocio, estrategias de lanzamiento, expansión internacional y crecimiento empresarial.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 1</h3>
+            <p class="mb-4"><strong>Desarrolla un modelo de negocio escalable para una startup tecnológica enfocada en resolver problemas de logística en mercados emergentes. Incluye análisis de mercado, propuesta de valor única, canales de distribución y proyecciones financieras iniciales.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Startup</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Tecnología</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Logística</span>
             </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 2</h3>
+            <p class="mb-4"><strong>Crea una estrategia integral para lanzar un negocio de comercio electrónico desde cero, incluyendo selección de nicho, plataforma recomendada, estrategia de marketing inicial y métricas clave de éxito para los primeros 90 días.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">E-commerce</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Marketing</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Métricas</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 3</h3>
+            <p class="mb-4"><strong>Diseña un plan de expansión internacional para una empresa de software que actualmente opera solo en su mercado local. Incluye análisis de países objetivo, adaptaciones culturales necesarias, estructura legal recomendada y cronograma de implementación de 12 meses.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Internacionalización</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Software</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Legal</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 4</h3>
+            <p class="mb-4"><strong>Desarrolla una propuesta de socio estratégico para una empresa de salud digital que busca acelerar su crecimiento mediante alianzas. Incluye perfil de socios ideales, estructura de beneficios mutuos, modelo de gobernanza y métricas de éxito.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Alianzas</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Salud Digital</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Gobernanza</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 5</h3>
+            <p class="mb-4"><strong>Elabora un modelo financiero detallado para un negocio de suscripción mensual en la industria del fitness. Incluye proyecciones de ingresos, costos variables y fijos, punto de equilibrio, y estrategias para mejorar el lifetime value del cliente.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Suscripción</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Fitness</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Finanzas</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 6</h3>
+            <p class="mb-4"><strong>Crea una estrategia de pivote para un restaurante que ha visto disminuir sus ventas tradicionales debido al auge de servicios de entrega. Incluye nuevos modelos de negocio, adaptaciones operativas, estrategias digitales y análisis de viabilidad financiera.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Pivote</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Restaurante</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Digital</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 7</h3>
+            <p class="mb-4"><strong>Diseña un ecosistema de productos complementarios para una marca de productos ecológicos que busca aumentar su ticket promedio y fidelidad de clientes. Incluye análisis de sinergias, desarrollo de nuevos productos y estrategia de lanzamiento coordinada.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Ecosistema</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Productos Ecológicos</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Sinergias</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 8</h3>
+            <p class="mb-4"><strong>Desarrolla un plan de franquicia para un concepto innovador de cafetería con enfoque en tecnología y sostenibilidad. Incluye manual operativo básico, requerimientos de inversión inicial, perfil de franquiciado ideal y proyecciones de rentabilidad.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Franquicia</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Cafetería</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Sostenibilidad</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 9</h3>
+            <p class="mb-4"><strong>Crea una estrategia de entrada al mercado para una startup de fintech que ofrece soluciones de pago para pequeñas empresas. Incluye análisis regulatorio, competidores clave, canales de adquisición de clientes y modelo de monetización óptimo.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Fintech</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Pagos</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Regulaciones</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 10</h3>
+            <p class="mb-4"><strong>Elabora un modelo de negocio basado en economía colaborativa para conectar profesionales independientes con clientes corporativos. Incluye plataforma tecnológica requerida, mecanismos de verificación, estructura de comisiones y estrategia de crecimiento viral.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Economía Colaborativa</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded mr-2">Plataforma</span>
+                <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded">Crecimiento</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 2: Productividad -->
+    <div id="categoria2" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">2. PRODUCTIVIDAD</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para optimizar tu tiempo, energía y sistemas personales de gestión para emprendedores con múltiples responsabilidades.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 51</h3>
+            <p class="mb-4"><strong>Desarrolla un sistema personal de gestión del tiempo basado en principios de deep work y técnicas de productividad comprobadas, que maximice la eficiencia cognitiva durante las horas pico de trabajo.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Deep Work</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Gestión del Tiempo</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Eficiencia</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 52</h3>
+            <p class="mb-4"><strong>Crea un protocolo diario de optimización de energía física y mental para emprendedores que manejan múltiples proyectos simultáneamente, incluyendo rutinas matutinas, pausas estratégicas y rituales de cierre.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Energía</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Rutinas</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Bienestar</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 53</h3>
+            <p class="mb-4"><strong>Diseña una metodología de toma de decisiones rápidas y efectivas para situaciones críticas en startups, incorporando frameworks de análisis y criterios de priorización bajo incertidumbre.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Decisiones</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Análisis</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Priorización</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 54</h3>
+            <p class="mb-4"><strong>Elabora un sistema de delegación efectiva para fundadores que necesitan escalar su capacidad de ejecución sin comprometer la calidad ni el control estratégico de operaciones clave.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Delegación</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Escalabilidad</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Control</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 55</h3>
+            <p class="mb-4"><strong>Desarrolla una estrategia de batch processing para tareas administrativas recurrentes en negocios en crecimiento, reduciendo el tiempo dedicado en un 60% mediante agrupación inteligente de actividades.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Batch Processing</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded mr-2">Administración</span>
+                <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Optimización</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 3: Marca Personal -->
+    <div id="categoria3" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">3. MARCA PERSONAL</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para construir y posicionar tu marca personal como líder en tu industria y atraer oportunidades estratégicas.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 86</h3>
+            <p class="mb-4"><strong>Desarrolla una estrategia integral de construcción de marca personal para emprendedores que buscan posicionarse como thought leaders en sus respectivas industrias.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Marca Personal</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Thought Leadership</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Posicionamiento</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 87</h3>
+            <p class="mb-4"><strong>Crea un framework para definir y comunicar consistentemente tu unique value proposition personal en todos los canales digitales y presenciales.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">UVP</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Comunicación</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Consistencia</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 88</h3>
+            <p class="mb-4"><strong>Diseña una estrategia de storytelling auténtico que convierta tu trayectoria profesional en una narrativa atractiva y memorable para audiencias objetivo.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Storytelling</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Narrativa</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Autenticidad</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 89</h3>
+            <p class="mb-4"><strong>Elabora un plan de contenido que establezca autoridad en tu campo de expertise mientras genera engagement genuino con seguidores potenciales.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Contenido</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Autoridad</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Engagement</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 90</h3>
+            <p class="mb-4"><strong>Desarrolla una metodología para mantener coherencia de mensaje y estilo visual en todas las plataformas sociales sin invertir tiempo excesivo en creación individual.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Coherencia</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded mr-2">Branding</span>
+                <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Automatización</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 4: Ventas -->
+    <div id="categoria4" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">4. VENTAS</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para dominar técnicas de ventas, objection handling, consultative selling y estrategias de cierre efectivas.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 116</h3>
+            <p class="mb-4"><strong>Desarrolla una metodología de prospección de leads de alta calidad que identifique prospectos ideales antes de que manifiesten interés explícito.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Prospección</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Leads</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Calificación</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 117</h3>
+            <p class="mb-4"><strong>Crea un sistema de storytelling de ventas que convierta características de productos en beneficios emocionales irresistibles para compradores.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Storytelling</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Beneficios</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Emocional</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 118</h3>
+            <p class="mb-4"><strong>Diseña una estrategia de objection handling que transforme objeciones comunes en oportunidades de profundizar la relación y aumentar el valor percibido.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Objection Handling</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Relación</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Valor</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 119</h3>
+            <p class="mb-4"><strong>Elabora un framework para identificar buying signals sutiles que indiquen momento óptimo para cerrar ventas sin parecer pushy o agresivo.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Buying Signals</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Cierre</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Timing</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 120</h3>
+            <p class="mb-4"><strong>Desarrolla una técnica de consultative selling que posicione a tu equipo como asesores de confianza en lugar de vendedores tradicionales.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Consultative Selling</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded mr-2">Asesoría</span>
+                <span class="bg-red-100 text-red-800 px-2 py-1 rounded">Confianza</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 5: Inversiones -->
+    <div id="categoria5" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">5. INVERSIONES</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para tomar decisiones inteligentes de inversión, evaluar oportunidades y optimizar portfolios para crecimiento sostenible.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 156</h3>
+            <p class="mb-4"><strong>Desarrolla una estrategia de inversión en startups tecnológicas que equilibre potencial de retorno con tolerancia al riesgo para inversores ángel principiantes.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Startups</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Tecnología</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Inversión</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 157</h3>
+            <p class="mb-4"><strong>Crea un framework para evaluar oportunidades de inversión en criptomonedas considerando volatilidad, fundamentos tecnológicos y adopción del mercado.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Criptomonedas</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Volatilidad</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Adopción</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 158</h3>
+            <p class="mb-4"><strong>Diseña una metodología de portfolio diversification que proteja capital mientras maximiza retornos en diferentes ciclos económicos.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Diversificación</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Portfolio</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Ciclos Económicos</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 159</h3>
+            <p class="mb-4"><strong>Elabora una estrategia de inversión en bienes raíces que identifique propiedades con potencial de plusvalía superior al promedio del mercado.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Bienes Raíces</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Plusvalía</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Mercado</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 160</h3>
+            <p class="mb-4"><strong>Desarrolla una técnica para analizar financial statements de empresas privadas con información limitada disponible públicamente.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Financial Statements</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded mr-2">Empresas Privadas</span>
+                <span class="bg-yellow-100 text-yellow-800 px-2 py-1 rounded">Análisis</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 6: Marketing -->
+    <div id="categoria6" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">6. MARKETING</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para ejecutar campañas virales, estrategias de growth hacking, customer journey mapping y marketing de contenidos efectivo.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 181</h3>
+            <p class="mb-4"><strong>Desarrolla una estrategia de growth hacking que identifique canales de adquisición de clientes con bajo costo y alto impacto viral.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Growth Hacking</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Adquisición</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Viralidad</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 182</h3>
+            <p class="mb-4"><strong>Crea un framework para diseñar campañas de marketing de contenidos que generen leads cualificados de forma orgánica y sostenible.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Marketing de Contenidos</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Leads</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Organicidad</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 183</h3>
+            <p class="mb-4"><strong>Diseña una metodología de customer journey mapping que identifique puntos críticos de fricción y oportunidades de delight.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Customer Journey</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Friction Points</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Delight</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 184</h3>
+            <p class="mb-4"><strong>Elabora una estrategia de community building que convierta usuarios en embajadores apasionados de tu marca.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Community Building</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Embajadores</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Marca</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 185</h3>
+            <p class="mb-4"><strong>Desarrolla una técnica de viral loop design que incentive compartir orgánico mediante incentivos intrínsecos al producto.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Viral Loop</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded mr-2">Compartir</span>
+                <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded">Incentivos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categoría 7: Estrategia -->
+    <div id="categoria7" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 category-title">7. ESTRATEGIA</h2>
+        <p class="text-gray-600 mb-8">Prompts especializados para desarrollar pensamiento estratégico avanzado, scenario planning, business model innovation y competitive intelligence.</p>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 216</h3>
+            <p class="mb-4"><strong>Desarrolla una metodología de scenario planning que prepare tu organización para múltiples futuros posibles con diferentes grados de probabilidad.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Scenario Planning</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Futuro</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded">Probabilidad</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 217</h3>
+            <p class="mb-4"><strong>Crea un framework para identificar y explotar first mover advantages en mercados emergentes antes de que se saturen.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">First Mover</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Ventaja</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded">Mercados Emergentes</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 218</h3>
+            <p class="mb-4"><strong>Diseña una estrategia de blue ocean strategy que cree nuevos espacios de mercado sin competencia directa significativa.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Blue Ocean</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Estrategia</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded">Competencia</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 219</h3>
+            <p class="mb-4"><strong>Elabora una técnica de competitive intelligence que revele movimientos estratégicos de competidores antes de que se hagan públicos.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Competitive Intelligence</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Estrategia</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded">Competencia</span>
+            </div>
+        </div>
+        
+        <div class="prompt-card p-6">
+            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 220</h3>
+            <p class="mb-4"><strong>Desarrolla una metodología de pivot strategy que permita cambios de dirección radical sin perder momentum acumulado.</strong></p>
+            <div class="flex items-center text-sm text-gray-500">
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Pivot Strategy</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded mr-2">Dirección</span>
+                <span class="bg-pink-100 text-pink-800 px-2 py-1 rounded">Momentum</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Conclusión -->
+    <div id="conclusion" class="page-break bg-white p-8 min-h-screen">
+        <h2 class="text-3xl font-bold mb-6 pb-2 border-b border-gray-300">CONCLUSIÓN</h2>
+        <div class="prose max-w-none">
+            <p class="text-lg mb-6 leading-relaxed">
+                Esta colección premium de prompts especializados proporciona herramientas inmediatas para emprendedores que buscan:
+            </p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Sistema de Gestión del Tiempo</h3>
-                    <p class="text-gray-600 mb-3">Diseña un sistema personalizado de gestión del tiempo para un emprendedor que trabaja en múltiples proyectos simultáneamente. Incluye: metodología de priorización (Eisenhower, Ivy Lee, etc.), bloqueo de tiempo para actividades estratégicas, manejo de interrupciones, herramientas tecnológicas recomendadas, rituales matutinos/nocturnos, y métricas para evaluar la efectividad del sistema.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Tiempo</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Organización</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Automatización de Procesos</h3>
-                    <p class="text-gray-600 mb-3">Identifica 20 procesos repetitivos en una startup de tecnología que pueden automatizarse completamente. Para cada proceso, especifica: descripción detallada, herramientas/software recomendadas, tiempo estimado de implementación, ROI esperado, y pasos de implementación paso a paso. Prioriza por impacto en productividad vs. complejidad técnica.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Automatización</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Eficiencia</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Eliminación de Distracciones</h3>
-                    <p class="text-gray-600 mb-3">Como experto en focus y concentración, crea un plan completo para eliminar distracciones digitales y físicas durante horas de trabajo intensivo. Incluye: configuración óptima del entorno de trabajo, gestión de notificaciones, técnicas de focus profundo, rutinas anti-procrastinación, herramientas de bloqueo de distracciones, y estrategias para mantener consistencia a largo plazo.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Concentración</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Focus</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Rutinas de Alto Rendimiento</h3>
-                    <p class="text-gray-600 mb-3">Diseña 5 rutinas diarias basadas en neurociencia y psicología del rendimiento para emprendedores de alto impacto. Incluye: rutina matutina (60 minutos), bloque de trabajo profundo (90 minutos), pausa estratégica (15 minutos), revisión ejecutiva (30 minutos), y cierre del día (30 minutos). Detalla actividades específicas, timing óptimo, y beneficios esperados de cada rutina.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Rutinas</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Rendimiento</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 5 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-green-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Gestión de Energía vs Tiempo</h3>
-                    <p class="text-gray-600 mb-3">Como coach de productividad avanzada, desarrolla un sistema de gestión de energía que optimice el rendimiento emprendedor. Incluye: mapeo de ciclos energéticos personales, alineación de tareas con niveles de energía, estrategias de recuperación activa, nutrición y ejercicio óptimos, manejo del estrés, y plan semanal que maximice la energía durante las 24 horas del día.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Energía</span>
-                        <span class="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Bienestar</span>
-                    </div>
-                </div>
-                
-                <!-- Additional PRODUCTIVIDAD prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 30+ PRODUCTIVIDAD prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+30 prompts adicionales en esta categoría</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MARCA PERSONAL Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-purple-100 text-purple-600 mr-4">
-                    <i class="fas fa-user-tie fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">MARCA PERSONAL</h2>
-            </div>
+            <ul class="list-disc pl-6 space-y-2 mb-6">
+                <li>Iniciar y escalar negocios exitosos</li>
+                <li>Optimizar productividad personal y profesional</li>
+                <li>Construir marca personal poderosa</li>
+                <li>Dominar arte de ventas efectivas</li>
+                <li>Tomar decisiones inteligentes de inversión</li>
+                <li>Ejecutar estrategias de marketing impactantes</li>
+                <li>Desarrollar pensamiento estratégico avanzado</li>
+            </ul>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-purple-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Definición de Identidad Profesional</h3>
-                    <p class="text-gray-600 mb-3">Como estratega de marca personal, ayuda a definir la identidad profesional única de un emprendedor en [INDUSTRIA]. Incluye: valores fundamentales, propuesta de valor personal, narrativa auténtica, diferenciadores clave, audiencia ideal, canales de comunicación prioritarios, y plan de contenido que refuerce esta identidad durante 6 meses.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Identidad</span>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Autenticidad</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-purple-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Posicionamiento como Experto</h3>
-                    <p class="text-gray-600 mb-3">Desarrolla una estrategia completa para posicionar a [PROFESIONAL] como autoridad en [NICHO ESPECÍFICO]. Incluye: mapa de contenido especializado, frecuencia de publicación óptima, tipos de contenido más efectivos, plataformas prioritarias, colaboraciones estratégicas, métricas de autoridad, y timeline de 12 meses para alcanzar reconocimiento en la industria.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Autoridad</span>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Reconocimiento</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-purple-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Presencia Digital Integral</h3>
-                    <p class="text-gray-600 mb-3">Crea una estrategia de presencia digital coherente y profesional para un emprendedor en [SECTOR]. Incluye: optimización de perfiles en redes sociales profesionales, sitio web personal, newsletter, podcast, YouTube channel, LinkedIn articles, y presencia en comunidades relevantes. Define voice and tone, calendar de contenidos, y sistema de medición de impacto.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Digital</span>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Presencia</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-purple-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Networking Estratégico</h3>
-                    <p class="text-gray-600 mb-3">Diseña un plan de networking estratégico para conectar con 100+ profesionales influyentes en [INDUSTRIA] durante 6 meses. Incluye: identificación de personas clave, estrategias de aproximación personalizada, valor único que ofrecer, seguimiento efectivo, participación en eventos relevantes, y construcción de relaciones mutuamente beneficiosas a largo plazo.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Networking</span>
-                        <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded">Relaciones</span>
-                    </div>
-                </div>
-                
-                <!-- Additional MARCA PERSONAL prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 25+ MARCA PERSONAL prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+25 prompts adicionales en esta categoría</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- VENTAS Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-red-100 text-red-600 mr-4">
-                    <i class="fas fa-chart-line fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">VENTAS</h2>
-            </div>
+            <p class="mb-6 leading-relaxed">
+                Cada prompt está diseñado para obtener resultados concretos cuando se usa con inteligencia artificial moderna como ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs principales. La estructura por categorías permite navegación fácil y aplicación específica según necesidades inmediatas.
+            </p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-red-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Arquitectura de Ventas Completa</h3>
-                    <p class="text-gray-600 mb-3">Diseña una arquitectura de ventas end-to-end para [TIPO DE PRODUCTO/SERVICIO] dirigido a [PERSONA IDEAL]. Incluye: buyer persona detallada, customer journey map, funnels de ventas múltiples, puntos de contacto clave, mensajes de valor por etapa, herramientas tecnológicas, métricas KPI por fase, y estrategias de optimización continua con ROI esperado.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Arquitectura</span>
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Estrategia</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-red-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Técnicas de Cierre Avanzadas</h3>
-                    <p class="text-gray-600 mb-3">Como maestro en cierre de ventas, proporciona 15 técnicas psicológicamente probadas para cerrar deals complejos de [MONTO MÍNIMO]. Incluye: descripción detallada de cada técnica, situaciones óptimas de aplicación, scripts conversacionales, señales de compra a observar, objeciones típicas y respuestas, y ejemplos prácticos de implementación exitosa.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Cierre</span>
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Psicología</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-red-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Superación de Objeciones</h3>
-                    <p class="text-gray-600 mb-3">Identifica las 20 objeciones más comunes en ventas de [TIPO DE PRODUCTO/SERVICIO] y desarrolla respuestas persuasivas basadas en principios de persuasión neurolingüística. Para cada objeción, incluye: contexto típico, respuesta estructurada (ACK, Bridge, Solution), técnicas de redirección, y ejemplos de diálogo realista entre vendedor y prospecto.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Objeciones</span>
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Persuasión</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-red-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Presentaciones Impactantes</h3>
-                    <p class="text-gray-600 mb-3">Crea una metodología para desarrollar presentaciones de ventas irresistibles para [AUDIENCIA OBJETIVO]. Incluye: estructura narrativa ganadora, elementos visuales persuasivos, storytelling efectivo, demostraciones interactivas, manejo de Q&A, cierre memorables, y herramientas tecnológicas para elevar la experiencia del cliente durante la presentación.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Presentaciones</span>
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Storytelling</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 5 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-red-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Prospección de Clientes Alta Calidad</h3>
-                    <p class="text-gray-600 mb-3">Desarrolla un sistema de prospección de leads altamente calificados para [INDUSTRIA ESPECÍFICA]. Incluye: criterios de ideal customer profile, fuentes de prospectos premium, técnicas de outreach personalizado, secuencias de follow-up efectivas, herramientas de investigación de prospects, scoring de leads, y métricas para optimizar la tasa de conversión desde lead hasta oportunidad calificada.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Prospección</span>
-                        <span class="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">Leads</span>
-                    </div>
-                </div>
-                
-                <!-- Additional VENTAS prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 35+ VENTAS prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+35 prompts adicionales en esta categoría</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- INVERSIONES Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-yellow-100 text-yellow-600 mr-4">
-                    <i class="fas fa-coins fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">INVERSIONES</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-yellow-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Análisis de Oportunidades de Inversión</h3>
-                    <p class="text-gray-600 mb-3">Como analista senior de inversiones, evalúa 10 oportunidades emergentes en [SECTOR/TECNOLOGÍA] con potencial de retorno superior al 25% en 3-5 años. Para cada oportunidad, proporciona: análisis fundamental, comparables del mercado, proyecciones financieras, riesgos identificados, thesis de inversión, y métricas clave de due diligence. Incluye recomendaciones de estructura de inversión óptima.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Análisis</span>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Oportunidades</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-yellow-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Diversificación de Portafolio</h3>
-                    <p class="text-gray-600 mb-3">Diseña una estrategia de diversificación óptima para un portafolio de inversión de [MONTO TOTAL] distribuido entre clases de activos tradicionales y alternativas. Incluye: asignación porcentual recomendada, correlaciones entre activos, reequilibrio automático, protección contra inflación, exposición geográfica, instrumentos específicos recomendados, y escenarios de stress testing para diferentes condiciones de mercado.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Diversificación</span>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Portafolio</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-yellow-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Evaluación de Startups Pre-Serie A</h3>
-                    <p class="text-gray-600 mb-3">Como socio de venture capital, desarrolla un framework de evaluación para startups pre-serie A en [VERTICAL ESPECÍFICO]. Incluye: criterios de screening inicial, due diligence checklist detallada, métricas SaaS/Ventas clave, análisis del founding team, assessment del market opportunity, competitive landscape, unit economics, y matriz de scoring para tomar decisiones de inversión informadas.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Venture Capital</span>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Due Diligence</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-yellow-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Estrategias de Salida</h3>
-                    <p class="text-gray-600 mb-3">Como advisor de M&A, crea un playbook completo de estrategias de salida para inversiones en [TIPO DE ACTIVO]. Incluye: timing óptimo de salida, canales de distribución (trade sale, IPO, secondary), preparación previa a la salida, valuación expectante, compradores potenciales, estructura de deal preferida, y tácticas para maximizar el valor percibido durante el proceso de salida.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">M&A</span>
-                        <span class="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">Salida</span>
-                    </div>
-                </div>
-                
-                <!-- Additional INVERSIONES prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 20+ INVERSIONES prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+20 prompts adicionales en esta categoría</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- MARKETING Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-indigo-100 text-indigo-600 mr-4">
-                    <i class="fas fa-bullhorn fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">MARKETING</h2>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Estrategia de Contenido Viral</h3>
-                    <p class="text-gray-600 mb-3">Diseña una estrategia de contenido con potencial viral para [INDUSTRIA/NICHO] que genere 1M+ impresiones mensuales en 6 meses. Incluye: análisis de contenido viral histórico en el sector, formatos de contenido de alto engagement, calendar editorial, tácticas de distribución orgánica y pagada, métricas de éxito, y proceso de optimización basado en datos en tiempo real.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Contenido</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Viral</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Automatización de Marketing</h3>
-                    <p class="text-gray-600 mb-3">Como arquitecto de marketing automation, diseña un sistema completo para nutrir leads automatizados en [FUNNEL ESPECÍFICO]. Incluye: segmentación avanzada, journeys personalizados, puntos de activación, integraciones tecnológicas, métricas de performance, y optimización continua. Proporciona estructura de 5 campañas automatizadas con triggers y contenido específico.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Automatización</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Email</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Marketing de Influencers</h3>
-                    <p class="text-gray-600 mb-3">Desarrolla una estrategia de influencer marketing para lanzar [PRODUCTO/SERVICIO] en [MERCADO OBJETIVO]. Incluye: identificación de influencers por tier (nano, micro, macro), criterios de selección, estructuras de colaboración, briefings detallados, métricas de éxito, y plan de 12 semanas con objetivos semanales y KPIs por campaña.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Influencers</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Colaboraciones</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Publicidad Digital de Alto ROI</h3>
-                    <p class="text-gray-600 mb-3">Crea una estrategia de paid advertising multi-canal para [PRODUCTO/SERVICIO] con objetivo de CPA < $[MONTO]. Incluye: plataforma prioritarias (Google Ads, Meta, LinkedIn, TikTok), targeting avanzado, creatividades testeables, estructura de campañas, bidding strategies, attribution model, y proceso de optimización continua con análisis de cohorts y lifetime value.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Paid Ads</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">ROI</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 5 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-indigo-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Métricas y Analytics Avanzados</h3>
-                    <p class="text-gray-600 mb-3">Implementa un dashboard de marketing analytics avanzado para [TIPO DE NEGOCIO]. Incluye: KPIs estratégicos por canal, métricas de atribución multi-touch, análisis de cohortes, customer journey mapping digital, herramientas de analytics recomendadas, proceso de reporting automatizado, y alertas inteligentes para optimización en tiempo real.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">Analytics</span>
-                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded">KPIs</span>
-                    </div>
-                </div>
-                
-                <!-- Additional MARKETING prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 30+ MARKETING prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+30 prompts adicionales en esta categoría</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ESTRATEGIA Category -->
-    <div class="min-h-screen p-8 page-break">
-        <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-8">
-            <div class="flex items-center mb-8">
-                <div class="category-icon bg-pink-100 text-pink-600 mr-4">
-                    <i class="fas fa-chess fa-2x"></i>
-                </div>
-                <h2 class="text-3xl font-bold text-gray-800">ESTRATEGIA</h2>
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-lg my-8">
+                <h3 class="text-xl font-semibold mb-3 text-blue-800">Implementa estos prompts hoy y acelera tu camino hacia el éxito empresarial y la generación de riqueza sostenible.</h3>
+                <p class="text-blue-700">
+                    <strong>Recuerda:</strong> La clave del éxito no está solo en tener las herramientas, sino en usarlas consistentemente y adaptarlas a tu contexto único.
+                </p>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- Prompt 1 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Planificación Estratégica a 5 Años</h3>
-                    <p class="text-gray-600 mb-3">Como estratega corporativo, desarrolla un plan estratégico de 5 años para [ORGANIZACIÓN] en [INDUSTRIA]. Incluye: visión futura, objetivos estratégicos SMART, análisis PESTEL, escenarios futuros (mejor caso/base/peor caso), iniciativas estratégicas prioritarias, roadmaps de implementación, KPIs estratégicos, y proceso de revisión trimestral con métricas de adaptabilidad.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Planificación</span>
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Largo Plazo</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 2 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Análisis Competitivo Estratégico</h3>
-                    <p class="text-gray-600 mb-3">Realiza un análisis competitivo 360° de [COMPETIDOR CLAVE] versus [TU ORGANIZACIÓN]. Incluye: positioning estratégico, diferenciadores competitivos, movimientos recientes del competidor, debilidades explotables, amenazas emergentes, oportunidades de contrataque, y recomendaciones específicas para obtener ventaja competitiva sostenible en los próximos 24 meses.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Competencia</span>
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Análisis</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 3 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Innovación Estratégica</h3>
-                    <p class="text-gray-600 mb-3">Diseña un laboratorio de innovación estratégica para [ORGANIZACIÓN] que genere 3 nuevas líneas de negocio escalables en 18 meses. Incluye: proceso de generación de ideas, metodología de validación rápida, estructura del equipo innovador, métricas de éxito, budget recomendado, timeline de desarrollo, y estrategia de integración con el core business existente.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Innovación</span>
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Laboratorio</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 4 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Transformación Digital Estratégica</h3>
-                    <p class="text-gray-600 mb-3">Como transformation officer, crea un roadmap de transformación digital estratégica para [ORGANIZACIÓN TRADICIONAL]. Incluye: diagnóstico de madurez digital actual, visión target de digitalización, iniciativas prioritarias por horizonte temporal, inversión requerida, change management strategy, KPIs de transformación, y plan de contingencia para resistencia al cambio.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Digital</span>
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Transformación</span>
-                    </div>
-                </div>
-                
-                <!-- Prompt 5 -->
-                <div class="prompt-card bg-gray-50 rounded-lg p-6 border-l-4 border-pink-500">
-                    <h3 class="font-semibold text-lg text-gray-800 mb-2">Escenarios Futuros y Plan B</h3>
-                    <p class="text-gray-600 mb-3">Desarrolla 5 escenarios futuros plausibles para [INDUSTRIA] en los próximos 5 años considerando tendencias tecnológicas, económicas, regulatorias y sociales. Para cada escenario, proporciona: descripción detallada, impacto probable en el negocio, estrategias de adaptación, señales tempranas a monitorear, y planes B específicos para pivotar rápidamente según el escenario que se materialice.</p>
-                    <div class="flex flex-wrap gap-2 mt-3">
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Futuro</span>
-                        <span class="bg-pink-100 text-pink-800 text-xs px-2 py-1 rounded">Planificación</span>
-                    </div>
-                </div>
-                
-                <!-- Additional ESTRATEGIA prompts would continue here -->
-                <!-- For brevity, I'll add placeholders for the remaining prompts -->
-                
-                <!-- Placeholder for remaining 25+ ESTRATEGIA prompts -->
-                <div class="col-span-2 text-center py-8 text-gray-500">
-                    <p>+25 prompts adicionales en esta categoría</p>
-                </div>
+            <div class="text-center mt-12 p-6 bg-gray-50 rounded-lg">
+                <h3 class="text-2xl font-bold mb-4">¡Gracias por confiar en nuestra colección!</h3>
+                <p class="text-gray-600">Esperamos que estas herramientas impulsen tu crecimiento profesional y empresarial.</p>
             </div>
         </div>
     </div>
 
-    <!-- Final Page -->
-    <div class="min-h-screen flex items-center justify-center p-8 page-break">
-        <div class="max-w-4xl mx-auto text-center">
-            <div class="bg-white rounded-xl shadow-lg p-12">
-                <i class="fas fa-star text-5xl text-yellow-500 mb-6"></i>
-                <h2 class="text-3xl font-bold text-gray-800 mb-6">¡FELICIDADES!</h2>
-                <p class="text-xl text-gray-600 mb-8">Has completado la revisión de más de 200 prompts especializados para emprendedores.</p>
-                <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-6 rounded-lg mb-8">
-                    <p class="text-lg font-semibold">Ahora tienes las herramientas más poderosas para:</p>
-                    <ul class="mt-4 text-left max-w-md mx-auto space-y-2">
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Identificar oportunidades únicas</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Escalar tu negocio exponencialmente</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Dominar la productividad personal</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Construir una marca irresistible</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Cerrar ventas de alto ticket</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Invertir inteligentemente</li>
-                        <li class="flex items-center"><i class="fas fa-check-circle mr-3"></i> Desarrollar estrategias ganadoras</li>
-                    </ul>
-                </div>
-                <p class="text-gray-600">Utiliza estos prompts con cualquier LLM para obtener resultados extraordinarios en tu emprendimiento.</p>
-            </div>
-        </div>
+    <!-- Footer para impresión -->
+    <div class="no-print fixed bottom-0 left-0 right-0 bg-gray-800 text-white p-4 text-center text-sm">
+        <p>Colección Premium de Prompts para Emprender, Escalar y Generar Riqueza | Documento para uso exclusivo</p>
     </div>
+
 </body>
 </html>
