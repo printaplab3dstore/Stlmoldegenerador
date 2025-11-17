@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Estudio de Inglés - Nivel Principiante</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .lesson-card {
+            transition: all 0.3s ease;
+        }
+        .lesson-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        .completed {
+            background: linear-gradient(45deg, #10b981, #34d399);
+        }
+        .star-animation {
+            animation: starPulse 2s infinite;
+        }
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        .bounce-in {
+            animation: bounceIn 0.6s ease;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pronunciation-btn {
+            transition: all 0.2s ease;
+        }
+        .pronunciation-btn:hover {
+            transform: scale(1.1);
+        }
+        .quiz-option {
+            transition: all 0.3s ease;
+        }
+        .quiz-option:hover {
+            transform: translateX(5px);
+        }
+        .correct-answer {
+            background: linear-gradient(45deg, #10b981, #34d399);
+            color: white;
+        }
+        .wrong-answer {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/5d9b603a-e6d8-4c10-a97e-8bf48770ba12/english_study_hero_20251117221713_1.png" 
+                         alt="English Study Hero" class="w-16 h-16 rounded-full border-4 border-white">
+                    <div>
+                        <h1 class="text-3xl font-bold">¡Aprende Inglés!</h1>
+                        <p class="text-blue-100">Plan de Estudio Interactivo</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-star text-yellow-300"></i>
+                        <span id="totalPoints" class="text-2xl font-bold">0</span>
+                        <span class="text-blue-100">puntos</span>
+                    </div>
+                    <div class="text-sm text-blue-100">Progreso: <span id="overallProgress">0</span>%</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Progress Overview -->
+    <div class="container mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-line text-blue-600 mr-3"></i>
+                Tu Progreso General
+            </h2>
+            <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                <div id="mainProgressBar" class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-4 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600" id="completedLessons">0</div>
+                    <div class="text-gray-600">Lecciones Completadas</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600" id="correctAnswers">0</div>
+                    <div class="text-gray-600">Respuestas Correctas</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600" id="streakDays">0</div>
+                    <div class="text-gray-600">Días Seguidos</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600" id="achievements">0</div>
+                    <div class="text-gray-600">Logros</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Lesson 1: Plurals -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="1">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/9c2bb791-7b87-4762-a3ff-7f7d9c831da5/plurals_illustration_20251117221734_1.png" 
+                         alt="Plurals" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 1: Plurales</h3>
+                    <p class="text-gray-600 mb-4">Aprende cómo formar el plural en inglés (cat → cats, book → books)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">15 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">50 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Comenzar Lección
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 2: Possessive 's -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="2">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/a0545aee-0402-4fc8-9ecf-65d920b196b8/possessive_illustration_20251117221755_1.png" 
+                         alt="Possessive" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 2: Posesivo 's</h3>
+                    <p class="text-gray-600 mb-4">Aprende a mostrar posesión (Tom's book, Maria's cat)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">12 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">40 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 3: Have got / Has got -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="3">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/dbf618db-12b2-4a25-b204-ccc282048f78/have_has_got_illustration_20251117221816_1.png" 
+                         alt="Have Has Got" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 3: Have got / Has got</h3>
+                    <p class="text-gray-600 mb-4">Aprende a decir lo que tienes (I have got, She has got)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">18 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">60 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 4: School Subjects -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="4">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/2bf46a5f-89f4-48c6-8c4a-8f54698bdca8/school_subjects_illustration_20251117221837_1.png" 
+                         alt="School Subjects" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 4: Materias Escolares</h3>
+                    <p class="text-gray-600 mb-4">Aprende los nombres de las materias en inglés</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">20 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">45 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 5: Telling Time -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="5">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/f4bf8656-d698-417c-b0e9-cedc34b236b3/time_clock_illustration_20251117221859_1.png" 
+                         alt="Telling Time" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 5: La Hora</h3>
+                    <p class="text-gray-600 mb-4">Aprende a decir la hora en inglés</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">25 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">55 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 6: Daily Routines -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="6">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/c236ea60-73f3-4cb2-b9b1-73355ca1f4b6/daily_routines_illustration_20251117221920_1.png" 
+                         alt="Daily Routines" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 6: Rutinas Diarias</h3>
+                    <p class="text-gray-600 mb-4">Aprende a hablar sobre tu rutina diaria</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">22 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">65 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 7: Present Simple -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="7">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/c78d2de2-134d-40a6-8d68-e3adce3a35fc/present_simple_illustration_20251117221941_1.png" 
+                         alt="Present Simple" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 7: Presente Simple</h3>
+                    <p class="text-gray-600 mb-4">Aprende el presente simple: positivo, negativo y preguntas</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">30 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">80 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lesson Modal -->
+    <div id="lessonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 id="lessonTitle" class="text-2xl font-bold text-gray-800"></h2>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="lessonContent" class="p-6">
+                <!-- Lesson content will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Modal -->
+    <div id="achievementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full bounce-in">
+            <div class="p-6 text-center">
+                <div class="text-6xl mb-4">🏆</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">¡Felicitaciones!</h3>
+                <p id="achievementText" class="text-gray-600 mb-4"></p>
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i class="fas fa-star text-yellow-500"></i>
+                    <span id="achievementPoints" class="text-xl font-bold text-blue-600"></span>
+                    <span class="text-gray-600">puntos ganados</span>
+                </div>
+                <button id="closeAchievement" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700">
+                    ¡Genial!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            currentLesson: 1,
+            completedLessons: [],
+            totalPoints: 0,
+            correctAnswers: 0,
+            streakDays: 1,
+            achievements: 0
+        };
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('englishStudyProgress');
+            if (saved) {
+                gameState = { ...gameState, ...JSON.parse(saved) };
+                updateUI();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('englishStudyProgress', JSON.stringify(gameState));
+        }
+
+        // Update UI elements
+        function updateUI() {
+            document.getElementById('totalPoints').textContent = gameState.totalPoints;
+            document.getElementById('completedLessons').textContent = gameState.completedLessons.length;
+            document.getElementById('correctAnswers').textContent = gameState.correctAnswers;
+            document.getElementById('streakDays').textContent = gameState.streakDays;
+            document.getElementById('achievements').textContent = gameState.achievements;
+            
+            const progress = (gameState.completedLessons.length / 7) * 100;
+            document.getElementById('overallProgress').textContent = Math.round(progress);
+            document.getElementById('mainProgressBar').style.width = progress + '%';
+
+            updateLessonCards();
+        }
+
+        // Update lesson cards based on progress
+        function updateLessonCards() {
+            const lessonCards = document.querySelectorAll('.lesson-card');
+            lessonCards.forEach((card, index) => {
+                const lessonNum = index + 1;
+                const statusDiv = card.querySelector('.lesson-status');
+                const button = card.querySelector('.lesson-btn');
+                
+                if (gameState.completedLessons.includes(lessonNum)) {
+                    statusDiv.innerHTML = '<i class="fas fa-check mr-1"></i>Completado';
+                    statusDiv.className = 'lesson-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Repasar Lección';
+                    button.className = 'lesson-btn w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors';
+                    card.classList.add('completed');
+                } else if (lessonNum === gameState.currentLesson) {
+                    statusDiv.innerHTML = '<i class="fas fa-play mr-1"></i>Disponible';
+                    statusDiv.className = 'lesson-status bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Comenzar Lección';
+                    button.className = 'lesson-btn w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors';
+                } else if (lessonNum > gameState.currentLesson) {
+                    statusDiv.innerHTML = '<i class="fas fa-lock mr-1"></i>Bloqueado';
+                    statusDiv.className = 'lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Completa la lección anterior';
+                    button.className = 'lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed';
+                }
+            });
+        }
+
+        // Lesson content data
+        const lessonData = {
+            1: {
+                title: 'Lección 1: Plurales',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">¿Qué son los plurales?</h3>
+                            <p class="text-gray-700 mb-4">Los plurales se usan cuando hablamos de más de una cosa. En español decimos "gato" y "gatos". En inglés es similar:</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">🐱</div>
+                                    <div class="font-bold">cat</div>
+                                    <div class="text-sm text-gray-600">(gato)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">🐱🐱🐱</div>
+                                    <div class="font-bold">cats</div>
+                                    <div class="text-sm text-gray-600">(gatos)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-green-800 mb-4">Reglas básicas:</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                    <div>
+                                        <div class="font-semibold">Regla general: agregar -s</div>
+                                        <div class="text-sm text-gray-600">book → books, pen → pens</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                    <div>
+                                        <div class="font-semibold">Si termina en -s, -x, -z, -ch, -sh: agregar -es</div>
+                                        <div class="text-sm text-gray-600">box → boxes, watch → watches</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-4">Practica la pronunciación:</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">cats</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('cats')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">/kæts/</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">books</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('books')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">/bʊks/</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="quiz1" class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-purple-800 mb-4">¡Hora del Quiz!</h3>
+                            <div id="question1" class="quiz-question">
+                                <p class="mb-4 font-semibold">¿Cuál es el plural de "dog"?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'dogs', this)">dogs</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'doges', this)">doges</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'dogies', this)">dogies</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="completeLesson1" class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors disabled:bg-gray-400" disabled onclick="completeLesson(1)">
+                            Completar Lección (Responde el quiz primero)
+                        </button>
+                    </div>
+                `
+            },
+            2: {
+                title: 'Lección 2: Posesivo \'s',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">¿Qué es el posesivo 's?</h3>
+                            <p class="text-gray-700 mb-4">Usamos 's para mostrar que algo pertenece a alguien. En español decimos "el libro de Tom", en inglés decimos "Tom's book".</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👦</div>
+                                    <div class="font-bold">Tom's book</div>
+                                    <div class="text-sm text-gray-600">(el libro de Tom)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👩</div>
+                                    <div class="font-bold">Maria's cat</div>
+                                    <div class="text-sm text-gray-600">(el gato de María)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👨‍🏫</div>
+                                    <div class="font-bold">Teacher's desk</div>
+                                    <div class="text-sm text-gray-600">(el escritorio del maestro)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-green-800 mb-4">Cómo formar el posesivo:</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                    <div>
+                                        <div class="font-semibold">Nombre + 's + cosa</div>
+                                        <div class="text-sm text-gray-600">John + 's + car = John's car</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                    <div>
+                                        <div class="font-semibold">Si el nombre termina en -s, solo agregar '</div>
+                                        <div class="text-sm text-gray-600">James + ' + house = James' house</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-4">Ejemplos con pronunciación:</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">Sarah's bag</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('sarahs bag')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">la bolsa de Sarah</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">Dad's car</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('dads car')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">el auto de papá</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="quiz2" class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-purple-800 mb-4">¡Hora del Quiz!</h3>
+                            <div id="question2" class="quiz-question">
+                                <p class="mb-4 font-semibold">¿Cómo se dice "el perro de Ana" en inglés?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'Anas dog', this)">Ana's dog</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'Ana dog', this)">Ana dog</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'dog of Ana', this)">dog of Ana</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="completeLesson2" class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors disabled:bg-gray-400" disabled onclick="completeLesson(2)">
+                            Completar Lección (Responde el quiz primero)
+                        </button>
+                    </div>
+                `
+            }
+            // Add more lessons here...
+        };
+
+        // Play pronunciation (simulated)
+        function playPronunciation(word) {
+            // In a real app, this would use Web Speech API or audio files
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert(`Pronunciación: ${word}`);
+            }
+        }
+
+        // Check quiz answer
+        function checkAnswer(lessonNum, correctAnswer, button) {
+            const allOptions = button.parentElement.querySelectorAll('.quiz-option');
+            const isCorrect = button.textContent.trim() === correctAnswer;
+            
+            allOptions.forEach(option => {
+                option.disabled = true;
+                if (option.textContent.trim() === correctAnswer) {
+                    option.classList.add('correct-answer');
+                } else if (option === button && !isCorrect) {
+                    option.classList.add('wrong-answer');
+                }
+            });
+
+            if (isCorrect) {
+                gameState.correctAnswers++;
+                gameState.totalPoints += 10;
+                document.getElementById(`completeLesson${lessonNum}`).disabled = false;
+                document.getElementById(`completeLesson${lessonNum}`).textContent = '¡Completar Lección!';
+                showAchievement('¡Respuesta correcta!', 10);
+            } else {
+                setTimeout(() => {
+                    alert('¡Inténtalo de nuevo! La respuesta correcta es: ' + correctAnswer);
+                }, 1000);
+            }
+            
+            saveProgress();
+            updateUI();
+        }
+
+        // Complete lesson
+        function completeLesson(lessonNum) {
+            if (!gameState.completedLessons.includes(lessonNum)) {
+                gameState.completedLessons.push(lessonNum);
+                gameState.currentLesson = lessonNum + 1;
+                gameState.totalPoints += 50;
+                gameState.achievements++;
+                
+                showAchievement(`¡Lección ${lessonNum} completada!`, 50);
+                
+                saveProgress();
+                updateUI();
+                
+                setTimeout(() => {
+                    closeModal();
+                }, 2000);
+            }
+        }
+
+        // Show achievement modal
+        function showAchievement(text, points) {
+            document.getElementById('achievementText').textContent = text;
+            document.getElementById('achievementPoints').textContent = points;
+            document.getElementById('achievementModal').classList.remove('hidden');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Lesson buttons
+            document.querySelectorAll('.lesson-btn').forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    const lessonNum = index + 1;
+                    if (lessonNum <= gameState.currentLesson || gameState.completedLessons.includes(lessonNum)) {
+                        openLesson(lessonNum);
+                    }
+                });
+            });
+
+            // Modal close buttons
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('closeAchievement').addEventListener('click', function() {
+                document.getElementById('achievementModal').classList.add('hidden');
+            });
+
+            // Click outside modal to close
+            document.getElementById('lessonModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        });
+
+        // Open lesson modal
+        function openLesson(lessonNum) {
+            if (lessonData[lessonNum]) {
+                document.getElementById('lessonTitle').textContent = lessonData[lessonNum].title;
+                document.getElementById('lessonContent').innerHTML = lessonData[lessonNum].content;
+                document.getElementById('lessonModal').classList.remove('hidden');
+            }
+        }
+
+        // Close lesson modal
+        function closeModal() {
+            document.getElementById('lessonModal').classList.add('hidden');
+        }
+
+        // Initialize the app
+        loadProgress();
+    </script>
+</body>
+</html>
