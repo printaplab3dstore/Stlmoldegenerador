@@ -3,935 +3,723 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Colección Premium de Prompts para Emprender, Escalar y Generar Riqueza</title>
+    <title>Plan de Estudio de Inglés - Nivel Principiante</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.4.0/dist/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        h1, h2, h3, h4 {
-            font-family: 'Orbitron', monospace;
-        }
-        
-        .futuristic-bg {
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .futuristic-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-            animation: pulse 4s ease-in-out infinite alternate;
-        }
-        
-        @keyframes pulse {
-            0% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-        
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
-            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.8), 0 0 40px rgba(59, 130, 246, 0.3); }
-        }
-        
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .page-break {
-            page-break-before: always;
-        }
-        
-        .category-title {
-            border-left: 4px solid #3b82f6;
-            padding-left: 1rem;
-            background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
-            animation: glow 3s ease-in-out infinite;
-        }
-        
-        .prompt-card {
-            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
-            border-radius: 1rem;
-            box-shadow: 
-                0 10px 25px rgba(0,0,0,0.1),
-                0 0 0 1px rgba(255,255,255,0.05);
-            margin-bottom: 1.5rem;
-            page-break-inside: avoid;
+        .lesson-card {
             transition: all 0.3s ease;
-            animation: slideIn 0.6s ease-out;
-            position: relative;
-            overflow: hidden;
         }
-        
-        .prompt-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-            animation: float 3s ease-in-out infinite;
-        }
-        
-        .prompt-card:hover {
+        .lesson-card:hover {
             transform: translateY(-5px);
-            box-shadow: 
-                0 20px 40px rgba(0,0,0,0.15),
-                0 0 0 1px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
         }
-        
-        .neon-text {
-            text-shadow: 
-                0 0 5px rgba(59, 130, 246, 0.5),
-                0 0 10px rgba(59, 130, 246, 0.3),
-                0 0 15px rgba(59, 130, 246, 0.2);
-            animation: glow 2s ease-in-out infinite alternate;
+        .progress-bar {
+            transition: width 0.5s ease;
         }
-        
-        .hologram-effect {
-            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
-            background-size: 200% 200%;
-            animation: hologram 3s linear infinite;
+        .completed {
+            background: linear-gradient(45deg, #10b981, #34d399);
         }
-        
-        @keyframes hologram {
-            0% { background-position: -200% -200%; }
-            100% { background-position: 200% 200%; }
+        .star-animation {
+            animation: starPulse 2s infinite;
         }
-        
-        .cyber-grid {
-            background-image: 
-                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: grid-move 20s linear infinite;
+        @keyframes starPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
-        
-        @keyframes grid-move {
-            0% { background-position: 0 0; }
-            100% { background-position: 50px 50px; }
+        .bounce-in {
+            animation: bounceIn 0.6s ease;
         }
-        
-        .toc-entry {
-            padding: 1rem;
-            margin: 0.5rem 0;
-            background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
-            border-radius: 0.5rem;
-            border: 1px solid rgba(59, 130, 246, 0.2);
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pronunciation-btn {
+            transition: all 0.2s ease;
+        }
+        .pronunciation-btn:hover {
+            transform: scale(1.1);
+        }
+        .quiz-option {
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
-        
-        .toc-entry:hover {
-            background: linear-gradient(145deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.05));
-            transform: translateX(10px);
-            border-color: rgba(59, 130, 246, 0.5);
+        .quiz-option:hover {
+            transform: translateX(5px);
         }
-        
-        .futuristic-button {
-            background: linear-gradient(45deg, #3b82f6, #8b5cf6);
-            border: none;
-            border-radius: 2rem;
-            padding: 0.75rem 2rem;
+        .correct-answer {
+            background: linear-gradient(45deg, #10b981, #34d399);
             color: white;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-        
-        .futuristic-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s;
-        }
-        
-        .futuristic-button:hover::before {
-            left: 100%;
-        }
-        
-        .tag {
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-            border: 1px solid rgba(59, 130, 246, 0.3);
-            color: #3b82f6;
-            padding: 0.25rem 0.75rem;
-            border-radius: 1rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-        }
-        
-        .tag:hover {
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
-            transform: scale(1.05);
-        }
-        
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-            
-            body {
-                padding: 0;
-                margin: 0;
-                background: white;
-            }
-            
-            @page {
-                size: letter;
-                margin: 1in;
-            }
-            
-            .futuristic-bg {
-                background: white;
-            }
-            
-            .prompt-card {
-                break-inside: avoid;
-            }
-        }
-        
-        .loading-bar {
-            width: 100%;
-            height: 4px;
-            background: rgba(59, 130, 246, 0.2);
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 1rem 0;
-        }
-        
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
-            border-radius: 2px;
-            animation: loading 2s ease-in-out infinite;
-        }
-        
-        @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+        .wrong-answer {
+            background: linear-gradient(45deg, #ef4444, #f87171);
+            color: white;
         }
     </style>
 </head>
-<body class="text-gray-800">
-
-    <!-- Portada Futurista -->
-    <div class="futuristic-bg text-white min-h-screen flex flex-col justify-center items-center p-8 text-center cyber-grid">
-        <div class="max-w-4xl z-10 relative">
-            <div class="mb-8">
-                <div class="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                    <svg class="w-16 h-16 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                </div>
-            </div>
-            <h1 class="text-4xl md:text-7xl font-bold mb-6 neon-text">COLECCIÓN PREMIUM</h1>
-            <h2 class="text-3xl md:text-5xl font-bold mb-8 text-blue-300 hologram-effect">PROMPTS PARA EMPRENDER, ESCALAR Y GENERAR RIQUEZA</h2>
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-            <p class="text-xl mb-12 max-w-2xl mx-auto opacity-90">Herramientas especializadas para emprendedores que buscan iniciar negocios, escalar operaciones y generar riqueza sostenible con inteligencia artificial</p>
-            <div class="flex flex-wrap justify-center gap-4 mt-8">
-                <span class="futuristic-button">NEGOCIOS</span>
-                <span class="futuristic-button">PRODUCTIVIDAD</span>
-                <span class="futuristic-button">MARCA PERSONAL</span>
-                <span class="futuristic-button">VENTAS</span>
-                <span class="futuristic-button">INVERSIONES</span>
-                <span class="futuristic-button">MARKETING</span>
-                <span class="futuristic-button">ESTRATEGIA</span>
-            </div>
-        </div>
-        <div class="absolute bottom-8 text-blue-300 text-sm opacity-75">
-            Compatible con ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs
-        </div>
-    </div>
-
-    <!-- Página de copyright -->
-    <div class="page-break min-h-screen flex flex-col justify-center items-center p-8 text-center bg-gradient-to-br from-gray-900 to-blue-900 text-white">
-        <div class="max-w-2xl">
-            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
-                <svg class="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732L14.146 12.8l-1.179 4.456a1 1 0 01-1.934 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732L9.854 7.2l1.179-4.456A1 1 0 0112 2z" clip-rule="evenodd"/>
-                </svg>
-            </div>
-            <h3 class="text-3xl font-bold mb-6 neon-text">© 2025 COLECCIÓN PREMIUM DE PROMPTS PARA EMPRENDEDORES</h3>
-            <p class="mb-4 text-lg">Todos los derechos reservados.</p>
-            <p class="text-blue-300 mb-8 opacity-90">Esta colección contiene información confidencial y propiedad intelectual. Queda prohibida la reproducción total o parcial sin autorización expresa.</p>
-            <div class="border-t border-blue-500 pt-6 mt-8">
-                <p class="text-sm text-blue-200">Documento optimizado para impresión y lectura digital</p>
-                <p class="text-sm text-blue-200 mt-2">Formato: 8.5" x 11" | Diseño Futurista Interactivo</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Índice Futurista -->
-    <div class="page-break bg-gradient-to-br from-gray-900 to-blue-900 text-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-8 pb-4 border-b-2 border-blue-500 neon-text text-center">ÍNDICE INTERACTIVO</h2>
-        <div class="max-w-4xl mx-auto space-y-4">
-            <div class="toc-entry">
-                <a href="#introduccion" class="font-semibold text-lg flex items-center justify-between">
-                    <span>🚀 INTRODUCCIÓN</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria1" class="font-semibold text-lg flex items-center justify-between">
-                    <span>💼 1. NEGOCIOS</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria2" class="font-semibold text-lg flex items-center justify-between">
-                    <span>⚡ 2. PRODUCTIVIDAD</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria3" class="font-semibold text-lg flex items-center justify-between">
-                    <span>👤 3. MARCA PERSONAL</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria4" class="font-semibold text-lg flex items-center justify-between">
-                    <span>📈 4. VENTAS</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria5" class="font-semibold text-lg flex items-center justify-between">
-                    <span>💰 5. INVERSIONES</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria6" class="font-semibold text-lg flex items-center justify-between">
-                    <span>📢 6. MARKETING</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#categoria7" class="font-semibold text-lg flex items-center justify-between">
-                    <span>♟️ 7. ESTRATEGIA</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-            <div class="toc-entry">
-                <a href="#conclusion" class="font-semibold text-lg flex items-center justify-between">
-                    <span>🎯 CONCLUSIÓN</span>
-                    <span class="text-blue-400">→</span>
-                </a>
-            </div>
-        </div>
-    </div>
-
-    <!-- Introducción -->
-    <div id="introduccion" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 pb-2 border-b border-gray-300 text-center">🚀 INTRODUCCIÓN</h2>
-        <div class="max-w-4xl mx-auto">
-            <div class="prompt-card p-8 mb-8">
-                <p class="text-lg mb-6 leading-relaxed">
-                    Esta colección contiene prompts especializados diseñados para emprendedores que buscan iniciar negocios, escalar operaciones y generar riqueza sostenible. Todos los prompts están optimizados para obtener resultados efectivos con inteligencia artificial, incluyendo ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs principales.
-                </p>
-                
-                <h3 class="text-2xl font-semibold mt-8 mb-4 text-blue-600">CATEGORÍAS INCLUIDAS:</h3>
-                <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <div class="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                        <strong>💼 Negocios</strong> - Modelos de negocio, estrategias de lanzamiento, expansión internacional
-                    </div>
-                    <div class="p-4 bg-green-50 rounded-lg border-l-4 border-green-500">
-                        <strong>⚡ Productividad</strong> - Gestión del tiempo, sistemas de eficiencia, optimización personal
-                    </div>
-                    <div class="p-4 bg-purple-50 rounded-lg border-l-4 border-purple-500">
-                        <strong>👤 Marca Personal</strong> - Posicionamiento, storytelling, construcción de autoridad
-                    </div>
-                    <div class="p-4 bg-red-50 rounded-lg border-l-4 border-red-500">
-                        <strong>📈 Ventas</strong> - Técnicas de cierre, prospección, objection handling
-                    </div>
-                    <div class="p-4 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
-                        <strong>💰 Inversiones</strong> - Análisis de oportunidades, portfolio management, due diligence
-                    </div>
-                    <div class="p-4 bg-indigo-50 rounded-lg border-l-4 border-indigo-500">
-                        <strong>📢 Marketing</strong> - Campañas virales, customer journey, growth hacking
-                    </div>
-                    <div class="p-4 bg-pink-50 rounded-lg border-l-4 border-pink-500">
-                        <strong>♟️ Estrategia</strong> - Planificación, competitive intelligence, business model innovation
+<body class="bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/5d9b603a-e6d8-4c10-a97e-8bf48770ba12/english_study_hero_20251117221713_1.png" 
+                         alt="English Study Hero" class="w-16 h-16 rounded-full border-4 border-white">
+                    <div>
+                        <h1 class="text-3xl font-bold">¡Aprende Inglés!</h1>
+                        <p class="text-blue-100">Plan de Estudio Interactivo</p>
                     </div>
                 </div>
-                
-                <h3 class="text-2xl font-semibold mt-8 mb-4 text-blue-600">CÓMO USAR ESTOS PROMPTS:</h3>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
-                            <span><strong>Copia cualquier prompt</strong> de las secciones siguientes</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
-                            <span><strong>Pégalo en tu LLM preferido</strong> (ChatGPT, Claude, Gemini, etc.)</span>
-                        </div>
+                <div class="text-right">
+                    <div class="flex items-center space-x-2">
+                        <i class="fas fa-star text-yellow-300"></i>
+                        <span id="totalPoints" class="text-2xl font-bold">0</span>
+                        <span class="text-blue-100">puntos</span>
                     </div>
-                    <div class="space-y-4">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">3</div>
-                            <span><strong>Ajusta según tus necesidades específicas</strong> agregando contexto relevante</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center font-bold">4</div>
-                            <span><strong>Implementa las ideas generadas</strong> en tu negocio o estrategia personal</span>
-                        </div>
-                    </div>
+                    <div class="text-sm text-blue-100">Progreso: <span id="overallProgress">0</span>%</div>
                 </div>
             </div>
+        </div>
+    </header>
+
+    <!-- Progress Overview -->
+    <div class="container mx-auto p-6">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <i class="fas fa-chart-line text-blue-600 mr-3"></i>
+                Tu Progreso General
+            </h2>
+            <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                <div id="mainProgressBar" class="progress-bar bg-gradient-to-r from-blue-500 to-purple-500 h-4 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-blue-600" id="completedLessons">0</div>
+                    <div class="text-gray-600">Lecciones Completadas</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-green-600" id="correctAnswers">0</div>
+                    <div class="text-gray-600">Respuestas Correctas</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-purple-600" id="streakDays">0</div>
+                    <div class="text-gray-600">Días Seguidos</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl font-bold text-yellow-600" id="achievements">0</div>
+                    <div class="text-gray-600">Logros</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lessons Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
-                <p class="text-blue-800">
-                    <strong>💡 Consejo Profesional:</strong> Para mejores resultados, proporciona contexto específico sobre tu situación actual, objetivos y restricciones al usar cada prompt.
-                </p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 1: Negocios -->
-    <div id="categoria1" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">💼 1. NEGOCIOS</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para desarrollar modelos de negocio, estrategias de lanzamiento, expansión internacional y crecimiento empresarial.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 1</h3>
-            <p class="mb-4"><strong>Desarrolla un modelo de negocio escalable para una startup tecnológica enfocada en resolver problemas de logística en mercados emergentes. Incluye análisis de mercado, propuesta de valor única, canales de distribución y proyecciones financieras iniciales.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Startup</span>
-                <span class="tag">Tecnología</span>
-                <span class="tag">Logística</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 2</h3>
-            <p class="mb-4"><strong>Crea una estrategia integral para lanzar un negocio de comercio electrónico desde cero, incluyendo selección de nicho, plataforma recomendada, estrategia de marketing inicial y métricas clave de éxito para los primeros 90 días.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">E-commerce</span>
-                <span class="tag">Marketing</span>
-                <span class="tag">Métricas</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 3</h3>
-            <p class="mb-4"><strong>Diseña un plan de expansión internacional para una empresa de software que actualmente opera solo en su mercado local. Incluye análisis de países objetivo, adaptaciones culturales necesarias, estructura legal recomendada y cronograma de implementación de 12 meses.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Internacionalización</span>
-                <span class="tag">Software</span>
-                <span class="tag">Legal</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 4</h3>
-            <p class="mb-4"><strong>Desarrolla una propuesta de socio estratégico para una empresa de salud digital que busca acelerar su crecimiento mediante alianzas. Incluye perfil de socios ideales, estructura de beneficios mutuos, modelo de gobernanza y métricas de éxito.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Alianzas</span>
-                <span class="tag">Salud Digital</span>
-                <span class="tag">Gobernanza</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 5</h3>
-            <p class="mb-4"><strong>Elabora un modelo financiero detallado para un negocio de suscripción mensual en la industria del fitness. Incluye proyecciones de ingresos, costos variables y fijos, punto de equilibrio, y estrategias para mejorar el lifetime value del cliente.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Suscripción</span>
-                <span class="tag">Fitness</span>
-                <span class="tag">Finanzas</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 6</h3>
-            <p class="mb-4"><strong>Crea una estrategia de pivote para un restaurante que ha visto disminuir sus ventas tradicionales debido al auge de servicios de entrega. Incluye nuevos modelos de negocio, adaptaciones operativas, estrategias digitales y análisis de viabilidad financiera.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Pivote</span>
-                <span class="tag">Restaurante</span>
-                <span class="tag">Digital</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 7</h3>
-            <p class="mb-4"><strong>Diseña un ecosistema de productos complementarios para una marca de productos ecológicos que busca aumentar su ticket promedio y fidelidad de clientes. Incluye análisis de sinergias, desarrollo de nuevos productos y estrategia de lanzamiento coordinada.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Ecosistema</span>
-                <span class="tag">Productos Ecológicos</span>
-                <span class="tag">Sinergias</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 8</h3>
-            <p class="mb-4"><strong>Desarrolla un plan de franquicia para un concepto innovador de cafetería con enfoque en tecnología y sostenibilidad. Incluye manual operativo básico, requerimientos de inversión inicial, perfil de franquiciado ideal y proyecciones de rentabilidad.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Franquicia</span>
-                <span class="tag">Cafetería</span>
-                <span class="tag">Sostenibilidad</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 9</h3>
-            <p class="mb-4"><strong>Crea una estrategia de entrada al mercado para una startup de fintech que ofrece soluciones de pago para pequeñas empresas. Incluye análisis regulatorio, competidores clave, canales de adquisición de clientes y modelo de monetización óptimo.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Fintech</span>
-                <span class="tag">Pagos</span>
-                <span class="tag">Regulaciones</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-blue-700">Prompt 10</h3>
-            <p class="mb-4"><strong>Elabora un modelo de negocio basado en economía colaborativa para conectar profesionales independientes con clientes corporativos. Incluye plataforma tecnológica requerida, mecanismos de verificación, estructura de comisiones y estrategia de crecimiento viral.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Economía Colaborativa</span>
-                <span class="tag">Plataforma</span>
-                <span class="tag">Crecimiento</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 2: Productividad -->
-    <div id="categoria2" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">⚡ 2. PRODUCTIVIDAD</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para optimizar tu tiempo, energía y sistemas personales de gestión para emprendedores con múltiples responsabilidades.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 11</h3>
-            <p class="mb-4"><strong>Desarrolla un sistema personal de gestión del tiempo basado en principios de deep work y técnicas de productividad comprobadas, que maximice la eficiencia cognitiva durante las horas pico de trabajo.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Deep Work</span>
-                <span class="tag">Gestión del Tiempo</span>
-                <span class="tag">Eficiencia</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 12</h3>
-            <p class="mb-4"><strong>Crea un protocolo diario de optimización de energía física y mental para emprendedores que manejan múltiples proyectos simultáneamente, incluyendo rutinas matutinas, pausas estratégicas y rituales de cierre.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Energía</span>
-                <span class="tag">Rutinas</span>
-                <span class="tag">Bienestar</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 13</h3>
-            <p class="mb-4"><strong>Diseña una metodología de toma de decisiones rápidas y efectivas para situaciones críticas en startups, incorporando frameworks de análisis y criterios de priorización bajo incertidumbre.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Decisiones</span>
-                <span class="tag">Análisis</span>
-                <span class="tag">Priorización</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 14</h3>
-            <p class="mb-4"><strong>Elabora un sistema de delegación efectiva para fundadores que necesitan escalar su capacidad de ejecución sin comprometer la calidad ni el control estratégico de operaciones clave.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Delegación</span>
-                <span class="tag">Escalabilidad</span>
-                <span class="tag">Control</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-green-700">Prompt 15</h3>
-            <p class="mb-4"><strong>Desarrolla una estrategia de batch processing para tareas administrativas recurrentes en negocios en crecimiento, reduciendo el tiempo dedicado en un 60% mediante agrupación inteligente de actividades.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Batch Processing</span>
-                <span class="tag">Administración</span>
-                <span class="tag">Optimización</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 3: Marca Personal -->
-    <div id="categoria3" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">👤 3. MARCA PERSONAL</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para construir y posicionar tu marca personal como líder en tu industria y atraer oportunidades estratégicas.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 16</h3>
-            <p class="mb-4"><strong>Desarrolla una estrategia integral de construcción de marca personal para emprendedores que buscan posicionarse como thought leaders en sus respectivas industrias.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Marca Personal</span>
-                <span class="tag">Thought Leadership</span>
-                <span class="tag">Posicionamiento</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 17</h3>
-            <p class="mb-4"><strong>Crea un framework para definir y comunicar consistentemente tu unique value proposition personal en todos los canales digitales y presenciales.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">UVP</span>
-                <span class="tag">Comunicación</span>
-                <span class="tag">Consistencia</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 18</h3>
-            <p class="mb-4"><strong>Diseña una estrategia de storytelling auténtico que convierta tu trayectoria profesional en una narrativa atractiva y memorable para audiencias objetivo.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Storytelling</span>
-                <span class="tag">Narrativa</span>
-                <span class="tag">Autenticidad</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 19</h3>
-            <p class="mb-4"><strong>Elabora un plan de contenido que establezca autoridad en tu campo de expertise mientras genera engagement genuino con seguidores potenciales.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Contenido</span>
-                <span class="tag">Autoridad</span>
-                <span class="tag">Engagement</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-purple-700">Prompt 20</h3>
-            <p class="mb-4"><strong>Desarrolla una metodología para mantener coherencia de mensaje y estilo visual en todas las plataformas sociales sin invertir tiempo excesivo en creación individual.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Coherencia</span>
-                <span class="tag">Branding</span>
-                <span class="tag">Automatización</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 4: Ventas -->
-    <div id="categoria4" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">📈 4. VENTAS</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para dominar técnicas de ventas, objection handling, consultative selling y estrategias de cierre efectivas.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 21</h3>
-            <p class="mb-4"><strong>Desarrolla una metodología de prospección de leads de alta calidad que identifique prospectos ideales antes de que manifiesten interés explícito.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Prospección</span>
-                <span class="tag">Leads</span>
-                <span class="tag">Calificación</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 22</h3>
-            <p class="mb-4"><strong>Crea un sistema de storytelling de ventas que convierta características de productos en beneficios emocionales irresistibles para compradores.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Storytelling</span>
-                <span class="tag">Beneficios</span>
-                <span class="tag">Emocional</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 23</h3>
-            <p class="mb-4"><strong>Diseña una estrategia de objection handling que transforme objeciones comunes en oportunidades de profundizar la relación y aumentar el valor percibido.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Objection Handling</span>
-                <span class="tag">Relación</span>
-                <span class="tag">Valor</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 24</h3>
-            <p class="mb-4"><strong>Elabora un framework para identificar buying signals sutiles que indiquen momento óptimo para cerrar ventas sin parecer pushy o agresivo.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Buying Signals</span>
-                <span class="tag">Cierre</span>
-                <span class="tag">Timing</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-red-700">Prompt 25</h3>
-            <p class="mb-4"><strong>Desarrolla una técnica de consultative selling que posicione a tu equipo como asesores de confianza en lugar de vendedores tradicionales.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Consultative Selling</span>
-                <span class="tag">Asesoría</span>
-                <span class="tag">Confianza</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 5: Inversiones -->
-    <div id="categoria5" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">💰 5. INVERSIONES</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para tomar decisiones inteligentes de inversión, evaluar oportunidades y optimizar portfolios para crecimiento sostenible.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 26</h3>
-            <p class="mb-4"><strong>Desarrolla una estrategia de inversión en startups tecnológicas que equilibre potencial de retorno con tolerancia al riesgo para inversores ángel principiantes.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Startups</span>
-                <span class="tag">Tecnología</span>
-                <span class="tag">Inversión</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 27</h3>
-            <p class="mb-4"><strong>Crea un framework para evaluar oportunidades de inversión en criptomonedas considerando volatilidad, fundamentos tecnológicos y adopción del mercado.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Criptomonedas</span>
-                <span class="tag">Volatilidad</span>
-                <span class="tag">Adopción</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 28</h3>
-            <p class="mb-4"><strong>Diseña una metodología de portfolio diversification que proteja capital mientras maximiza retornos en diferentes ciclos económicos.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Diversificación</span>
-                <span class="tag">Portfolio</span>
-                <span class="tag">Ciclos Económicos</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 29</h3>
-            <p class="mb-4"><strong>Elabora una estrategia de inversión en bienes raíces que identifique propiedades con potencial de plusvalía superior al promedio del mercado.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Bienes Raíces</span>
-                <span class="tag">Plusvalía</span>
-                <span class="tag">Mercado</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-yellow-700">Prompt 30</h3>
-            <p class="mb-4"><strong>Desarrolla una técnica para analizar financial statements de empresas privadas con información limitada disponible públicamente.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Financial Statements</span>
-                <span class="tag">Empresas Privadas</span>
-                <span class="tag">Análisis</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 6: Marketing -->
-    <div id="categoria6" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">📢 6. MARKETING</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para ejecutar campañas virales, estrategias de growth hacking, customer journey mapping y marketing de contenidos efectivo.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 31</h3>
-            <p class="mb-4"><strong>Desarrolla una estrategia de growth hacking que identifique canales de adquisición de clientes con bajo costo y alto impacto viral.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Growth Hacking</span>
-                <span class="tag">Adquisición</span>
-                <span class="tag">Viralidad</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 32</h3>
-            <p class="mb-4"><strong>Crea un framework para diseñar campañas de marketing de contenidos que generen leads cualificados de forma orgánica y sostenible.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Marketing de Contenidos</span>
-                <span class="tag">Leads</span>
-                <span class="tag">Organicidad</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 33</h3>
-            <p class="mb-4"><strong>Diseña una metodología de customer journey mapping que identifique puntos críticos de fricción y oportunidades de delight.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Customer Journey</span>
-                <span class="tag">Friction Points</span>
-                <span class="tag">Delight</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 34</h3>
-            <p class="mb-4"><strong>Elabora una estrategia de community building que convierta usuarios en embajadores apasionados de tu marca.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Community Building</span>
-                <span class="tag">Embajadores</span>
-                <span class="tag">Marca</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-indigo-700">Prompt 35</h3>
-            <p class="mb-4"><strong>Desarrolla una técnica de viral loop design que incentive compartir orgánico mediante incentivos intrínsecos al producto.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Viral Loop</span>
-                <span class="tag">Compartir</span>
-                <span class="tag">Incentivos</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Categoría 7: Estrategia -->
-    <div id="categoria7" class="page-break bg-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 category-title">♟️ 7. ESTRATEGIA</h2>
-        <p class="text-gray-600 mb-8 text-lg">Prompts especializados para desarrollar pensamiento estratégico avanzado, scenario planning, business model innovation y competitive intelligence.</p>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 36</h3>
-            <p class="mb-4"><strong>Desarrolla una metodología de scenario planning que prepare tu organización para múltiples futuros posibles con diferentes grados de probabilidad.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Scenario Planning</span>
-                <span class="tag">Futuro</span>
-                <span class="tag">Probabilidad</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 37</h3>
-            <p class="mb-4"><strong>Crea un framework para identificar y explotar first mover advantages en mercados emergentes antes de que se saturen.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">First Mover</span>
-                <span class="tag">Ventaja</span>
-                <span class="tag">Mercados Emergentes</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 38</h3>
-            <p class="mb-4"><strong>Diseña una estrategia de blue ocean strategy que cree nuevos espacios de mercado sin competencia directa significativa.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Blue Ocean</span>
-                <span class="tag">Estrategia</span>
-                <span class="tag">Competencia</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 39</h3>
-            <p class="mb-4"><strong>Elabora una técnica de competitive intelligence que revele movimientos estratégicos de competidores antes de que se hagan públicos.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Competitive Intelligence</span>
-                <span class="tag">Estrategia</span>
-                <span class="tag">Competencia</span>
-            </div>
-        </div>
-        
-        <div class="prompt-card p-6">
-            <h3 class="text-xl font-semibold mb-3 text-pink-700">Prompt 40</h3>
-            <p class="mb-4"><strong>Desarrolla una metodología de pivot strategy que permita cambios de dirección radical sin perder momentum acumulado.</strong></p>
-            <div class="flex flex-wrap gap-2">
-                <span class="tag">Pivot Strategy</span>
-                <span class="tag">Dirección</span>
-                <span class="tag">Momentum</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- Conclusión -->
-    <div id="conclusion" class="page-break bg-gradient-to-br from-gray-900 to-blue-900 text-white p-8 min-h-screen">
-        <h2 class="text-4xl font-bold mb-6 pb-2 border-b border-blue-500 neon-text text-center">🎯 CONCLUSIÓN</h2>
-        <div class="max-w-4xl mx-auto">
-            <div class="prompt-card p-8 mb-8 bg-gradient-to-br from-white to-blue-50">
-                <p class="text-lg mb-6 leading-relaxed text-gray-800">
-                    Esta colección premium de prompts especializados proporciona herramientas inmediatas para emprendedores que buscan:
-                </p>
-                
-                <div class="grid md:grid-cols-2 gap-4 mb-6">
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full flex items-center justify-center">🚀</div>
-                            <span class="text-gray-800">Iniciar y escalar negocios exitosos</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-green-500 to-blue-600 text-white rounded-full flex items-center justify-center">⚡</div>
-                            <span class="text-gray-800">Optimizar productividad personal y profesional</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-full flex items-center justify-center">👤</div>
-                            <span class="text-gray-800">Construir marca personal poderosa</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-orange-600 text-white rounded-full flex items-center justify-center">📈</div>
-                            <span class="text-gray-800">Dominar arte de ventas efectivas</span>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-yellow-500 to-red-600 text-white rounded-full flex items-center justify-center">💰</div>
-                            <span class="text-gray-800">Tomar decisiones inteligentes de inversión</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-full flex items-center justify-center">📢</div>
-                            <span class="text-gray-800">Ejecutar estrategias de marketing impactantes</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-gradient-to-r from-pink-500 to-red-600 text-white rounded-full flex items-center justify-center">♟️</div>
-                            <span class="text-gray-800">Desarrollar pensamiento estratégico avanzado</span>
+            <!-- Lesson 1: Plurals -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="1">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/9c2bb791-7b87-4762-a3ff-7f7d9c831da5/plurals_illustration_20251117221734_1.png" 
+                         alt="Plurals" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
                         </div>
                     </div>
                 </div>
-                
-                <p class="mb-6 leading-relaxed text-gray-800">
-                    Cada prompt está diseñado para obtener resultados concretos cuando se usa con inteligencia artificial moderna como ChatGPT, Claude, Gemini, Mistral, Llama y otros LLMs principales. La estructura por categorías permite navegación fácil y aplicación específica según necesidades inmediatas.
-                </p>
-            </div>
-            
-            <div class="bg-gradient-to-r from-blue-600 to-purple-600 p-8 rounded-2xl mb-8 text-center">
-                <h3 class="text-2xl font-bold mb-4 neon-text">🚀 Implementa estos prompts hoy y acelera tu camino hacia el éxito empresarial y la generación de riqueza sostenible.</h3>
-                <p class="text-blue-100 text-lg">
-                    <strong>💡 Recuerda:</strong> La clave del éxito no está solo en tener las herramientas, sino en usarlas consistentemente y adaptarlas a tu contexto único.
-                </p>
-            </div>
-            
-            <div class="text-center p-8 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl">
-                <h3 class="text-3xl font-bold mb-4 neon-text">¡Gracias por confiar en nuestra colección!</h3>
-                <p class="text-purple-100 text-lg">Esperamos que estas herramientas impulsen tu crecimiento profesional y empresarial hacia nuevas alturas.</p>
-                <div class="mt-6">
-                    <div class="w-16 h-16 mx-auto bg-white rounded-full flex items-center justify-center">
-                        <span class="text-2xl">🎯</span>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 1: Plurales</h3>
+                    <p class="text-gray-600 mb-4">Aprende cómo formar el plural en inglés (cat → cats, book → books)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">15 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">50 puntos</span>
+                        </div>
                     </div>
+                    <button class="lesson-btn w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                        Comenzar Lección
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 2: Possessive 's -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="2">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/a0545aee-0402-4fc8-9ecf-65d920b196b8/possessive_illustration_20251117221755_1.png" 
+                         alt="Possessive" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 2: Posesivo 's</h3>
+                    <p class="text-gray-600 mb-4">Aprende a mostrar posesión (Tom's book, Maria's cat)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">12 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">40 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 3: Have got / Has got -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="3">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/dbf618db-12b2-4a25-b204-ccc282048f78/have_has_got_illustration_20251117221816_1.png" 
+                         alt="Have Has Got" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 3: Have got / Has got</h3>
+                    <p class="text-gray-600 mb-4">Aprende a decir lo que tienes (I have got, She has got)</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">18 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">60 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 4: School Subjects -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="4">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/2bf46a5f-89f4-48c6-8c4a-8f54698bdca8/school_subjects_illustration_20251117221837_1.png" 
+                         alt="School Subjects" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 4: Materias Escolares</h3>
+                    <p class="text-gray-600 mb-4">Aprende los nombres de las materias en inglés</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">20 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">45 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 5: Telling Time -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="5">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/f4bf8656-d698-417c-b0e9-cedc34b236b3/time_clock_illustration_20251117221859_1.png" 
+                         alt="Telling Time" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 5: La Hora</h3>
+                    <p class="text-gray-600 mb-4">Aprende a decir la hora en inglés</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">25 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">55 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 6: Daily Routines -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="6">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/c236ea60-73f3-4cb2-b9b1-73355ca1f4b6/daily_routines_illustration_20251117221920_1.png" 
+                         alt="Daily Routines" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 6: Rutinas Diarias</h3>
+                    <p class="text-gray-600 mb-4">Aprende a hablar sobre tu rutina diaria</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">22 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">65 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
+                </div>
+            </div>
+
+            <!-- Lesson 7: Present Simple -->
+            <div class="lesson-card bg-white rounded-xl shadow-lg overflow-hidden" data-lesson="7">
+                <div class="relative">
+                    <img src="https://skyagent-artifacts.skywork.ai/image/1990544715041464320/c78d2de2-134d-40a6-8d68-e3adce3a35fc/present_simple_illustration_20251117221941_1.png" 
+                         alt="Present Simple" class="w-full h-48 object-cover">
+                    <div class="absolute top-4 right-4">
+                        <div class="lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold">
+                            <i class="fas fa-lock mr-1"></i>Bloqueado
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">Lección 7: Presente Simple</h3>
+                    <p class="text-gray-600 mb-4">Aprende el presente simple: positivo, negativo y preguntas</p>
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-clock text-blue-500"></i>
+                            <span class="text-sm text-gray-600">30 min</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <i class="fas fa-star text-yellow-500"></i>
+                            <span class="text-sm text-gray-600">80 puntos</span>
+                        </div>
+                    </div>
+                    <button class="lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed">
+                        Completa la lección anterior
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Lesson Modal -->
+    <div id="lessonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b border-gray-200">
+                <div class="flex items-center justify-between">
+                    <h2 id="lessonTitle" class="text-2xl font-bold text-gray-800"></h2>
+                    <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="lessonContent" class="p-6">
+                <!-- Lesson content will be dynamically loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Modal -->
+    <div id="achievementModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl max-w-md w-full bounce-in">
+            <div class="p-6 text-center">
+                <div class="text-6xl mb-4">🏆</div>
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">¡Felicitaciones!</h3>
+                <p id="achievementText" class="text-gray-600 mb-4"></p>
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <i class="fas fa-star text-yellow-500"></i>
+                    <span id="achievementPoints" class="text-xl font-bold text-blue-600"></span>
+                    <span class="text-gray-600">puntos ganados</span>
+                </div>
+                <button id="closeAchievement" class="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700">
+                    ¡Genial!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        let gameState = {
+            currentLesson: 1,
+            completedLessons: [],
+            totalPoints: 0,
+            correctAnswers: 0,
+            streakDays: 1,
+            achievements: 0
+        };
+
+        // Load saved progress
+        function loadProgress() {
+            const saved = localStorage.getItem('englishStudyProgress');
+            if (saved) {
+                gameState = { ...gameState, ...JSON.parse(saved) };
+                updateUI();
+            }
+        }
+
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('englishStudyProgress', JSON.stringify(gameState));
+        }
+
+        // Update UI elements
+        function updateUI() {
+            document.getElementById('totalPoints').textContent = gameState.totalPoints;
+            document.getElementById('completedLessons').textContent = gameState.completedLessons.length;
+            document.getElementById('correctAnswers').textContent = gameState.correctAnswers;
+            document.getElementById('streakDays').textContent = gameState.streakDays;
+            document.getElementById('achievements').textContent = gameState.achievements;
+            
+            const progress = (gameState.completedLessons.length / 7) * 100;
+            document.getElementById('overallProgress').textContent = Math.round(progress);
+            document.getElementById('mainProgressBar').style.width = progress + '%';
+
+            updateLessonCards();
+        }
+
+        // Update lesson cards based on progress
+        function updateLessonCards() {
+            const lessonCards = document.querySelectorAll('.lesson-card');
+            lessonCards.forEach((card, index) => {
+                const lessonNum = index + 1;
+                const statusDiv = card.querySelector('.lesson-status');
+                const button = card.querySelector('.lesson-btn');
+                
+                if (gameState.completedLessons.includes(lessonNum)) {
+                    statusDiv.innerHTML = '<i class="fas fa-check mr-1"></i>Completado';
+                    statusDiv.className = 'lesson-status bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Repasar Lección';
+                    button.className = 'lesson-btn w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition-colors';
+                    card.classList.add('completed');
+                } else if (lessonNum === gameState.currentLesson) {
+                    statusDiv.innerHTML = '<i class="fas fa-play mr-1"></i>Disponible';
+                    statusDiv.className = 'lesson-status bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Comenzar Lección';
+                    button.className = 'lesson-btn w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors';
+                } else if (lessonNum > gameState.currentLesson) {
+                    statusDiv.innerHTML = '<i class="fas fa-lock mr-1"></i>Bloqueado';
+                    statusDiv.className = 'lesson-status bg-gray-300 text-gray-600 px-3 py-1 rounded-full text-sm font-semibold';
+                    button.textContent = 'Completa la lección anterior';
+                    button.className = 'lesson-btn w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed';
+                }
+            });
+        }
+
+        // Lesson content data
+        const lessonData = {
+            1: {
+                title: 'Lección 1: Plurales',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">¿Qué son los plurales?</h3>
+                            <p class="text-gray-700 mb-4">Los plurales se usan cuando hablamos de más de una cosa. En español decimos "gato" y "gatos". En inglés es similar:</p>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">🐱</div>
+                                    <div class="font-bold">cat</div>
+                                    <div class="text-sm text-gray-600">(gato)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">🐱🐱🐱</div>
+                                    <div class="font-bold">cats</div>
+                                    <div class="text-sm text-gray-600">(gatos)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-green-800 mb-4">Reglas básicas:</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                    <div>
+                                        <div class="font-semibold">Regla general: agregar -s</div>
+                                        <div class="text-sm text-gray-600">book → books, pen → pens</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                    <div>
+                                        <div class="font-semibold">Si termina en -s, -x, -z, -ch, -sh: agregar -es</div>
+                                        <div class="text-sm text-gray-600">box → boxes, watch → watches</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-4">Practica la pronunciación:</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">cats</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('cats')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">/kæts/</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">books</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('books')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">/bʊks/</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="quiz1" class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-purple-800 mb-4">¡Hora del Quiz!</h3>
+                            <div id="question1" class="quiz-question">
+                                <p class="mb-4 font-semibold">¿Cuál es el plural de "dog"?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'dogs', this)">dogs</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'doges', this)">doges</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(1, 'dogies', this)">dogies</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="completeLesson1" class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors disabled:bg-gray-400" disabled onclick="completeLesson(1)">
+                            Completar Lección (Responde el quiz primero)
+                        </button>
+                    </div>
+                `
+            },
+            2: {
+                title: 'Lección 2: Posesivo \'s',
+                content: `
+                    <div class="space-y-6">
+                        <div class="bg-blue-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-blue-800 mb-4">¿Qué es el posesivo 's?</h3>
+                            <p class="text-gray-700 mb-4">Usamos 's para mostrar que algo pertenece a alguien. En español decimos "el libro de Tom", en inglés decimos "Tom's book".</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👦</div>
+                                    <div class="font-bold">Tom's book</div>
+                                    <div class="text-sm text-gray-600">(el libro de Tom)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👩</div>
+                                    <div class="font-bold">Maria's cat</div>
+                                    <div class="text-sm text-gray-600">(el gato de María)</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg text-center">
+                                    <div class="text-2xl mb-2">👨‍🏫</div>
+                                    <div class="font-bold">Teacher's desk</div>
+                                    <div class="text-sm text-gray-600">(el escritorio del maestro)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-green-800 mb-4">Cómo formar el posesivo:</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">1</div>
+                                    <div>
+                                        <div class="font-semibold">Nombre + 's + cosa</div>
+                                        <div class="text-sm text-gray-600">John + 's + car = John's car</div>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-500 text-white rounded-full flex items-center justify-center font-bold">2</div>
+                                    <div>
+                                        <div class="font-semibold">Si el nombre termina en -s, solo agregar '</div>
+                                        <div class="text-sm text-gray-600">James + ' + house = James' house</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-yellow-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-yellow-800 mb-4">Ejemplos con pronunciación:</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">Sarah's bag</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('sarahs bag')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">la bolsa de Sarah</div>
+                                </div>
+                                <div class="bg-white p-4 rounded-lg">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="font-bold">Dad's car</span>
+                                        <button class="pronunciation-btn bg-blue-500 text-white px-3 py-1 rounded-full text-sm" onclick="playPronunciation('dads car')">
+                                            <i class="fas fa-volume-up"></i>
+                                        </button>
+                                    </div>
+                                    <div class="text-sm text-gray-600">el auto de papá</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="quiz2" class="bg-purple-50 p-6 rounded-lg">
+                            <h3 class="text-xl font-bold text-purple-800 mb-4">¡Hora del Quiz!</h3>
+                            <div id="question2" class="quiz-question">
+                                <p class="mb-4 font-semibold">¿Cómo se dice "el perro de Ana" en inglés?</p>
+                                <div class="space-y-2">
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'Anas dog', this)">Ana's dog</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'Ana dog', this)">Ana dog</button>
+                                    <button class="quiz-option w-full text-left p-3 bg-white rounded-lg hover:bg-purple-100" onclick="checkAnswer(2, 'dog of Ana', this)">dog of Ana</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button id="completeLesson2" class="w-full bg-green-600 text-white py-4 rounded-lg font-bold text-lg hover:bg-green-700 transition-colors disabled:bg-gray-400" disabled onclick="completeLesson(2)">
+                            Completar Lección (Responde el quiz primero)
+                        </button>
+                    </div>
+                `
+            }
+            // Add more lessons here...
+        };
+
+        // Play pronunciation (simulated)
+        function playPronunciation(word) {
+            // In a real app, this would use Web Speech API or audio files
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+            } else {
+                alert(`Pronunciación: ${word}`);
+            }
+        }
+
+        // Check quiz answer
+        function checkAnswer(lessonNum, correctAnswer, button) {
+            const allOptions = button.parentElement.querySelectorAll('.quiz-option');
+            const isCorrect = button.textContent.trim() === correctAnswer;
+            
+            allOptions.forEach(option => {
+                option.disabled = true;
+                if (option.textContent.trim() === correctAnswer) {
+                    option.classList.add('correct-answer');
+                } else if (option === button && !isCorrect) {
+                    option.classList.add('wrong-answer');
+                }
+            });
+
+            if (isCorrect) {
+                gameState.correctAnswers++;
+                gameState.totalPoints += 10;
+                document.getElementById(`completeLesson${lessonNum}`).disabled = false;
+                document.getElementById(`completeLesson${lessonNum}`).textContent = '¡Completar Lección!';
+                showAchievement('¡Respuesta correcta!', 10);
+            } else {
+                setTimeout(() => {
+                    alert('¡Inténtalo de nuevo! La respuesta correcta es: ' + correctAnswer);
+                }, 1000);
+            }
+            
+            saveProgress();
+            updateUI();
+        }
+
+        // Complete lesson
+        function completeLesson(lessonNum) {
+            if (!gameState.completedLessons.includes(lessonNum)) {
+                gameState.completedLessons.push(lessonNum);
+                gameState.currentLesson = lessonNum + 1;
+                gameState.totalPoints += 50;
+                gameState.achievements++;
+                
+                showAchievement(`¡Lección ${lessonNum} completada!`, 50);
+                
+                saveProgress();
+                updateUI();
+                
+                setTimeout(() => {
+                    closeModal();
+                }, 2000);
+            }
+        }
+
+        // Show achievement modal
+        function showAchievement(text, points) {
+            document.getElementById('achievementText').textContent = text;
+            document.getElementById('achievementPoints').textContent = points;
+            document.getElementById('achievementModal').classList.remove('hidden');
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+            
+            // Lesson buttons
+            document.querySelectorAll('.lesson-btn').forEach((btn, index) => {
+                btn.addEventListener('click', function() {
+                    const lessonNum = index + 1;
+                    if (lessonNum <= gameState.currentLesson || gameState.completedLessons.includes(lessonNum)) {
+                        openLesson(lessonNum);
+                    }
+                });
+            });
+
+            // Modal close buttons
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            document.getElementById('closeAchievement').addEventListener('click', function() {
+                document.getElementById('achievementModal').classList.add('hidden');
+            });
+
+            // Click outside modal to close
+            document.getElementById('lessonModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+        });
+
+        // Open lesson modal
+        function openLesson(lessonNum) {
+            if (lessonData[lessonNum]) {
+                document.getElementById('lessonTitle').textContent = lessonData[lessonNum].title;
+                document.getElementById('lessonContent').innerHTML = lessonData[lessonNum].content;
+                document.getElementById('lessonModal').classList.remove('hidden');
+            }
+        }
+
+        // Close lesson modal
+        function closeModal() {
+            document.getElementById('lessonModal').classList.add('hidden');
+        }
+
+        // Initialize the app
+        loadProgress();
+    </script>
 </body>
 </html>
