@@ -1208,7 +1208,7 @@
                         </div>
 
                         <!-- Slide 3: Lámpara Coquí -->
-                        <div class="carousel-slide" onclick="window.open('https://cults3d.com/:4009947', '_blank')">
+                        <div class="carousel-slide" onclick="window.open('https://cults3d.com/es/modelo-3d/variado/lampara-garita-diseno-articulado-coqui-sin-soportes', '_blank')">
                             <div class="slide-image-container">
                                 <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/coqui-lampara.jpg" 
                                      alt="Lámpara Coquí Puertorriqueño - Diseño Articulado sin Soportes" 
@@ -1936,87 +1936,5 @@ www.printaplab3dstore.com
             elementsToAnimate.forEach(el => observer.observe(el));
         });
     </script>
-    <!-- ================= AUDIO PRINTAPLAB ================= -->
-<div class="audio-player">
-  <button id="playPauseBtn">⏸</button>
-  <button id="muteBtn">🔊</button>
-  <input type="range" id="volumeControl" min="0" max="1" step="0.01" value="0.4">
-</div>
-
-<audio id="bgMusic">
-  <source src="mi-musica-final.mp3" type="audio/mpeg">
-</audio>
-
-<style>
-.audio-player {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgba(0,0,0,0.8);
-  padding: 10px 15px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  z-index: 9999;
-  box-shadow: 0 0 10px #00f7ff;
-}
-
-.audio-player button {
-  background: #00f7ff;
-  border: none;
-  color: black;
-  font-weight: bold;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.audio-player button:hover {
-  background: #00c2cc;
-}
-
-#audio-player input[type="range"],
-#volumeControl {
-  width: 80px;
-  accent-color: #00f7ff;
-}
-</style>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-  const audio = document.getElementById("bgMusic");
-  const playPauseBtn = document.getElementById("playPauseBtn");
-  const muteBtn = document.getElementById("muteBtn");
-  const volumeControl = document.getElementById("volumeControl");
-
-  audio.volume = 0.4;
-
-  setTimeout(() => {
-    audio.play().catch(() => {});
-  }, 3000);
-
-  playPauseBtn.addEventListener("click", () => {
-    if (audio.paused) {
-      audio.play();
-      playPauseBtn.textContent = "⏸";
-    } else {
-      audio.pause();
-      playPauseBtn.textContent = "▶";
-    }
-  });
-
-  muteBtn.addEventListener("click", () => {
-    audio.muted = !audio.muted;
-    muteBtn.textContent = audio.muted ? "🔇" : "🔊";
-  });
-
-  volumeControl.addEventListener("input", () => {
-    audio.volume = volumeControl.value;
-  });
-});
-</script>
-<!-- ================= FIN AUDIO ================= -->
 </body>
 </html>
