@@ -317,6 +317,24 @@
             color: white;
         }
 
+        .social-link.donate {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            color: #1a1a1a;
+            font-weight: 700;
+            box-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+            animation: donateGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes donateGlow {
+            0%, 100% { box-shadow: 0 0 18px rgba(249, 115, 22, 0.35); }
+            50% { box-shadow: 0 0 32px rgba(245, 158, 11, 0.6); }
+        }
+
+        .social-link.donate:hover {
+            background: linear-gradient(135deg, #fbbf24, #fb923c);
+            box-shadow: 0 25px 50px rgba(249, 115, 22, 0.5);
+        }
+
         .social-icon { 
             width: 24px; 
             height: 24px; 
@@ -1311,6 +1329,16 @@
                     <path d="M12 3L1 9l11 6 9-4.91V17h2V9M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/>
                 </svg>
                 Curso FDM Bambú A1 Inicial
+            </a>
+
+            <a href="https://www.paypal.com/ncp/payment/HANAHM9E2B4ZA" target="_blank" class="social-link donate" aria-label="Buy me a coffee - Support Printaplab">
+                <svg class="social-icon" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4z"/>
+                </svg>
+                <span style="display:flex; flex-direction:column; line-height:1.2;">
+                    <span>☕ Buy me a coffee</span>
+                    <span style="font-size:0.7rem; font-weight:400; opacity:0.75; letter-spacing:1px;">pa la birra 🍺</span>
+                </span>
             </a>
         </div>
 
