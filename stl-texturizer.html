@@ -822,6 +822,11 @@ function buildGeometry(stlData) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(stlData.positions.slice(), 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(stlData.normals.slice(), 3));
+  // Center geometry so live preview always reads from origin
+  geo.computeBoundingBox();
+  const center = new THREE.Vector3();
+  geo.boundingBox.getCenter(center);
+  geo.translate(-center.x, -center.y, -center.z);
   geo.computeBoundingBox();
   geo.computeBoundingSphere();
   return geo;
@@ -830,25 +835,29 @@ function buildGeometry(stlData) {
 function loadMeshIntoScene(geo) {
   if (meshObj) scene.remove(meshObj);
   const mat = new THREE.MeshPhongMaterial({
-    color: 0x111122,
+    color: 0x444466,
     specular: 0x00f5ff,
     shininess: 60,
     wireframe: wireframeMode,
     side: THREE.DoubleSide
   });
-  meshObj = new THREE.Mesh(geo, mat);
 
-  // Center and scale
-  const box = new THREE.Box3().setFromObject(meshObj);
+  // Center geometry directly before creating mesh
+  geo.computeBoundingBox();
   const center = new THREE.Vector3();
-  box.getCenter(center);
-  meshObj.position.sub(center);
-  const size = box.getSize(new THREE.Vector3()).length();
-  const scale = 4 / size;
+  geo.boundingBox.getCenter(center);
+  geo.translate(-center.x, -center.y, -center.z);
+  geo.computeBoundingBox();
+
+  const size = geo.boundingBox.getSize(new THREE.Vector3()).length();
+  const scale = 4 / (size || 1);
+
+  meshObj = new THREE.Mesh(geo, mat);
   meshObj.scale.setScalar(scale);
+  meshObj.position.set(0, 0, 0);
 
   scene.add(meshObj);
-  spherical.radius = size * scale * 1.5;
+  spherical.radius = 6;
   panOffset.set(0, 0, 0);
   updateCamera();
   document.getElementById('triCount').textContent = (geo.attributes.position.count / 3).toLocaleString();
@@ -1338,7 +1347,7 @@ function loadSTL(file) {
       stlData = parseSTL(e.target.result);
       originalGeo = buildGeometry(stlData);
       texturedGeo = null;
-      loadMeshIntoScene(originalGeo.clone()); // clone so live preview can modify in-place
+      loadMeshIntoScene(originalGeo.clone());
       document.getElementById('emptyState').classList.add('hidden');
       document.getElementById('wireframeBtn').style.display = 'block';
       document.getElementById('statusBar').style.display = 'block';
