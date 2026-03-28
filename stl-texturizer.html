@@ -329,6 +329,17 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
   padding: 5px 12px; font-size: 11px; color: var(--text-dim);
 }
 .status-bar span { color: var(--cyan); }
+
+/* QUICK PRESETS */
+.quick-preset {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text-dim); font-family: 'Space Mono', monospace;
+  font-size: 11px; padding: 8px 6px; border-radius: 6px;
+  cursor: pointer; transition: all 0.15s; text-align: center;
+  width: 100%;
+}
+.quick-preset:hover { border-color: var(--cyan); color: var(--cyan); }
+.quick-preset.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); font-weight: 700; }
 </style>
 </head>
 <body>
@@ -360,6 +371,26 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
       <div class="file-info" id="fileInfo">
         <div class="fname" id="fileName">—</div>
         <div class="fstats" id="fileStats">—</div>
+      </div>
+    </div>
+
+    <!-- QUICK PRESETS -->
+    <div class="section" style="background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(255,0,170,0.05));">
+      <div class="section-title">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 2h3v3H2zM7 2h3v3H7zM2 7h3v3H2zM7 7h3v3H7z" stroke="currentColor" stroke-width="1.2"/></svg>
+        ⚡ Presets Rápidos
+      </div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+        <button class="quick-preset active" data-qp="vaso" title="Vaso / Taza / Cilindro">🥛 Vaso</button>
+        <button class="quick-preset" data-qp="esfera" title="Esfera / Bola">🌐 Esfera</button>
+        <button class="quick-preset" data-qp="caja" title="Caja / Cubo / Objeto plano">📦 Caja</button>
+        <button class="quick-preset" data-qp="organico" title="Formas orgánicas / Figuras">🐸 Orgánico</button>
+        <button class="quick-preset" data-qp="suave" title="Textura muy suave y sutil">✨ Muy suave</button>
+        <button class="quick-preset" data-qp="fuerte" title="Textura pronunciada y visible">💪 Pronunciada</button>
+      </div>
+      <div style="height:6px"></div>
+      <div id="qpDesc" style="font-size:11px; color:var(--text-dim); text-align:center; padding:4px 8px; background:var(--bg3); border-radius:4px;">
+        Cilíndrico · Waves suave · Amplitud baja
       </div>
     </div>
 
@@ -401,7 +432,7 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
         <select id="projMode">
           <option value="triplanar">Triplanar</option>
           <option value="cubic">Cúbico (Box)</option>
-          <option value="cylindrical">Cilíndrico</option>
+          <option value="cylindrical" selected>Cilíndrico</option>
           <option value="spherical">Esférico</option>
           <option value="planarXY">Planar XY</option>
           <option value="planarXZ">Planar XZ</option>
@@ -534,7 +565,7 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
         </div>
       </div>
       <div style="height:4px"></div>
-      <button class="apply-btn" id="applyBtn" disabled>▶ APLICAR TEXTURA</button>
+      <button class="apply-btn" id="applyBtn" disabled>▶ GENERAR FINAL (con subdivisión)</button>
       <button class="export-btn" id="exportBtn" disabled>↓ EXPORTAR STL</button>
     </div>
 
@@ -573,6 +604,7 @@ let mapImageData = null;
 let currentPreset = null;
 let isProcessing = false;
 let selectedRes = 1.0;
+let liveDebounceTimer = null;
 
 function initThree() {
   renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, alpha: true });
@@ -810,7 +842,6 @@ function loadMeshIntoScene(geo) {
   updateCamera();
   document.getElementById('triCount').textContent = (geo.attributes.position.count / 3).toLocaleString();
 }
-
 // ===================== PRESET MAPS =====================
 function generatePresetMap(type, size = 512) {
   const c = document.getElementById('mapCanvas');
@@ -988,7 +1019,84 @@ function triplanarSample(imgData, x, y, z, nx, ny, nz, scaleU, scaleV, offsetU, 
   return (tx * wx + ty * wy + tz * wz) / sum;
 }
 
-// ===================== MESH SUBDIVISION =====================
+// ===================== LIVE PREVIEW (sin subdivisión, instantáneo) =====================
+function liveDisplace() {
+  if (!originalGeo || !mapImageData) return;
+
+  const pos = originalGeo.attributes.position.array;
+  const nrm = originalGeo.attributes.normal.array;
+  const triCount = pos.length / 9;
+
+  const amplitude = parseFloat(document.getElementById('amplitude').value) / 10;
+  const symmetric = document.getElementById('symmetric').checked;
+  const mode = document.getElementById('projMode').value;
+  const scaleU = parseFloat(document.getElementById('scaleU').value) / 100;
+  const scaleV = parseFloat(document.getElementById('scaleV').value) / 100;
+  const offsetU = parseFloat(document.getElementById('offsetU').value) / 100;
+  const offsetV = parseFloat(document.getElementById('offsetV').value) / 100;
+  const rotation = (parseFloat(document.getElementById('rotation').value) / 180) * Math.PI;
+  const seam = parseFloat(document.getElementById('seamBlend').value) / 100;
+  const maskBottom = parseFloat(document.getElementById('maskBottom').value);
+  const maskTop = parseFloat(document.getElementById('maskTop').value);
+
+  const bbox = { min: { x: Infinity, y: Infinity, z: Infinity }, max: { x: -Infinity, y: -Infinity, z: -Infinity } };
+  for (let i = 0; i < pos.length; i += 3) {
+    bbox.min.x = Math.min(bbox.min.x, pos[i]); bbox.max.x = Math.max(bbox.max.x, pos[i]);
+    bbox.min.y = Math.min(bbox.min.y, pos[i+1]); bbox.max.y = Math.max(bbox.max.y, pos[i+1]);
+    bbox.min.z = Math.min(bbox.min.z, pos[i+2]); bbox.max.z = Math.max(bbox.max.z, pos[i+2]);
+  }
+  const maxDim = Math.max(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z);
+
+  const newPos = new Float32Array(pos.length);
+
+  for (let t = 0; t < triCount; t++) {
+    for (let v = 0; v < 3; v++) {
+      const base = t * 9 + v * 3;
+      const x = pos[base], y = pos[base+1], z = pos[base+2];
+      let nx = nrm[base], ny = nrm[base+1], nz = nrm[base+2];
+      const nlen = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
+      nx /= nlen; ny /= nlen; nz /= nlen;
+
+      let mask = 1.0;
+      const upDot = ny;
+      if (maskBottom > 0) { const t = Math.cos((90 - maskBottom) * Math.PI / 180); if (upDot < -t) mask = 0; }
+      if (maskTop > 0) { const t = Math.cos((90 - maskTop) * Math.PI / 180); if (upDot > t) mask = 0; }
+
+      let disp = 0;
+      if (mask > 0) {
+        if (mode === 'triplanar') {
+          const bsx = (bbox.max.x-bbox.min.x)||1, bsy = (bbox.max.y-bbox.min.y)||1, bsz = (bbox.max.z-bbox.min.z)||1;
+          disp = triplanarSample(mapImageData, (x-bbox.min.x)/bsx, (y-bbox.min.y)/bsy, (z-bbox.min.z)/bsz, nx, ny, nz, scaleU, scaleV, offsetU, offsetV, seam);
+        } else {
+          const { u, v: uv } = getUV(x, y, z, mode, bbox, scaleU, scaleV, offsetU, offsetV, rotation);
+          disp = sampleMap(mapImageData, u, uv);
+        }
+      }
+
+      const amp = amplitude * (maxDim * 0.05);
+      const d = symmetric ? (disp - 0.5) * 2 * amp : disp * amp;
+      newPos[base]   = x + nx * d * mask;
+      newPos[base+1] = y + ny * d * mask;
+      newPos[base+2] = z + nz * d * mask;
+    }
+  }
+
+  // Update mesh in-place (fast, no rebuild)
+  if (meshObj) {
+    meshObj.geometry.attributes.position.array.set(newPos);
+    meshObj.geometry.attributes.position.needsUpdate = true;
+    meshObj.geometry.computeVertexNormals();
+    meshObj.geometry.computeBoundingSphere();
+  }
+}
+
+function scheduleLivePreview() {
+  if (!originalGeo || !mapImageData) return;
+  clearTimeout(liveDebounceTimer);
+  liveDebounceTimer = setTimeout(liveDisplace, 80);
+}
+
+// ===================== DISPLACEMENT (con subdivisión, para exportar) =====================
 // Subdivides each triangle into 4 smaller triangles (1 level)
 function subdivideMesh(posArr, nrmArr) {
   const triCount = posArr.length / 9;
@@ -1197,17 +1305,17 @@ function loadSTL(file) {
       stlData = parseSTL(e.target.result);
       originalGeo = buildGeometry(stlData);
       texturedGeo = null;
-      loadMeshIntoScene(originalGeo);
+      loadMeshIntoScene(originalGeo.clone()); // clone so live preview can modify in-place
       document.getElementById('emptyState').classList.add('hidden');
       document.getElementById('wireframeBtn').style.display = 'block';
       document.getElementById('statusBar').style.display = 'block';
       document.getElementById('orbitHint').style.display = 'block';
       document.getElementById('triCount').textContent = stlData.triCount.toLocaleString();
-      // File info
       document.getElementById('fileName').textContent = file.name;
       document.getElementById('fileStats').textContent = `${stlData.triCount.toLocaleString()} triángulos · ${(file.size / 1024).toFixed(0)} KB`;
       document.getElementById('fileInfo').classList.add('visible');
       updateApplyBtn();
+      scheduleLivePreview();
     } catch (err) {
       alert('Error al leer el STL: ' + err.message);
     }
@@ -1218,6 +1326,7 @@ function loadSTL(file) {
 function updateApplyBtn() {
   const canApply = !!originalGeo && !!mapImageData;
   document.getElementById('applyBtn').disabled = !canApply;
+  document.getElementById('exportBtn').disabled = !canApply;
 }
 
 // Drop zone - STL
@@ -1254,15 +1363,13 @@ function loadMapImage(file) {
     const ctx = c.getContext('2d');
     ctx.drawImage(img, 0, 0);
     mapImageData = ctx.getImageData(0, 0, img.width, img.height);
-    // Show preview
     document.getElementById('mapPreview').src = img.src;
     document.getElementById('mapPreview').classList.add('visible');
     document.getElementById('mapText').style.display = 'none';
-    // Deselect presets
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
     currentPreset = null;
     updateApplyBtn();
-    if (document.getElementById('livePreview').checked && originalGeo) applyDisplacement();
+    scheduleLivePreview();
   };
   img.src = URL.createObjectURL(file);
 }
@@ -1274,13 +1381,12 @@ document.querySelectorAll('.preset-btn').forEach(btn => {
     btn.classList.add('active');
     currentPreset = btn.dataset.preset;
     mapImageData = generatePresetMap(currentPreset);
-    // Show on preview
     const mc = document.getElementById('mapCanvas');
     document.getElementById('mapPreview').src = mc.toDataURL();
     document.getElementById('mapPreview').classList.add('visible');
     document.getElementById('mapText').style.display = 'none';
     updateApplyBtn();
-    if (document.getElementById('livePreview').checked && originalGeo) applyDisplacement();
+    scheduleLivePreview();
   });
 });
 
@@ -1294,7 +1400,7 @@ function setupSlider(id, valId, transform) {
   update();
   s.addEventListener('input', () => {
     update();
-    if (document.getElementById('livePreview').checked && originalGeo && mapImageData) applyDisplacement();
+    scheduleLivePreview();
   });
 }
 setupSlider('amplitude', 'amplitudeVal', v => (v / 10).toFixed(1));
@@ -1307,7 +1413,7 @@ setupSlider('offsetV', 'offsetVVal', v => (v / 100).toFixed(2));
 setupSlider('rotation', 'rotationVal', v => v + '°');
 
 document.getElementById('projMode').addEventListener('change', () => {
-  if (document.getElementById('livePreview').checked && originalGeo && mapImageData) applyDisplacement();
+  scheduleLivePreview();
 });
 
 // Resolution chips
@@ -1319,10 +1425,116 @@ document.querySelectorAll('.res-chip').forEach(chip => {
   });
 });
 
+document.getElementById('symmetric').addEventListener('change', scheduleLivePreview);
+document.getElementById('maskBottom').addEventListener('input', scheduleLivePreview);
+document.getElementById('maskTop').addEventListener('input', scheduleLivePreview);
+
 document.getElementById('applyBtn').addEventListener('click', applyDisplacement);
 document.getElementById('exportBtn').addEventListener('click', exportSTL);
 
-// Init
+// ===================== QUICK PRESETS =====================
+const quickPresetConfigs = {
+  vaso: {
+    desc: 'Cilíndrico · Waves suave · Amplitud baja',
+    projMode: 'cylindrical',
+    amplitude: 3, symmetric: false,
+    scaleU: 200, scaleV: 100, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 60, smoothing: 20,
+    mapPreset: 'waves',
+    maskBottom: 10, maskTop: 5,
+  },
+  esfera: {
+    desc: 'Esférico · Noise · Amplitud media',
+    projMode: 'spherical',
+    amplitude: 5, symmetric: true,
+    scaleU: 150, scaleV: 150, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 80, smoothing: 30,
+    mapPreset: 'noise',
+    maskBottom: 0, maskTop: 0,
+  },
+  caja: {
+    desc: 'Triplanar · Grid suave · Amplitud baja',
+    projMode: 'triplanar',
+    amplitude: 4, symmetric: false,
+    scaleU: 120, scaleV: 120, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 70, smoothing: 10,
+    mapPreset: 'diamonds',
+    maskBottom: 0, maskTop: 0,
+  },
+  organico: {
+    desc: 'Triplanar · Noise orgánico · Amplitud media',
+    projMode: 'triplanar',
+    amplitude: 6, symmetric: true,
+    scaleU: 180, scaleV: 180, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 90, smoothing: 40,
+    mapPreset: 'noise',
+    maskBottom: 0, maskTop: 0,
+  },
+  suave: {
+    desc: 'Cilíndrico · Waves muy suave · Amplitud mínima',
+    projMode: 'cylindrical',
+    amplitude: 1, symmetric: true,
+    scaleU: 300, scaleV: 200, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 80, smoothing: 50,
+    mapPreset: 'waves',
+    maskBottom: 5, maskTop: 5,
+  },
+  fuerte: {
+    desc: 'Triplanar · Honeycomb · Amplitud alta',
+    projMode: 'triplanar',
+    amplitude: 15, symmetric: false,
+    scaleU: 200, scaleV: 200, offsetU: 0, offsetV: 0, rotation: 0,
+    seamBlend: 50, smoothing: 0,
+    mapPreset: 'honeycomb',
+    maskBottom: 0, maskTop: 0,
+  },
+};
+
+function applyQuickPreset(key) {
+  const cfg = quickPresetConfigs[key];
+  if (!cfg) return;
+
+  // Update UI
+  document.getElementById('projMode').value = cfg.projMode;
+  document.getElementById('amplitude').value = cfg.amplitude;
+  document.getElementById('scaleU').value = cfg.scaleU;
+  document.getElementById('scaleV').value = cfg.scaleV;
+  document.getElementById('offsetU').value = cfg.offsetU;
+  document.getElementById('offsetV').value = cfg.offsetV;
+  document.getElementById('rotation').value = cfg.rotation;
+  document.getElementById('seamBlend').value = cfg.seamBlend;
+  document.getElementById('smoothing').value = cfg.smoothing;
+  document.getElementById('maskBottom').value = cfg.maskBottom;
+  document.getElementById('maskTop').value = cfg.maskTop;
+  document.getElementById('symmetric').checked = cfg.symmetric;
+
+  // Refresh slider displays
+  ['amplitude','scaleU','scaleV','offsetU','offsetV','rotation','seamBlend','smoothing'].forEach(id => {
+    const s = document.getElementById(id);
+    s.dispatchEvent(new Event('input'));
+  });
+
+  // Apply map preset
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+  const pb = document.querySelector(`.preset-btn[data-preset="${cfg.mapPreset}"]`);
+  if (pb) { pb.classList.add('active'); pb.click(); }
+
+  // Update desc
+  document.getElementById('qpDesc').textContent = cfg.desc;
+
+  // Mark active button
+  document.querySelectorAll('.quick-preset').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.quick-preset[data-qp="${key}"]`).classList.add('active');
+}
+
+document.querySelectorAll('.quick-preset').forEach(btn => {
+  btn.addEventListener('click', () => applyQuickPreset(btn.dataset.qp));
+});
+
+// Apply vaso preset on load by default
+applyQuickPreset('vaso');
+
+// ===================== INIT =====================
 initThree();
 
 }); // end window.onload
