@@ -628,7 +628,11 @@ function initThree() {
 
   const vw = viewport.clientWidth, vh = viewport.clientHeight;
   camera = new THREE.PerspectiveCamera(50, vw / vh, 0.01, 10000);
-  camera.position.set(0, 0, 5);
+  camera.position.set(0, 2, 8);
+  camera.lookAt(0, 0, 0);
+
+  // Init spherical to match
+  spherical = { theta: 0, phi: Math.PI / 2.5, radius: 8 };
 
   // Lights
   const ambient = new THREE.AmbientLight(0xffffff, 0.4);
@@ -664,7 +668,7 @@ function handleResize() {
 // Simple orbit controls (no external dep)
 let isDragging = false, isRightDrag = false;
 let prevMouse = { x: 0, y: 0 };
-let spherical = { theta: 0.5, phi: 1.0, radius: 5 };
+let spherical = { theta: 0, phi: Math.PI / 2.5, radius: 8 };
 let panOffset = new THREE.Vector3();
 
 function setupOrbitControls() {
@@ -857,7 +861,9 @@ function loadMeshIntoScene(geo) {
   meshObj.position.set(0, 0, 0);
 
   scene.add(meshObj);
-  spherical.radius = 6;
+  spherical.radius = 4 / scale * 1.8;
+  spherical.theta = 0;
+  spherical.phi = Math.PI / 2.5;
   panOffset.set(0, 0, 0);
   updateCamera();
   document.getElementById('triCount').textContent = (geo.attributes.position.count / 3).toLocaleString();
