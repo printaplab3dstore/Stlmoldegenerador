@@ -330,7 +330,17 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
 }
 .status-bar span { color: var(--cyan); }
 
-/* QUICK PRESETS */
+/* RELIEF TYPE BUTTONS */
+.relief-type {
+  background: var(--bg3); border: 1px solid var(--border);
+  color: var(--text-dim); font-family: 'Space Mono', monospace;
+  font-size: 11px; padding: 7px 6px; border-radius: 6px;
+  cursor: pointer; transition: all 0.15s; text-align: center; width: 100%;
+}
+.relief-type:hover { border-color: var(--cyan); color: var(--cyan); }
+.relief-type.active { border-color: var(--cyan); color: var(--cyan); background: var(--cyan-dim); font-weight: 700; }
+.relief-type[data-type="positive"].active { border-color: #00ff88; color: #00ff88; background: rgba(0,255,136,0.1); }
+.relief-type[data-type="negative"].active { border-color: var(--magenta); color: var(--magenta); background: var(--magenta-dim); }
 .quick-preset {
   background: var(--bg3); border: 1px solid var(--border);
   color: var(--text-dim); font-family: 'Space Mono', monospace;
@@ -459,22 +469,22 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
     <div class="section">
       <div class="section-title">
         <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M1 9 L3 3 L6 7 L8 2 L11 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Desplazamiento
+        Relieve
       </div>
       <div class="ctrl-group">
-        <label>Amplitud (mm)</label>
+        <label>Profundidad del relieve (mm)</label>
         <div class="slider-row">
-          <input type="range" id="amplitude" min="0" max="200" value="5" step="1">
-          <span class="slider-val" id="amplitudeVal">3.0</span>
+          <input type="range" id="amplitude" min="1" max="30" value="5" step="1">
+          <span class="slider-val" id="amplitudeVal">0.5</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-dim); margin-top:3px;">
+          <span>0.1mm</span><span>suave</span><span>3.0mm</span>
         </div>
       </div>
-      <div class="toggle-row">
-        <span class="toggle-label">Desplazamiento simétrico</span>
-        <label class="toggle">
-          <input type="checkbox" id="symmetric">
-          <div class="toggle-track"></div>
-          <div class="toggle-thumb"></div>
-        </label>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:10px;">
+        <button class="relief-type active" data-type="symmetric" title="±0.5mm — Relieve simétrico">⬡ Simétrico ±</button>
+        <button class="relief-type" data-type="positive" title="Relieve positivo, sobresale">▲ Positivo</button>
+        <button class="relief-type" data-type="negative" title="Relieve negativo, se hunde">▼ Negativo</button>
       </div>
       <div class="toggle-row">
         <span class="toggle-label">Preview 3D en tiempo real</span>
@@ -565,8 +575,8 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
         </div>
       </div>
       <div style="height:4px"></div>
-      <button class="apply-btn" id="applyBtn" disabled>▶ GENERAR FINAL (con subdivisión)</button>
-      <button class="export-btn" id="exportBtn" disabled>↓ EXPORTAR STL</button>
+      <button class="apply-btn" id="applyBtn" disabled>▶ GENERAR PREVIEW FINAL</button>
+      <button class="export-btn" id="exportBtn" disabled>↓ EXPORTAR STL (con subdivisión)</button>
     </div>
 
   </div>
@@ -605,6 +615,7 @@ let currentPreset = null;
 let isProcessing = false;
 let selectedRes = 1.0;
 let liveDebounceTimer = null;
+let reliefType = 'symmetric'; // 'symmetric', 'positive', 'negative'
 
 function initThree() {
   renderer = new THREE.WebGLRenderer({ canvas: canvas3d, antialias: true, alpha: true });
@@ -1027,8 +1038,8 @@ function liveDisplace() {
   const nrm = originalGeo.attributes.normal.array;
   const triCount = pos.length / 9;
 
-  const amplitude = parseFloat(document.getElementById('amplitude').value) / 10;
-  const symmetric = document.getElementById('symmetric').checked;
+  // amplitude in real mm (slider 1-30 → 0.1mm to 3.0mm)
+  const ampMM = parseFloat(document.getElementById('amplitude').value) / 10;
   const mode = document.getElementById('projMode').value;
   const scaleU = parseFloat(document.getElementById('scaleU').value) / 100;
   const scaleV = parseFloat(document.getElementById('scaleV').value) / 100;
@@ -1045,7 +1056,11 @@ function liveDisplace() {
     bbox.min.y = Math.min(bbox.min.y, pos[i+1]); bbox.max.y = Math.max(bbox.max.y, pos[i+1]);
     bbox.min.z = Math.min(bbox.min.z, pos[i+2]); bbox.max.z = Math.max(bbox.max.z, pos[i+2]);
   }
+
+  // Detect model unit scale — if model is huge (>500 units), assume mm already; if tiny, scale up
   const maxDim = Math.max(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z);
+  // Assume 1 unit = 1mm. ampMM is in mm directly.
+  const amp = ampMM;
 
   const newPos = new Float32Array(pos.length);
 
@@ -1059,29 +1074,32 @@ function liveDisplace() {
 
       let mask = 1.0;
       const upDot = ny;
-      if (maskBottom > 0) { const t = Math.cos((90 - maskBottom) * Math.PI / 180); if (upDot < -t) mask = 0; }
-      if (maskTop > 0) { const t = Math.cos((90 - maskTop) * Math.PI / 180); if (upDot > t) mask = 0; }
+      if (maskBottom > 0) { const th = Math.cos((90 - maskBottom) * Math.PI / 180); if (upDot < -th) mask = 0; }
+      if (maskTop > 0) { const th = Math.cos((90 - maskTop) * Math.PI / 180); if (upDot > th) mask = 0; }
 
       let disp = 0;
       if (mask > 0) {
         if (mode === 'triplanar') {
-          const bsx = (bbox.max.x-bbox.min.x)||1, bsy = (bbox.max.y-bbox.min.y)||1, bsz = (bbox.max.z-bbox.min.z)||1;
-          disp = triplanarSample(mapImageData, (x-bbox.min.x)/bsx, (y-bbox.min.y)/bsy, (z-bbox.min.z)/bsz, nx, ny, nz, scaleU, scaleV, offsetU, offsetV, seam);
+          const bsx=(bbox.max.x-bbox.min.x)||1, bsy=(bbox.max.y-bbox.min.y)||1, bsz=(bbox.max.z-bbox.min.z)||1;
+          disp = triplanarSample(mapImageData,(x-bbox.min.x)/bsx,(y-bbox.min.y)/bsy,(z-bbox.min.z)/bsz,nx,ny,nz,scaleU,scaleV,offsetU,offsetV,seam);
         } else {
-          const { u, v: uv } = getUV(x, y, z, mode, bbox, scaleU, scaleV, offsetU, offsetV, rotation);
+          const { u, v: uv } = getUV(x,y,z,mode,bbox,scaleU,scaleV,offsetU,offsetV,rotation);
           disp = sampleMap(mapImageData, u, uv);
         }
       }
 
-      const amp = amplitude * (maxDim * 0.05);
-      const d = symmetric ? (disp - 0.5) * 2 * amp : disp * amp;
+      // Apply relief type
+      let d = 0;
+      if (reliefType === 'symmetric') d = (disp - 0.5) * 2 * amp; // -amp to +amp
+      else if (reliefType === 'positive') d = disp * amp;           // 0 to +amp
+      else if (reliefType === 'negative') d = (disp - 1) * amp;    // -amp to 0
+
       newPos[base]   = x + nx * d * mask;
       newPos[base+1] = y + ny * d * mask;
       newPos[base+2] = z + nz * d * mask;
     }
   }
 
-  // Update mesh in-place (fast, no rebuild)
   if (meshObj) {
     meshObj.geometry.attributes.position.array.set(newPos);
     meshObj.geometry.attributes.position.needsUpdate = true;
@@ -1149,9 +1167,8 @@ async function applyDisplacement() {
 
   await new Promise(r => setTimeout(r, 20));
 
-  // Params
-  const amplitude = parseFloat(document.getElementById('amplitude').value) / 10;
-  const symmetric = document.getElementById('symmetric').checked;
+  // Params — amplitude in real mm
+  const ampMM = parseFloat(document.getElementById('amplitude').value) / 10;
   const mode = document.getElementById('projMode').value;
   const scaleU = parseFloat(document.getElementById('scaleU').value) / 100;
   const scaleV = parseFloat(document.getElementById('scaleV').value) / 100;
@@ -1161,6 +1178,7 @@ async function applyDisplacement() {
   const seam = parseFloat(document.getElementById('seamBlend').value) / 100;
   const maskBottom = parseFloat(document.getElementById('maskBottom').value);
   const maskTop = parseFloat(document.getElementById('maskTop').value);
+  const amp = ampMM; // 1 unit = 1mm
 
   // Subdivide mesh based on resolution setting
   progressText.textContent = 'Subdividiendo malla...';
@@ -1197,6 +1215,7 @@ async function applyDisplacement() {
     bbox.min.z = Math.min(bbox.min.z, origPos[i+2]); bbox.max.z = Math.max(bbox.max.z, origPos[i+2]);
   }
   const maxDim = Math.max(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z);
+  // maxDim kept for reference only
 
   progressText.textContent = 'Aplicando textura...';
   const newPos = new Float32Array(workPos.length);
@@ -1236,8 +1255,11 @@ async function applyDisplacement() {
           }
         }
 
-        const amp = amplitude * (maxDim * 0.05); // reduced multiplier for saner defaults
-        const d = symmetric ? (disp - 0.5) * 2 * amp : disp * amp;
+        const amp2 = amp; // already in mm
+        let d = 0;
+        if (reliefType === 'symmetric') d = (disp - 0.5) * 2 * amp2;
+        else if (reliefType === 'positive') d = disp * amp2;
+        else if (reliefType === 'negative') d = (disp - 1) * amp2;
         newPos[base] = x + nx * d * mask;
         newPos[base+1] = y + ny * d * mask;
         newPos[base+2] = z + nz * d * mask;
@@ -1257,21 +1279,33 @@ async function applyDisplacement() {
   texturedGeo.computeBoundingBox();
   texturedGeo.computeBoundingSphere();
 
-  loadMeshIntoScene(texturedGeo);
+  // Show subdivided result temporarily in viewport
+  loadMeshIntoScene(texturedGeo.clone());
 
   progressWrap.style.display = 'none';
   progressFill.style.width = '0%';
   document.getElementById('applyBtn').disabled = false;
   document.getElementById('exportBtn').disabled = false;
   isProcessing = false;
+
+  // Restore original mesh for continued live preview editing after 2s
+  setTimeout(() => {
+    if (originalGeo) {
+      loadMeshIntoScene(originalGeo.clone());
+      scheduleLivePreview();
+    }
+  }, 2000);
 }
 
 // ===================== STL EXPORT =====================
-function exportSTL() {
-  const geo = texturedGeo || originalGeo;
-  if (!geo) return;
-  const pos = geo.attributes.position.array;
-  const nrm = geo.attributes.normal ? geo.attributes.normal.array : null;
+async function exportSTL() {
+  if (!originalGeo || !mapImageData) return;
+  // Always run full applyDisplacement before export to get subdivided mesh
+  await applyDisplacement();
+  if (!texturedGeo) return;
+
+  const pos = texturedGeo.attributes.position.array;
+  const nrm = texturedGeo.attributes.normal ? texturedGeo.attributes.normal.array : null;
   const triCount = pos.length / 9;
   const buf = new ArrayBuffer(84 + triCount * 50);
   const view = new DataView(buf);
@@ -1279,7 +1313,6 @@ function exportSTL() {
   view.setUint32(offset, triCount, true); offset += 4;
   for (let i = 0; i < triCount; i++) {
     const base = i * 9;
-    // Normal
     const nx = nrm ? nrm[base] : 0, ny = nrm ? nrm[base+1] : 0, nz = nrm ? nrm[base+2] : 0;
     view.setFloat32(offset, nx, true); view.setFloat32(offset+4, ny, true); view.setFloat32(offset+8, nz, true); offset += 12;
     for (let v = 0; v < 3; v++) {
@@ -1403,7 +1436,7 @@ function setupSlider(id, valId, transform) {
     scheduleLivePreview();
   });
 }
-setupSlider('amplitude', 'amplitudeVal', v => (v / 10).toFixed(1));
+setupSlider('amplitude', 'amplitudeVal', v => (v / 10).toFixed(1) + 'mm');
 setupSlider('seamBlend', 'seamBlendVal', v => v + '%');
 setupSlider('smoothing', 'smoothingVal', v => v + '%');
 setupSlider('scaleU', 'scaleUVal', v => (v / 100).toFixed(1));
@@ -1425,9 +1458,18 @@ document.querySelectorAll('.res-chip').forEach(chip => {
   });
 });
 
-document.getElementById('symmetric').addEventListener('change', scheduleLivePreview);
 document.getElementById('maskBottom').addEventListener('input', scheduleLivePreview);
 document.getElementById('maskTop').addEventListener('input', scheduleLivePreview);
+
+// Relief type buttons
+document.querySelectorAll('.relief-type').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.relief-type').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    reliefType = btn.dataset.type;
+    scheduleLivePreview();
+  });
+});
 
 document.getElementById('applyBtn').addEventListener('click', applyDisplacement);
 document.getElementById('exportBtn').addEventListener('click', exportSTL);
@@ -1435,54 +1477,54 @@ document.getElementById('exportBtn').addEventListener('click', exportSTL);
 // ===================== QUICK PRESETS =====================
 const quickPresetConfigs = {
   vaso: {
-    desc: 'Cilíndrico · Waves suave · Amplitud baja',
+    desc: 'Cilíndrico · Waves · ±0.5mm simétrico',
     projMode: 'cylindrical',
-    amplitude: 3, symmetric: false,
+    amplitude: 5, reliefType: 'symmetric',
     scaleU: 200, scaleV: 100, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 60, smoothing: 20,
     mapPreset: 'waves',
     maskBottom: 10, maskTop: 5,
   },
   esfera: {
-    desc: 'Esférico · Noise · Amplitud media',
+    desc: 'Esférico · Noise · ±0.5mm simétrico',
     projMode: 'spherical',
-    amplitude: 5, symmetric: true,
+    amplitude: 5, reliefType: 'symmetric',
     scaleU: 150, scaleV: 150, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 80, smoothing: 30,
     mapPreset: 'noise',
     maskBottom: 0, maskTop: 0,
   },
   caja: {
-    desc: 'Triplanar · Grid suave · Amplitud baja',
+    desc: 'Triplanar · Diamonds · ±0.5mm simétrico',
     projMode: 'triplanar',
-    amplitude: 4, symmetric: false,
+    amplitude: 5, reliefType: 'symmetric',
     scaleU: 120, scaleV: 120, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 70, smoothing: 10,
     mapPreset: 'diamonds',
     maskBottom: 0, maskTop: 0,
   },
   organico: {
-    desc: 'Triplanar · Noise orgánico · Amplitud media',
+    desc: 'Triplanar · Noise · ±0.5mm simétrico',
     projMode: 'triplanar',
-    amplitude: 6, symmetric: true,
+    amplitude: 5, reliefType: 'symmetric',
     scaleU: 180, scaleV: 180, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 90, smoothing: 40,
     mapPreset: 'noise',
     maskBottom: 0, maskTop: 0,
   },
   suave: {
-    desc: 'Cilíndrico · Waves muy suave · Amplitud mínima',
+    desc: 'Cilíndrico · Waves · ±0.2mm muy sutil',
     projMode: 'cylindrical',
-    amplitude: 1, symmetric: true,
+    amplitude: 2, reliefType: 'symmetric',
     scaleU: 300, scaleV: 200, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 80, smoothing: 50,
     mapPreset: 'waves',
     maskBottom: 5, maskTop: 5,
   },
   fuerte: {
-    desc: 'Triplanar · Honeycomb · Amplitud alta',
+    desc: 'Triplanar · Honeycomb · ±1.5mm pronunciado',
     projMode: 'triplanar',
-    amplitude: 15, symmetric: false,
+    amplitude: 15, reliefType: 'symmetric',
     scaleU: 200, scaleV: 200, offsetU: 0, offsetV: 0, rotation: 0,
     seamBlend: 50, smoothing: 0,
     mapPreset: 'honeycomb',
@@ -1494,7 +1536,6 @@ function applyQuickPreset(key) {
   const cfg = quickPresetConfigs[key];
   if (!cfg) return;
 
-  // Update UI
   document.getElementById('projMode').value = cfg.projMode;
   document.getElementById('amplitude').value = cfg.amplitude;
   document.getElementById('scaleU').value = cfg.scaleU;
@@ -1506,12 +1547,16 @@ function applyQuickPreset(key) {
   document.getElementById('smoothing').value = cfg.smoothing;
   document.getElementById('maskBottom').value = cfg.maskBottom;
   document.getElementById('maskTop').value = cfg.maskTop;
-  document.getElementById('symmetric').checked = cfg.symmetric;
+
+  // Set relief type
+  reliefType = cfg.reliefType || 'symmetric';
+  document.querySelectorAll('.relief-type').forEach(b => b.classList.remove('active'));
+  const rb = document.querySelector(`.relief-type[data-type="${reliefType}"]`);
+  if (rb) rb.classList.add('active');
 
   // Refresh slider displays
   ['amplitude','scaleU','scaleV','offsetU','offsetV','rotation','seamBlend','smoothing'].forEach(id => {
-    const s = document.getElementById(id);
-    s.dispatchEvent(new Event('input'));
+    document.getElementById(id).dispatchEvent(new Event('input'));
   });
 
   // Apply map preset
@@ -1519,10 +1564,8 @@ function applyQuickPreset(key) {
   const pb = document.querySelector(`.preset-btn[data-preset="${cfg.mapPreset}"]`);
   if (pb) { pb.classList.add('active'); pb.click(); }
 
-  // Update desc
   document.getElementById('qpDesc').textContent = cfg.desc;
 
-  // Mark active button
   document.querySelectorAll('.quick-preset').forEach(b => b.classList.remove('active'));
   document.querySelector(`.quick-preset[data-qp="${key}"]`).classList.add('active');
 }
