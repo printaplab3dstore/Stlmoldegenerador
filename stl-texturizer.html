@@ -433,7 +433,7 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
       <div class="ctrl-group">
         <label>Amplitud (mm)</label>
         <div class="slider-row">
-          <input type="range" id="amplitude" min="0" max="200" value="30" step="1">
+          <input type="range" id="amplitude" min="0" max="200" value="5" step="1">
           <span class="slider-val" id="amplitudeVal">3.0</span>
         </div>
       </div>
@@ -527,10 +527,10 @@ input[type=number]:focus { outline: none; border-color: var(--cyan); }
       <div class="ctrl-group">
         <label>Resolución de subdivisión</label>
         <div class="res-chips" id="resChips">
-          <div class="res-chip" data-res="0.5">Baja</div>
-          <div class="res-chip active" data-res="1.0">Media</div>
-          <div class="res-chip" data-res="2.0">Alta</div>
-          <div class="res-chip" data-res="4.0">Ultra</div>
+          <div class="res-chip" data-res="0.5">1x (rápido)</div>
+          <div class="res-chip active" data-res="1.0">2x (medio)</div>
+          <div class="res-chip" data-res="2.0">3x (suave)</div>
+          <div class="res-chip" data-res="4.0">4x (ultra)</div>
         </div>
       </div>
       <div style="height:4px"></div>
@@ -988,6 +988,45 @@ function triplanarSample(imgData, x, y, z, nx, ny, nz, scaleU, scaleV, offsetU, 
   return (tx * wx + ty * wy + tz * wz) / sum;
 }
 
+// ===================== MESH SUBDIVISION =====================
+// Subdivides each triangle into 4 smaller triangles (1 level)
+function subdivideMesh(posArr, nrmArr) {
+  const triCount = posArr.length / 9;
+  const newPos = new Float32Array(triCount * 4 * 9);
+  const newNrm = new Float32Array(triCount * 4 * 9);
+  let out = 0;
+  for (let t = 0; t < triCount; t++) {
+    const b = t * 9;
+    // Vertices
+    const ax=posArr[b],   ay=posArr[b+1], az=posArr[b+2];
+    const bx=posArr[b+3], by=posArr[b+4], bz=posArr[b+5];
+    const cx=posArr[b+6], cy=posArr[b+7], cz=posArr[b+8];
+    // Normals
+    const nax=nrmArr[b],   nay=nrmArr[b+1], naz=nrmArr[b+2];
+    const nbx=nrmArr[b+3], nby=nrmArr[b+4], nbz=nrmArr[b+5];
+    const ncx=nrmArr[b+6], ncy=nrmArr[b+7], ncz=nrmArr[b+8];
+    // Midpoints
+    const mx1=(ax+bx)/2, my1=(ay+by)/2, mz1=(az+bz)/2;
+    const mx2=(bx+cx)/2, my2=(by+cy)/2, mz2=(bz+cz)/2;
+    const mx3=(ax+cx)/2, my3=(ay+cy)/2, mz3=(az+cz)/2;
+    // Midpoint normals (interpolated)
+    const mn1x=(nax+nbx)/2, mn1y=(nay+nby)/2, mn1z=(naz+nbz)/2;
+    const mn2x=(nbx+ncx)/2, mn2y=(nby+ncy)/2, mn2z=(nbz+ncz)/2;
+    const mn3x=(nax+ncx)/2, mn3y=(nay+ncy)/2, mn3z=(naz+ncz)/2;
+    // 4 sub-triangles: [A,M1,M3], [M1,B,M2], [M3,M2,C], [M1,M2,M3]
+    const tris = [
+      [ax,ay,az, mx1,my1,mz1, mx3,my3,mz3,  nax,nay,naz, mn1x,mn1y,mn1z, mn3x,mn3y,mn3z],
+      [mx1,my1,mz1, bx,by,bz, mx2,my2,mz2,  mn1x,mn1y,mn1z, nbx,nby,nbz, mn2x,mn2y,mn2z],
+      [mx3,my3,mz3, mx2,my2,mz2, cx,cy,cz,  mn3x,mn3y,mn3z, mn2x,mn2y,mn2z, ncx,ncy,ncz],
+      [mx1,my1,mz1, mx2,my2,mz2, mx3,my3,mz3, mn1x,mn1y,mn1z, mn2x,mn2y,mn2z, mn3x,mn3y,mn3z],
+    ];
+    for (const tri of tris) {
+      for (let i = 0; i < 9; i++) { newPos[out] = tri[i]; newNrm[out] = tri[9+i]; out++; }
+    }
+  }
+  return { positions: newPos, normals: newNrm };
+}
+
 async function applyDisplacement() {
   if (!originalGeo || !mapImageData || isProcessing) return;
   isProcessing = true;
@@ -999,13 +1038,8 @@ async function applyDisplacement() {
   const progressPct = document.getElementById('progressPct');
   const progressText = document.getElementById('progressText');
   progressWrap.style.display = 'flex';
-  progressText.textContent = 'Aplicando textura...';
 
   await new Promise(r => setTimeout(r, 20));
-
-  const pos = originalGeo.attributes.position.array;
-  const nrm = originalGeo.attributes.normal.array;
-  const triCount = pos.length / 9;
 
   // Params
   const amplitude = parseFloat(document.getElementById('amplitude').value) / 10;
@@ -1020,25 +1054,53 @@ async function applyDisplacement() {
   const maskBottom = parseFloat(document.getElementById('maskBottom').value);
   const maskTop = parseFloat(document.getElementById('maskTop').value);
 
-  // Get bounding box from original
+  // Subdivide mesh based on resolution setting
+  progressText.textContent = 'Subdividiendo malla...';
+  progressFill.style.width = '10%';
+  await new Promise(r => setTimeout(r, 20));
+
+  let workPos = originalGeo.attributes.position.array;
+  let workNrm = originalGeo.attributes.normal.array;
+
+  // Number of subdivision levels based on resolution
+  const subLevels = selectedRes <= 0.5 ? 1 : selectedRes <= 1.0 ? 2 : selectedRes <= 2.0 ? 3 : 4;
+  const MAX_TRIS = 800000;
+
+  for (let level = 0; level < subLevels; level++) {
+    const currentTris = workPos.length / 9;
+    if (currentTris * 4 > MAX_TRIS) break; // Safety cap
+    progressText.textContent = `Subdividiendo nivel ${level+1}/${subLevels}...`;
+    progressFill.style.width = (10 + level * 15) + '%';
+    await new Promise(r => setTimeout(r, 20));
+    const result = subdivideMesh(workPos, workNrm);
+    workPos = result.positions;
+    workNrm = result.normals;
+  }
+
+  const triCount = workPos.length / 9;
+  document.getElementById('triCount').textContent = triCount.toLocaleString();
+
+  // Get bounding box from original (not subdivided, for consistent UV)
+  const origPos = originalGeo.attributes.position.array;
   const bbox = { min: { x: Infinity, y: Infinity, z: Infinity }, max: { x: -Infinity, y: -Infinity, z: -Infinity } };
-  for (let i = 0; i < pos.length; i += 3) {
-    bbox.min.x = Math.min(bbox.min.x, pos[i]); bbox.max.x = Math.max(bbox.max.x, pos[i]);
-    bbox.min.y = Math.min(bbox.min.y, pos[i+1]); bbox.max.y = Math.max(bbox.max.y, pos[i+1]);
-    bbox.min.z = Math.min(bbox.min.z, pos[i+2]); bbox.max.z = Math.max(bbox.max.z, pos[i+2]);
+  for (let i = 0; i < origPos.length; i += 3) {
+    bbox.min.x = Math.min(bbox.min.x, origPos[i]); bbox.max.x = Math.max(bbox.max.x, origPos[i]);
+    bbox.min.y = Math.min(bbox.min.y, origPos[i+1]); bbox.max.y = Math.max(bbox.max.y, origPos[i+1]);
+    bbox.min.z = Math.min(bbox.min.z, origPos[i+2]); bbox.max.z = Math.max(bbox.max.z, origPos[i+2]);
   }
   const maxDim = Math.max(bbox.max.x - bbox.min.x, bbox.max.y - bbox.min.y, bbox.max.z - bbox.min.z);
 
-  const newPos = new Float32Array(pos.length);
-  const CHUNK = 5000;
+  progressText.textContent = 'Aplicando textura...';
+  const newPos = new Float32Array(workPos.length);
+  const CHUNK = 3000;
 
   for (let i = 0; i < triCount; i += CHUNK) {
     const end = Math.min(i + CHUNK, triCount);
     for (let t = i; t < end; t++) {
       for (let v = 0; v < 3; v++) {
         const base = t * 9 + v * 3;
-        const x = pos[base], y = pos[base+1], z = pos[base+2];
-        let nx = nrm[base], ny = nrm[base+1], nz = nrm[base+2];
+        const x = workPos[base], y = workPos[base+1], z = workPos[base+2];
+        let nx = workNrm[base], ny = workNrm[base+1], nz = workNrm[base+2];
         const nlen = Math.sqrt(nx*nx + ny*ny + nz*nz) || 1;
         nx /= nlen; ny /= nlen; nz /= nlen;
 
@@ -1066,14 +1128,14 @@ async function applyDisplacement() {
           }
         }
 
-        const amp = amplitude * (maxDim * 0.1);
+        const amp = amplitude * (maxDim * 0.05); // reduced multiplier for saner defaults
         const d = symmetric ? (disp - 0.5) * 2 * amp : disp * amp;
         newPos[base] = x + nx * d * mask;
         newPos[base+1] = y + ny * d * mask;
         newPos[base+2] = z + nz * d * mask;
       }
     }
-    const pct = Math.round((end / triCount) * 100);
+    const pct = Math.round(50 + (end / triCount) * 50);
     progressFill.style.width = pct + '%';
     progressPct.textContent = pct + '%';
     await new Promise(r => setTimeout(r, 0));
@@ -1082,7 +1144,7 @@ async function applyDisplacement() {
   // Rebuild geometry
   texturedGeo = new THREE.BufferGeometry();
   texturedGeo.setAttribute('position', new THREE.BufferAttribute(newPos, 3));
-  texturedGeo.setAttribute('normal', new THREE.BufferAttribute(nrm.slice(), 3));
+  texturedGeo.setAttribute('normal', new THREE.BufferAttribute(workNrm.slice(), 3));
   texturedGeo.computeVertexNormals();
   texturedGeo.computeBoundingBox();
   texturedGeo.computeBoundingSphere();
