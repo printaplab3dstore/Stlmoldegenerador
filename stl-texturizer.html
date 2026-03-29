@@ -628,11 +628,7 @@ function initThree() {
 
   const vw = viewport.clientWidth, vh = viewport.clientHeight;
   camera = new THREE.PerspectiveCamera(50, vw / vh, 0.01, 10000);
-  camera.position.set(0, 2, 8);
-  camera.lookAt(0, 0, 0);
-
-  // Init spherical to match
-  spherical = { theta: 0, phi: Math.PI / 2.5, radius: 8 };
+  camera.position.set(0, 0, 5);
 
   // Lights
   const ambient = new THREE.AmbientLight(0xffffff, 0.4);
@@ -668,7 +664,7 @@ function handleResize() {
 // Simple orbit controls (no external dep)
 let isDragging = false, isRightDrag = false;
 let prevMouse = { x: 0, y: 0 };
-let spherical = { theta: 0, phi: Math.PI / 2.5, radius: 8 };
+let spherical = { theta: 0.5, phi: 1.0, radius: 5 };
 let panOffset = new THREE.Vector3();
 
 function setupOrbitControls() {
@@ -826,11 +822,26 @@ function buildGeometry(stlData) {
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(stlData.positions.slice(), 3));
   geo.setAttribute('normal', new THREE.BufferAttribute(stlData.normals.slice(), 3));
-  // Center geometry so live preview always reads from origin
+
+  // Center geometry
   geo.computeBoundingBox();
   const center = new THREE.Vector3();
   geo.boundingBox.getCenter(center);
   geo.translate(-center.x, -center.y, -center.z);
+
+  // Auto-orient: if model is wider than tall (lying down), rotate it upright
+  geo.computeBoundingBox();
+  const size = geo.boundingBox.getSize(new THREE.Vector3());
+  if (size.y < size.z * 0.7) {
+    // Model is lying on its side — rotate 90° around X to stand it up
+    geo.applyMatrix4(new THREE.Matrix4().makeRotationX(-Math.PI / 2));
+    geo.computeBoundingBox();
+    // Re-center after rotation
+    const c2 = new THREE.Vector3();
+    geo.boundingBox.getCenter(c2);
+    geo.translate(-c2.x, -c2.y, -c2.z);
+  }
+
   geo.computeBoundingBox();
   geo.computeBoundingSphere();
   return geo;
@@ -846,13 +857,7 @@ function loadMeshIntoScene(geo) {
     side: THREE.DoubleSide
   });
 
-  // Center geometry directly before creating mesh
   geo.computeBoundingBox();
-  const center = new THREE.Vector3();
-  geo.boundingBox.getCenter(center);
-  geo.translate(-center.x, -center.y, -center.z);
-  geo.computeBoundingBox();
-
   const size = geo.boundingBox.getSize(new THREE.Vector3()).length();
   const scale = 4 / (size || 1);
 
@@ -862,8 +867,8 @@ function loadMeshIntoScene(geo) {
 
   scene.add(meshObj);
   spherical.radius = 4 / scale * 1.8;
-  spherical.theta = 0;
-  spherical.phi = Math.PI / 2.5;
+  spherical.theta = 0.5;
+  spherical.phi = 1.0;
   panOffset.set(0, 0, 0);
   updateCamera();
   document.getElementById('triCount').textContent = (geo.attributes.position.count / 3).toLocaleString();
@@ -1200,8 +1205,8 @@ async function applyDisplacement() {
   progressFill.style.width = '10%';
   await new Promise(r => setTimeout(r, 20));
 
-  let workPos = originalGeo.attributes.position.array;
-  let workNrm = originalGeo.attributes.normal.array;
+  let workPos = originalGeo.attributes.position.array.slice(); // safe copy
+  let workNrm = originalGeo.attributes.normal.array.slice();   // safe copy
 
   // Number of subdivision levels based on resolution
   const subLevels = selectedRes <= 0.5 ? 1 : selectedRes <= 1.0 ? 2 : selectedRes <= 2.0 ? 3 : 4;
@@ -1294,7 +1299,7 @@ async function applyDisplacement() {
   texturedGeo.computeBoundingBox();
   texturedGeo.computeBoundingSphere();
 
-  // Show subdivided result temporarily in viewport
+  // Show in viewport
   loadMeshIntoScene(texturedGeo.clone());
 
   progressWrap.style.display = 'none';
@@ -1302,26 +1307,21 @@ async function applyDisplacement() {
   document.getElementById('applyBtn').disabled = false;
   document.getElementById('exportBtn').disabled = false;
   isProcessing = false;
-
-  // Restore original mesh for continued live preview editing after 2s
-  setTimeout(() => {
-    if (originalGeo) {
-      loadMeshIntoScene(originalGeo.clone());
-      scheduleLivePreview();
-    }
-  }, 2000);
 }
 
 // ===================== STL EXPORT =====================
 async function exportSTL() {
   if (!originalGeo || !mapImageData) return;
-  // Always run full applyDisplacement before export to get subdivided mesh
+
+  // Run full displacement with subdivision
   await applyDisplacement();
   if (!texturedGeo) return;
 
-  const pos = texturedGeo.attributes.position.array;
-  const nrm = texturedGeo.attributes.normal ? texturedGeo.attributes.normal.array : null;
+  // Use a safe copy of positions BEFORE the timeout restores original
+  const pos = new Float32Array(texturedGeo.attributes.position.array);
+  const nrm = texturedGeo.attributes.normal ? new Float32Array(texturedGeo.attributes.normal.array) : null;
   const triCount = pos.length / 9;
+
   const buf = new ArrayBuffer(84 + triCount * 50);
   const view = new DataView(buf);
   let offset = 80;
@@ -1336,11 +1336,20 @@ async function exportSTL() {
     }
     view.setUint16(offset, 0, true); offset += 2;
   }
+
   const blob = new Blob([buf], { type: 'application/octet-stream' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'printaplab_texturized.stl';
   a.click();
+
+  // Restore original mesh for continued editing after export
+  setTimeout(() => {
+    if (originalGeo) {
+      loadMeshIntoScene(originalGeo.clone());
+      scheduleLivePreview();
+    }
+  }, 500);
 }
 
 // ===================== UI EVENTS =====================
