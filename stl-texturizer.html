@@ -605,21 +605,49 @@
 
     <div class="divider"></div>
 
-    <!-- IMAGEN EN RELIEVE -->
+    <!-- SVG EN RELIEVE CILÍNDRICO -->
     <div class="section">
-      <div class="section-title">Imagen en relieve</div>
+      <div class="section-title">Logo / SVG en relieve</div>
 
       <div class="ctrl-group">
-        <div class="ctrl-label">Imagen (PNG / JPG)</div>
-        <input id="imgUpload" type="file" accept="image/png,image/jpeg">
+        <div class="ctrl-label">Archivo SVG</div>
+        <input id="svgUpload" type="file" accept=".svg,image/svg+xml">
       </div>
 
       <div class="ctrl-group">
-        <div class="ctrl-label">Intensidad <span id="imgDepthVal">0.80</span></div>
-        <input id="imgDepth" type="range" min="0.1" max="4" step="0.05" value="0.8">
+        <div class="ctrl-label">Profundidad <span id="svgDepthVal">1.20</span></div>
+        <input id="svgDepth" type="range" min="0.1" max="5" step="0.05" value="1.2">
       </div>
 
-      <button id="applyImageBtn" class="btn btn-accent">◈ Grabar imagen</button>
+      <div class="ctrl-group">
+        <div class="ctrl-label">Posición vertical (%) <span id="svgPosYVal">50</span></div>
+        <input id="svgPosY" type="range" min="0" max="100" step="1" value="50">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">Ancho logo (°) <span id="svgArcVal">120</span></div>
+        <input id="svgArc" type="range" min="20" max="340" step="5" value="120">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">Alto logo (%) <span id="svgHeightVal">30</span></div>
+        <input id="svgHeight" type="range" min="5" max="80" step="1" value="30">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">Rotación (°) <span id="svgRotVal">0</span></div>
+        <input id="svgRot" type="range" min="-180" max="180" step="5" value="0">
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-label">Modo</div>
+        <select id="svgMode">
+          <option value="emboss">Relieve (hacia afuera)</option>
+          <option value="engrave">Grabado (hacia adentro)</option>
+        </select>
+      </div>
+
+      <button id="applySvgBtn" class="btn btn-accent">◈ Grabar logo en vaso</button>
     </div>
 
     <div class="divider"></div>
@@ -755,12 +783,16 @@ function setupUI() {
   bindSliderDisplay('depth', 'depthVal', v => v.toFixed(2))
   bindSliderDisplay('scale', 'scaleVal', v => Math.round(v))
   bindSliderDisplay('baseProtect', 'baseVal', v => v.toFixed(1))
-  bindSliderDisplay('imgDepth', 'imgDepthVal', v => v.toFixed(2))
+  bindSliderDisplay('svgDepth', 'svgDepthVal', v => v.toFixed(2))
+  bindSliderDisplay('svgPosY', 'svgPosYVal', v => Math.round(v))
+  bindSliderDisplay('svgArc', 'svgArcVal', v => Math.round(v))
+  bindSliderDisplay('svgHeight', 'svgHeightVal', v => Math.round(v))
+  bindSliderDisplay('svgRot', 'svgRotVal', v => Math.round(v))
 
   document.getElementById('applyBtn').onclick = applyTexture
   document.getElementById('resetBtn').onclick = resetMesh
   document.getElementById('exportBtn').onclick = exportSTL
-  document.getElementById('applyImageBtn').onclick = applyImageTexture
+  document.getElementById('applySvgBtn').onclick = applySvgEmboss
 }
 
 function bindSliderDisplay(inputId, displayId, fmt) {
@@ -970,72 +1002,136 @@ function resetMesh() {
   showToast('↩ Modelo restaurado', 'cyan')
 }
 
-// ── IMAGE EMBOSS ─────────────────────────────────────────────────────────────
-function applyImageTexture() {
+// ── SVG EMBOSS CILÍNDRICO ────────────────────────────────────────────────────
+// Lógica:
+// 1. Renderizar el SVG a un canvas offscreen
+// 2. Para cada vértice de la pared cilíndrica:
+//    - Calcular su ángulo theta = atan2(z, x) en el plano XZ
+//    - Calcular su altura relativa Y
+//    - Mapear (theta, Y) → (u, v) en el canvas del SVG
+//    - Si el pixel es oscuro/opaco → desplazar el vértice radialmente
+function applySvgEmboss() {
   if (!mesh) { showToast('Cargá un modelo primero', 'red'); return }
-  const file = document.getElementById('imgUpload').files[0]
-  if (!file) { showToast('Seleccioná una imagen', 'red'); return }
+  const file = document.getElementById('svgUpload').files[0]
+  if (!file) { showToast('Seleccioná un SVG', 'red'); return }
 
-  const imgDepth = parseFloat(document.getElementById('imgDepth').value)
-  const img = new Image()
+  const svgDepth   = parseFloat(document.getElementById('svgDepth').value)
+  const svgPosY    = parseFloat(document.getElementById('svgPosY').value) / 100   // 0-1
+  const svgArcDeg  = parseFloat(document.getElementById('svgArc').value)
+  const svgHeightP = parseFloat(document.getElementById('svgHeight').value) / 100 // 0-1
+  const svgRotDeg  = parseFloat(document.getElementById('svgRot').value)
+  const mode       = document.getElementById('svgMode').value  // 'emboss' | 'engrave'
+  const sign       = mode === 'engrave' ? -1 : 1
 
-  img.onload = function () {
-    // Reset antes de aplicar
-    resetPositions()
+  const reader = new FileReader()
+  reader.onload = e => {
+    const svgText = e.target.result
 
-    const canvas = document.createElement('canvas')
-    canvas.width = img.width
-    canvas.height = img.height
-    const ctx = canvas.getContext('2d')
-    ctx.drawImage(img, 0, 0)
-    const data = ctx.getImageData(0, 0, img.width, img.height).data
+    // Renderizar SVG a canvas usando Image + blob
+    const blob = new Blob([svgText], { type: 'image/svg+xml' })
+    const url  = URL.createObjectURL(blob)
+    const img  = new Image()
 
-    const geo = mesh.geometry
-    const pos = geo.attributes.position
+    img.onload = () => {
+      const RES = 512
+      const canvas = document.createElement('canvas')
+      canvas.width = canvas.height = RES
+      const ctx = canvas.getContext('2d')
 
-    // BUG FIX: bounding box del modelo para mapear UV correctamente
-    geo.computeBoundingBox()
-    const box = geo.boundingBox
-    const rangeX = box.max.x - box.min.x || 1
-    const rangeZ = box.max.z - box.min.z || 1
+      // Fondo blanco, SVG en negro para máscara de relieve
+      ctx.fillStyle = '#fff'
+      ctx.fillRect(0, 0, RES, RES)
+      ctx.drawImage(img, 0, 0, RES, RES)
+      URL.revokeObjectURL(url)
 
-    for (let i = 0; i < pos.count; i++) {
-      let x = pos.getX(i)
-      let y = pos.getY(i)
-      let z = pos.getZ(i)
+      const data = ctx.getImageData(0, 0, RES, RES).data
 
-      // Mapear posición a [0,1] usando el bounding box real
-      const u = Math.floor(((x - box.min.x) / rangeX) * (img.width - 1))
-      const v = Math.floor(((z - box.min.z) / rangeZ) * (img.height - 1))
-
-      const cu = Math.max(0, Math.min(img.width - 1, u))
-      const cv = Math.max(0, Math.min(img.height - 1, v))
-
-      const index = (cv * img.width + cu) * 4
-      // Luminance perceptual
-      const brightness = (data[index] * 0.299 + data[index + 1] * 0.587 + data[index + 2] * 0.114) / 255
-
-      // Desplazamiento en dirección de la normal (simplificado: eje Y y radial)
-      const r = Math.sqrt(x * x + z * z)
-      if (r > 0.001) {
-        x += (x / r) * brightness * imgDepth
-        z += (z / r) * brightness * imgDepth
+      // Función para samplear el canvas: devuelve 0 (blanco/vacío) a 1 (negro/lleno)
+      function sample(u, v) {
+        const px = Math.max(0, Math.min(RES - 1, Math.floor(u * RES)))
+        const py = Math.max(0, Math.min(RES - 1, Math.floor(v * RES)))
+        const i  = (py * RES + px) * 4
+        // Luminance: 1 = negro (relieve), 0 = blanco (nada)
+        const lum = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114) / 255
+        // Considerar también alpha para SVGs con transparencia
+        const alpha = data[i+3] / 255
+        return (1 - lum) * alpha
       }
-      y += brightness * imgDepth * 0.1
 
-      pos.setXYZ(i, x, y, z)
+      // Reset antes de aplicar
+      resetPositions()
+
+      const geo = mesh.geometry
+      const pos = geo.attributes.position
+      geo.computeBoundingBox()
+      const box    = geo.boundingBox
+      const modelH = box.max.y - box.min.y || 1
+
+      // Arco en radianes centrado en el eje del logo
+      const arcRad    = svgArcDeg * Math.PI / 180
+      const rotRad    = svgRotDeg * Math.PI / 180
+      // Centro vertical del logo
+      const logoCenterY = box.min.y + svgPosY * modelH
+      // Altura del logo en unidades del modelo
+      const logoH     = svgHeightP * modelH
+
+      // Umbral: vértices con Y fuera de la banda del logo se ignoran
+      const yMin = logoCenterY - logoH / 2
+      const yMax = logoCenterY + logoH / 2
+
+      for (let i = 0; i < pos.count; i++) {
+        let x = pos.getX(i)
+        let y = pos.getY(i)
+        let z = pos.getZ(i)
+
+        // Solo vértices dentro de la banda vertical del logo
+        if (y < yMin || y > yMax) continue
+
+        // Solo vértices en la pared lateral (radio significativo)
+        const r = Math.sqrt(x * x + z * z)
+        if (r < 0.5) continue
+
+        // Ángulo del vértice en el plano XZ
+        const theta = Math.atan2(z, x)  // -PI a +PI
+
+        // Ángulo relativo al centro de rotación del logo
+        let relTheta = theta - rotRad
+        // Normalizar a -PI..PI
+        while (relTheta >  Math.PI) relTheta -= 2 * Math.PI
+        while (relTheta < -Math.PI) relTheta += 2 * Math.PI
+
+        // ¿Está dentro del arco del logo?
+        if (Math.abs(relTheta) > arcRad / 2) continue
+
+        // Mapear a UV del canvas
+        // u: posición angular dentro del arco → 0..1 (izquierda a derecha del SVG)
+        const u = (relTheta + arcRad / 2) / arcRad
+        // v: posición vertical dentro de la banda → 0..1 (arriba a abajo del SVG)
+        const v = 1 - (y - yMin) / logoH
+
+        const intensity = sample(u, v)
+        if (intensity < 0.05) continue  // pixel vacío, no desplazar
+
+        // Desplazamiento radial (hacia afuera del eje del cilindro)
+        const disp = sign * intensity * svgDepth
+        const nx = x / r
+        const nz = z / r
+        pos.setXYZ(i, x + nx * disp, y, z + nz * disp)
+      }
+
+      pos.needsUpdate = true
+      geo.computeVertexNormals()
+
+      setStatus('ready', `Logo grabado — ${mode === 'emboss' ? 'relieve' : 'grabado'}`)
+      showToast('◈ Logo aplicado en vaso', 'cyan')
     }
 
-    pos.needsUpdate = true
-    geo.computeVertexNormals()
-
-    setStatus('ready', 'Imagen grabada en relieve')
-    showToast('◈ Imagen aplicada', 'cyan')
-    URL.revokeObjectURL(img.src)
+    img.onerror = () => showToast('Error al renderizar el SVG', 'red')
+    img.src = url
   }
 
-  img.onerror = () => showToast('Error al cargar la imagen', 'red')
-  img.src = URL.createObjectURL(file)
+  reader.onerror = () => showToast('Error al leer el SVG', 'red')
+  reader.readAsText(file)
 }
 
 // ── EXPORT STL ───────────────────────────────────────────────────────────────
