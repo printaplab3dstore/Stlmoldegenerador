@@ -720,6 +720,282 @@
         /* Accessibility */
         *:focus-visible { outline:3px solid var(--sun); outline-offset:3px; }
         .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
+        /* ===== STL SEARCH SECTION ===== */
+        .stl-search-section {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 80px;
+            animation: slideUp .8s ease 1.1s both;
+        }
+
+        .search-card {
+            background: rgba(255,255,255,.04);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            border: 2px solid rgba(255,255,255,.1);
+            overflow: hidden;
+            box-shadow: 0 30px 70px rgba(0,0,0,.4);
+        }
+
+        .search-card-header {
+            background: linear-gradient(135deg, var(--ocean), #0077a3);
+            padding: 24px 28px;
+            text-align: center;
+        }
+        .search-card-header h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            color: #fff;
+            text-shadow: 2px 2px 0 rgba(0,0,0,.2);
+        }
+        .search-card-header p { font-size: .85rem; color: rgba(255,255,255,.8); margin-top: 5px; font-family: 'Space Mono', monospace; }
+
+        .search-card-body { padding: 28px; }
+
+        .stl-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+        .stl-input {
+            flex: 1;
+            padding: 14px 18px;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.06);
+            color: #fff;
+            font-family: 'Space Mono', monospace;
+            font-size: .9rem;
+            outline: none;
+            transition: all .25s ease;
+            caret-color: var(--sun);
+        }
+        .stl-input::placeholder { color: rgba(255,255,255,.3); }
+        .stl-input:focus {
+            border-color: var(--ocean);
+            background: rgba(0,168,204,.08);
+            box-shadow: 0 0 0 3px rgba(0,168,204,.15);
+        }
+        .stl-btn-search {
+            padding: 14px 24px;
+            border-radius: 14px;
+            border: none;
+            background: linear-gradient(135deg, var(--sun), var(--mango));
+            color: var(--night);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.15rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all .3s cubic-bezier(.34,1.56,.64,1);
+            box-shadow: 0 6px 20px rgba(255,209,49,.25);
+        }
+        .stl-btn-search:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(255,209,49,.4); }
+        .stl-btn-search:active { transform: translateY(0); }
+
+        /* Filter row */
+        .stl-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .stl-filter-label {
+            font-family: 'Space Mono', monospace;
+            font-size: .68rem;
+            letter-spacing: .12em;
+            color: rgba(255,255,255,.4);
+            text-transform: uppercase;
+            flex-shrink: 0;
+        }
+        .stl-plat-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 13px;
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: rgba(255,255,255,.5);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .75rem;
+            cursor: pointer;
+            transition: all .2s ease;
+            user-select: none;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .stl-plat-btn .pdot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+        .stl-plat-btn[data-id="all"].active  { color:#fff; border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.1); }
+        .stl-plat-btn[data-id="thingiverse"].active    { color:#248eff; border-color:#248eff; background:rgba(36,142,255,.1); }
+        .stl-plat-btn[data-id="printables"].active     { color:#fa6831; border-color:#fa6831; background:rgba(250,104,49,.1); }
+        .stl-plat-btn[data-id="myminifactory"].active  { color:#ffd000; border-color:#ffd000; background:rgba(255,208,0,.1); }
+        .stl-plat-btn[data-id="makerworld"].active     { color:#00e676; border-color:#00e676; background:rgba(0,230,118,.1); }
+        .stl-plat-btn[data-id="cults3d"].active        { color:#cc44ff; border-color:#cc44ff; background:rgba(204,68,255,.1); }
+
+        .stl-sep { width:1px; height:18px; background:rgba(255,255,255,.12); flex-shrink:0; }
+
+        .stl-price-btn {
+            padding: 6px 13px;
+            border-radius: 50px;
+            border: 2px solid rgba(255,255,255,.12);
+            background: rgba(255,255,255,.05);
+            color: rgba(255,255,255,.5);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800;
+            font-size: .75rem;
+            cursor: pointer;
+            transition: all .2s ease;
+            user-select: none;
+            text-transform: uppercase;
+            letter-spacing: .05em;
+        }
+        .stl-price-btn.active { color: var(--ocean); border-color: var(--ocean); background: rgba(0,168,204,.1); }
+
+        /* Platform cards grid */
+        .stl-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+            gap: 14px;
+            margin-top: 22px;
+        }
+        .stl-plat-card {
+            background: rgba(255,255,255,.04);
+            border: 2px solid rgba(255,255,255,.08);
+            border-radius: 18px;
+            padding: 18px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all .25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stl-plat-card::before {
+            content:'';
+            position:absolute;
+            top:0; left:0; right:0;
+            height:3px;
+            opacity:0;
+            transition:opacity .25s;
+        }
+        .stl-plat-card:hover { transform:translateY(-4px); }
+        .stl-plat-card:hover::before { opacity:1; }
+        .stl-plat-card:hover .stl-card-arrow { opacity:1; transform:translateX(4px); }
+
+        .stl-card-thingiverse::before   { background:#248eff; box-shadow:0 0 8px #248eff; }
+        .stl-card-printables::before    { background:#fa6831; box-shadow:0 0 8px #fa6831; }
+        .stl-card-myminifactory::before { background:#ffd000; box-shadow:0 0 8px #ffd000; }
+        .stl-card-makerworld::before    { background:#00e676; box-shadow:0 0 8px #00e676; }
+        .stl-card-cults3d::before       { background:#cc44ff; box-shadow:0 0 8px #cc44ff; }
+
+        .stl-card-thingiverse:hover   { border-color:rgba(36,142,255,.35);  box-shadow:0 10px 30px rgba(36,142,255,.1); }
+        .stl-card-printables:hover    { border-color:rgba(250,104,49,.35);  box-shadow:0 10px 30px rgba(250,104,49,.1); }
+        .stl-card-myminifactory:hover { border-color:rgba(255,208,0,.35);   box-shadow:0 10px 30px rgba(255,208,0,.1); }
+        .stl-card-makerworld:hover    { border-color:rgba(0,230,118,.35);   box-shadow:0 10px 30px rgba(0,230,118,.1); }
+        .stl-card-cults3d:hover       { border-color:rgba(204,68,255,.35);  box-shadow:0 10px 30px rgba(204,68,255,.1); }
+
+        .stl-card-top { display:flex; align-items:center; justify-content:space-between; }
+        .stl-card-logo { display:flex; align-items:center; gap:8px; }
+        .stl-card-logo .cdot { width:10px; height:10px; border-radius:50%; }
+        .stl-card-logo .cname {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: .95rem;
+            letter-spacing: 1.5px;
+        }
+        .stl-card-arrow {
+            opacity:.25;
+            transition: opacity .2s, transform .2s;
+            font-size:1.1rem;
+            color:rgba(255,255,255,.5);
+        }
+        .stl-card-query {
+            font-family: 'Space Mono', monospace;
+            font-size: .75rem;
+            color: rgba(255,255,255,.45);
+            word-break: break-word;
+            line-height: 1.5;
+        }
+        .stl-card-query strong { color: var(--sun); }
+        .stl-card-badge {
+            align-self: flex-start;
+            font-family: 'Space Mono', monospace;
+            font-size: .62rem;
+            padding: 3px 9px;
+            border-radius: 50px;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+        }
+        .sbadge-free  { background:rgba(0,230,118,.1);  color:#00e676; border:1px solid rgba(0,230,118,.2); }
+        .sbadge-mixed { background:rgba(0,168,204,.08); color:var(--ocean); border:1px solid rgba(0,168,204,.2); }
+
+        /* Open all button */
+        .stl-btn-all {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 18px;
+            padding: 14px;
+            border-radius: 14px;
+            border: 2px solid rgba(0,168,204,.4);
+            background: rgba(0,168,204,.06);
+            color: var(--ocean);
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all .25s ease;
+        }
+        .stl-btn-all:hover { background:rgba(0,168,204,.14); border-color:var(--ocean); transform:translateY(-2px); box-shadow:0 8px 25px rgba(0,168,204,.2); }
+
+        /* Empty state */
+        .stl-empty {
+            text-align:center;
+            padding:30px 0 10px;
+            font-family:'Space Mono',monospace;
+            font-size:.8rem;
+            color:rgba(255,255,255,.25);
+        }
+        .stl-empty .eicon { font-size:2.5rem; margin-bottom:10px; }
+
+        /* Popup warning */
+        .stl-popup-warn {
+            display:none;
+            margin-top:14px;
+            padding:10px 16px;
+            border-radius:12px;
+            background:rgba(255,95,64,.08);
+            border:1px solid rgba(255,95,64,.25);
+            font-family:'Space Mono',monospace;
+            font-size:.72rem;
+            color:var(--coral);
+            line-height:1.6;
+        }
+        .stl-popup-warn.show { display:block; }
+
+        /* Light theme adaptations for STL Search */
+        [data-theme="light"] .search-card { background:rgba(255,255,255,.85); border-color:rgba(0,0,0,.08); }
+        [data-theme="light"] .stl-input { background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.12); color:#0A1628; }
+        [data-theme="light"] .stl-input::placeholder { color:rgba(10,22,40,.35); }
+        [data-theme="light"] .stl-plat-btn, [data-theme="light"] .stl-price-btn { color:rgba(10,22,40,.5); border-color:rgba(0,0,0,.12); }
+        [data-theme="light"] .stl-plat-card { background:rgba(0,0,0,.03); border-color:rgba(0,0,0,.08); }
+        [data-theme="light"] .stl-card-query { color:rgba(10,22,40,.5); }
+        [data-theme="light"] .stl-empty { color:rgba(10,22,40,.3); }
+
+        @media (max-width:640px) {
+            .stl-input-row { flex-direction:column; }
+            .stl-btn-search { width:100%; padding:14px; }
+            .stl-grid { grid-template-columns:1fr; }
+        }
     </style>
 </head>
 <body>
@@ -996,6 +1272,57 @@
         </div>
     </div>
 
+    <!-- STL SEARCH -->
+    <section class="stl-search-section" aria-label="Buscador de modelos 3D">
+        <div class="section-title">
+            <h2>🔍 Buscador de Modelos STL</h2>
+            <p>Todas las plataformas, un solo lugar</p>
+        </div>
+        <div class="search-card">
+            <div class="search-card-header">
+                <h2>🖨️ STL SEARCH</h2>
+                <p>Thingiverse · Printables · MyMiniFactory · MakerWorld · Cults3D</p>
+            </div>
+            <div class="search-card-body">
+                <div class="stl-input-row">
+                    <input
+                        type="text"
+                        class="stl-input"
+                        id="stlSearchInput"
+                        placeholder="garita, coquí, dragon, funko pop..."
+                        autocomplete="off"
+                        spellcheck="false"
+                    />
+                    <button class="stl-btn-search" onclick="stlDoSearch()">🔎 BUSCAR</button>
+                </div>
+                <div class="stl-filters">
+                    <span class="stl-filter-label">Plataforma:</span>
+                    <button class="stl-plat-btn active" data-id="all"           onclick="stlTogglePlatform(this)">Todas</button>
+                    <button class="stl-plat-btn" data-id="thingiverse"          onclick="stlTogglePlatform(this)"><span class="pdot" style="background:#248eff"></span>Thingiverse</button>
+                    <button class="stl-plat-btn" data-id="printables"           onclick="stlTogglePlatform(this)"><span class="pdot" style="background:#fa6831"></span>Printables</button>
+                    <button class="stl-plat-btn" data-id="myminifactory"        onclick="stlTogglePlatform(this)"><span class="pdot" style="background:#ffd000"></span>MMF</button>
+                    <button class="stl-plat-btn" data-id="makerworld"           onclick="stlTogglePlatform(this)"><span class="pdot" style="background:#00e676"></span>MakerWorld</button>
+                    <button class="stl-plat-btn" data-id="cults3d"              onclick="stlTogglePlatform(this)"><span class="pdot" style="background:#cc44ff"></span>Cults3D</button>
+                    <div class="stl-sep"></div>
+                    <span class="stl-filter-label">Precio:</span>
+                    <button class="stl-price-btn active" data-price="all"  onclick="stlTogglePrice(this)">Todos</button>
+                    <button class="stl-price-btn"        data-price="free" onclick="stlTogglePrice(this)">Gratis</button>
+                    <button class="stl-price-btn"        data-price="paid" onclick="stlTogglePrice(this)">Pago</button>
+                </div>
+
+                <div id="stlResultsArea">
+                    <div class="stl-empty">
+                        <div class="eicon">🌊</div>
+                        <p>Ingresa un modelo y presiona BUSCAR</p>
+                    </div>
+                </div>
+                <div class="stl-popup-warn" id="stlPopupWarn">
+                    ⚠️ Tu navegador bloqueó los popups. Haz clic en cada tarjeta por separado, o permite popups de esta página en tu navegador.
+                </div>
+            </div>
+        </div>
+    </section>
+
 </div><!-- /page -->
 
 <!-- AUDIO -->
@@ -1195,6 +1522,89 @@ document.addEventListener('DOMContentLoaded', () => {
     muteBtn.addEventListener('click', () => { audio.muted=!audio.muted; muteBtn.textContent=audio.muted?'🔇':'🔊'; });
     vol.addEventListener('input', () => { audio.volume=vol.value; });
 });
+
+// ===== STL SEARCH =====
+const STL_PLATFORMS = {
+    thingiverse:   { name:'Thingiverse',    color:'#248eff', cls:'stl-card-thingiverse',   badge:'mixed', badgeTxt:'Free & Paid',  buildUrl:(q,p)=>{ let u=`https://www.thingiverse.com/search?q=${encodeURIComponent(q)}&type=things&sort=relevant`; return u; } },
+    printables:    { name:'Printables',     color:'#fa6831', cls:'stl-card-printables',    badge:'mixed', badgeTxt:'Free & Paid',  buildUrl:(q,p)=>{ let u=`https://www.printables.com/search/models?q=${encodeURIComponent(q)}`; if(p==='free')u+='&access=free'; if(p==='paid')u+='&access=paid'; return u; } },
+    myminifactory: { name:'MyMiniFactory',  color:'#ffd000', cls:'stl-card-myminifactory', badge:'mixed', badgeTxt:'Free & Paid',  buildUrl:(q,p)=>{ let u=`https://www.myminifactory.com/search/?q=${encodeURIComponent(q)}`; if(p==='free')u+='&free=1'; if(p==='paid')u+='&free=0'; return u; } },
+    makerworld:    { name:'MakerWorld',     color:'#00e676', cls:'stl-card-makerworld',    badge:'free',  badgeTxt:'Mostly Free',  buildUrl:(q,p)=>`https://makerworld.com/en/search/models?keyword=${encodeURIComponent(q)}` },
+    cults3d:       { name:'Cults3D',        color:'#cc44ff', cls:'stl-card-cults3d',       badge:'mixed', badgeTxt:'Free & Paid',  buildUrl:(q,p)=>{ let u=`https://cults3d.com/en/search?q=${encodeURIComponent(q)}`; if(p==='free')u+='&free=true'; return u; } },
+};
+
+let stlSelected = new Set(['all']);
+let stlPrice = 'all';
+
+function stlTogglePlatform(btn) {
+    const id = btn.dataset.id;
+    const all = document.querySelectorAll('.stl-plat-btn');
+    if (id === 'all') {
+        stlSelected = new Set(['all']);
+        all.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    } else {
+        document.querySelector('.stl-plat-btn[data-id="all"]').classList.remove('active');
+        stlSelected.delete('all');
+        if (stlSelected.has(id)) { stlSelected.delete(id); btn.classList.remove('active'); }
+        else { stlSelected.add(id); btn.classList.add('active'); }
+        if (stlSelected.size === 0) { stlSelected.add('all'); document.querySelector('.stl-plat-btn[data-id="all"]').classList.add('active'); }
+    }
+}
+
+function stlTogglePrice(btn) {
+    document.querySelectorAll('.stl-price-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    stlPrice = btn.dataset.price;
+}
+
+function stlDoSearch() {
+    const q = document.getElementById('stlSearchInput').value.trim();
+    if (!q) { document.getElementById('stlSearchInput').focus(); return; }
+    const active = stlSelected.has('all') ? Object.keys(STL_PLATFORMS) : [...stlSelected].filter(p=>STL_PLATFORMS[p]);
+    stlRender(q, active);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('stlSearchInput').addEventListener('keydown', e => { if(e.key==='Enter') stlDoSearch(); });
+});
+
+function stlRender(query, platforms) {
+    const area = document.getElementById('stlResultsArea');
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const cards = platforms.map(id => {
+        const p = STL_PLATFORMS[id];
+        const url = p.buildUrl(query, stlPrice);
+        return `
+            <a class="stl-plat-card ${p.cls}" href="${url}" target="_blank" rel="noopener noreferrer">
+                <div class="stl-card-top">
+                    <div class="stl-card-logo">
+                        <span class="cdot" style="background:${p.color}"></span>
+                        <span class="cname" style="color:${p.color}">${p.name}</span>
+                    </div>
+                    <span class="stl-card-arrow">→</span>
+                </div>
+                <div class="stl-card-query">Buscar: <strong>${esc(query)}</strong></div>
+                <span class="stl-card-badge sbadge-${p.badge}">${p.badgeTxt}</span>
+            </a>`;
+    }).join('');
+
+    const openAllBtn = platforms.length > 1
+        ? `<button class="stl-btn-all" onclick="stlOpenAll(${JSON.stringify(platforms)}, ${JSON.stringify(query)})">⊞ ABRIR TODAS EN NUEVAS PESTAÑAS</button>`
+        : '';
+
+    area.innerHTML = `<div class="stl-grid">${cards}</div>${openAllBtn}`;
+}
+
+function stlOpenAll(platforms, query) {
+    let blocked = false;
+    platforms.forEach(id => {
+        const p = STL_PLATFORMS[id];
+        if (!p) return;
+        const win = window.open(p.buildUrl(query, stlPrice), '_blank');
+        if (!win || win.closed || typeof win.closed === 'undefined') blocked = true;
+    });
+    document.getElementById('stlPopupWarn').classList.toggle('show', blocked);
+}
 </script>
 
 </body>
