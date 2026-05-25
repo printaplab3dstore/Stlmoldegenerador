@@ -1,1655 +1,990 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROLED 3D - Generador de Letras 3D</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #2563EB;
-            --primary-hover: #1D4ED8;
-            --secondary: #1E293B;
-            --accent: #10B981;
-            --danger: #EF4444;
-            --danger-hover: #DC2626;
-            --background: #0F172A;
-            --surface: #1E293B;
-            --surface-elevated: #334155;
-            --border: #475569;
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --text-muted: #64748B;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', sans-serif;
-            background: var(--background);
-            color: var(--text-primary);
-            min-height: 100vh;
-            overflow: hidden;
-        }
-
-        /* Header */
-        .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            height: 60px;
-        }
-
-        .header-left {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .logo-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-icon svg {
-            width: 20px;
-            height: 20px;
-            fill: white;
-        }
-
-        .logo-text {
-            font-weight: 700;
-            font-size: 18px;
-        }
-
-        .logo-text span {
-            color: var(--accent);
-        }
-
-        .version {
-            font-size: 11px;
-            color: var(--text-muted);
-            background: var(--surface-elevated);
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        .btn-google {
-            background: var(--surface-elevated);
-            color: var(--text-primary);
-            border: 1px solid var(--border);
-        }
-
-        .btn-google:hover {
-            background: var(--border);
-        }
-
-        .btn-google svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .lang-selector {
-            background: var(--surface-elevated);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 8px 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        /* Main Layout */
-        .main-container {
-            display: flex;
-            height: calc(100vh - 60px);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: 340px;
-            background: var(--surface);
-            border-right: 1px solid var(--border);
-            overflow-y: auto;
-            flex-shrink: 0;
-        }
-
-        .sidebar::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: var(--surface);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 3px;
-        }
-
-        .panel-section {
-            border-bottom: 1px solid var(--border);
-        }
-
-        .panel-header {
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: background 0.2s ease;
-        }
-
-        .panel-header:hover {
-            background: var(--surface-elevated);
-        }
-
-        .panel-title {
-            font-weight: 600;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .panel-title svg {
-            width: 18px;
-            height: 18px;
-            fill: var(--primary);
-        }
-
-        .chevron {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-secondary);
-            transition: transform 0.2s ease;
-        }
-
-        .panel-header.collapsed .chevron {
-            transform: rotate(-90deg);
-        }
-
-        .panel-content {
-            padding: 0 16px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .panel-content.hidden {
-            display: none;
-        }
-
-        /* Toggle Buttons */
-        .toggle-group {
-            display: flex;
-            background: var(--background);
-            border-radius: 8px;
-            padding: 4px;
-        }
-
-        .toggle-btn {
-            flex: 1;
-            padding: 10px 16px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            border-radius: 6px;
-            transition: all 0.2s ease;
-        }
-
-        .toggle-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        .toggle-btn:hover:not(.active) {
-            color: var(--text-primary);
-        }
-
-        /* Input Group */
-        .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .input-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .input-field {
-            background: var(--background);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.2s ease;
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-        }
-
-        .input-field::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* File Upload */
-        .file-upload {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .file-dropzone {
-            border: 2px dashed var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .file-dropzone:hover,
-        .file-dropzone.dragover {
-            border-color: var(--primary);
-            background: rgba(37, 99, 235, 0.1);
-        }
-
-        .file-dropzone svg {
-            width: 32px;
-            height: 32px;
-            fill: var(--text-muted);
-            margin-bottom: 8px;
-        }
-
-        .file-dropzone p {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .file-dropzone span {
-            color: var(--primary);
-            font-weight: 500;
-        }
-
-        .file-name {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 12px;
-            background: var(--background);
-            border-radius: 8px;
-            font-size: 13px;
-        }
-
-        .file-name svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--accent);
-        }
-
-        /* Button Row */
-        .btn-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-row .btn {
-            flex: 1;
-            justify-content: center;
-        }
-
-        .btn-success {
-            background: var(--accent);
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #059669;
-        }
-
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: var(--danger-hover);
-        }
-
-        /* Select */
-        .select-field {
-            background: var(--background);
-            border: 1px solid var(--border);
-            color: var(--text-primary);
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2394A3B8'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 20px;
-        }
-
-        .select-field:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        /* Slider */
-        .slider-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .slider-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .slider-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: var(--accent);
-            background: var(--background);
-            padding: 4px 8px;
-            border-radius: 4px;
-        }
-
-        input[type="range"] {
-            width: 100%;
-            height: 6px;
-            border-radius: 3px;
-            background: var(--background);
-            outline: none;
-            -webkit-appearance: none;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            background: white;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            transition: transform 0.2s ease;
-        }
-
-        input[type="range"]::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        /* Toggle Switch */
-        .switch-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 0;
-        }
-
-        .switch-label {
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .switch {
-            position: relative;
-            width: 44px;
-            height: 24px;
-        }
-
-        .switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .slider-toggle {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--border);
-            transition: 0.3s;
-            border-radius: 24px;
-        }
-
-        .slider-toggle:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 3px;
-            bottom: 3px;
-            background: white;
-            transition: 0.3s;
-            border-radius: 50%;
-        }
-
-        input:checked + .slider-toggle {
-            background: var(--primary);
-        }
-
-        input:checked + .slider-toggle:before {
-            transform: translateX(20px);
-        }
-
-        /* Color Picker */
-        .color-row {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .color-picker {
-            width: 40px;
-            height: 40px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            overflow: hidden;
-        }
-
-        .color-picker::-webkit-color-swatch-wrapper {
-            padding: 0;
-        }
-
-        .color-picker::-webkit-color-swatch {
-            border: none;
-            border-radius: 6px;
-        }
-
-        .color-hex {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        /* Sub Section */
-        .sub-section {
-            background: var(--background);
-            border-radius: 8px;
-            padding: 12px;
-        }
-
-        .sub-section-title {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Viewport */
-        .viewport-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        #canvas-container {
-            flex: 1;
-            position: relative;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
-        }
-
-        #three-canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* Navigation Cube */
-        .nav-cube {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            background: rgba(30, 41, 59, 0.9);
-            padding: 8px;
-            border-radius: 8px;
-            backdrop-filter: blur(8px);
-        }
-
-        .nav-cube-btn {
-            padding: 6px 12px;
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .nav-cube-btn:hover {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        .nav-cube-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: white;
-        }
-
-        /* View Controls */
-        .view-controls {
-            position: absolute;
-            bottom: 80px;
-            right: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            background: rgba(30, 41, 59, 0.9);
-            padding: 8px;
-            border-radius: 8px;
-            backdrop-filter: blur(8px);
-        }
-
-        .view-btn {
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: transparent;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .view-btn:hover {
-            background: var(--surface-elevated);
-            border-color: var(--primary);
-        }
-
-        .view-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--text-secondary);
-        }
-
-        /* Status Bar */
-        .status-bar {
-            background: var(--surface);
-            border-top: 1px solid var(--border);
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .status-info {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 13px;
-        }
-
-        .status-item svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--text-muted);
-        }
-
-        .status-label {
-            color: var(--text-muted);
-        }
-
-        .status-value {
-            font-family: 'JetBrains Mono', monospace;
-            color: var(--accent);
-            font-weight: 500;
-        }
-
-        .status-success {
-            color: var(--accent);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-success::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--accent);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* Export Button */
-        .btn-export {
-            background: var(--danger);
-            color: white;
-            padding: 12px 24px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .btn-export:hover {
-            background: var(--danger-hover);
-        }
-
-        .btn-export svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        /* Loading Overlay */
-        .loading-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(15, 23, 42, 0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            z-index: 100;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-
-        .loading-overlay.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .spinner {
-            width: 48px;
-            height: 48px;
-            border: 4px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: var(--surface);
-            border: 1px solid var(--accent);
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            opacity: 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-        }
-
-        .toast.visible {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-
-        .toast svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--accent);
-        }
-
-        /* Responsive */
-        @media (max-width: 1024px) {
-            .sidebar {
-                width: 300px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-container {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                max-height: 50vh;
-            }
-
-            .header-right .btn span {
-                display: none;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StampLab 3D — Printaplab3D Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ── PRINTAPLAB 3D PALETTE ── */
+    :root {
+      --bg:      #0A0F1C;
+      --surface: #111827;
+      --card:    #1A2235;
+      --border:  #1E2D45;
+      --sun:     #FFD600;
+      --coral:   #FF6B4A;
+      --ocean:   #0EA5E9;
+      --jungle:  #22C55E;
+      --purple:  #A855F7;
+      --text:    #E2E8F0;
+      --muted:   #64748B;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-accent:  'Pacifico', cursive;
+      --font-mono:    'Space Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ── STARS CANVAS ── */
+    #stars-canvas {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* ── GRID OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(14,165,233,.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(14,165,233,.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* All content above background */
+    header, .app, footer { position: relative; z-index: 1; }
+
+    /* ── HEADER ── */
+    header {
+      background: rgba(17,24,39,.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 2px solid var(--sun);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .brand-name {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--sun);
+      letter-spacing: 3px;
+      line-height: 1;
+    }
+    .brand-name span { color: var(--coral); }
+    .brand-tag {
+      font-size: 0.55rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      line-height: 1.4;
+    }
+
+    .header-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .badge {
+      font-size: 0.6rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+    }
+    .badge-tool {
+      background: rgba(14,165,233,.15);
+      color: var(--ocean);
+      border: 1px solid rgba(14,165,233,.3);
+    }
+    .badge-back {
+      background: rgba(255,214,0,.1);
+      color: var(--sun);
+      border: 1px solid rgba(255,214,0,.25);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .badge-back:hover { background: rgba(255,214,0,.2); }
+
+    /* ── HERO BANNER ── */
+    .hero {
+      text-align: center;
+      padding: 28px 20px 20px;
+      position: relative;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      letter-spacing: 6px;
+      line-height: 1;
+      color: var(--text);
+    }
+    .hero-title em {
+      font-style: normal;
+      color: var(--sun);
+      text-shadow: 0 0 30px rgba(255,214,0,.4);
+    }
+    .hero-sub {
+      margin-top: 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 2px;
+    }
+    .hero-sub strong { color: var(--ocean); }
+
+    /* ── APP LAYOUT ── */
+    .app {
+      display: flex;
+      flex: 1;
+      gap: 0;
+      min-height: 0;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: rgba(17,24,39,.8);
+      backdrop-filter: blur(8px);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .s-section {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .s-label {
+      font-family: var(--font-display);
+      font-size: 0.85rem;
+      letter-spacing: 3px;
+      color: var(--sun);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .s-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* Upload zone */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 18px 12px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag {
+      border-color: var(--sun);
+      background: rgba(255,214,0,.04);
+      box-shadow: 0 0 20px rgba(255,214,0,.08);
+    }
+    .upload-zone input {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      font-size: 0;
+    }
+    .upload-icon { font-size: 2rem; margin-bottom: 6px; display: block; }
+    .upload-text { font-size: 0.68rem; color: var(--muted); line-height: 1.6; }
+    .upload-name {
+      margin-top: 7px;
+      font-size: 0.6rem;
+      color: var(--jungle);
+      word-break: break-all;
+      font-weight: 700;
+    }
+
+    /* Range controls */
+    .ctrl {
+      margin-bottom: 11px;
+    }
+    .ctrl:last-child { margin-bottom: 0; }
+    .ctrl-label {
+      font-size: 0.62rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+      letter-spacing: 0.5px;
+    }
+    .ctrl-val {
+      color: var(--ocean);
+      font-weight: 700;
+      min-width: 38px;
+      text-align: right;
+    }
+    input[type="range"] {
+      width: 100%;
+      height: 3px;
+      appearance: none;
+      background: var(--border);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 13px; height: 13px;
+      background: var(--sun);
+      border-radius: 50%;
+      border: 2px solid var(--bg);
+      box-shadow: 0 0 6px rgba(255,214,0,.5);
+      transition: transform 0.1s;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+
+    /* Toggle buttons */
+    .t-row {
+      display: flex;
+      gap: 5px;
+    }
+    .t-btn {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 0.75rem;
+      letter-spacing: 1.5px;
+      padding: 7px 4px;
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .t-btn:hover { border-color: rgba(255,214,0,.4); color: var(--text); }
+    .t-btn.active {
+      background: var(--sun);
+      color: #0A0F1C;
+      border-color: var(--sun);
+      box-shadow: 0 0 12px rgba(255,214,0,.3);
+    }
+
+    /* Tip box */
+    .tipbox {
+      background: rgba(14,165,233,.07);
+      border-left: 2px solid var(--ocean);
+      border-radius: 0 6px 6px 0;
+      padding: 8px 10px;
+      font-size: 0.63rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+    .tipbox strong { color: var(--ocean); }
+
+    /* Export button */
+    .export-wrap { padding: 14px 16px; margin-top: auto; }
+
+    .btn-export {
+      width: 100%;
+      padding: 14px;
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      letter-spacing: 5px;
+      background: linear-gradient(135deg, var(--coral), #e84c29);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 20px rgba(255,107,74,.3);
+    }
+    .btn-export:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--sun), #e6b800);
+      color: #0A0F1C;
+      box-shadow: 0 4px 25px rgba(255,214,0,.4);
+      transform: translateY(-1px);
+    }
+    .btn-export:active:not(:disabled) { transform: translateY(0); }
+    .btn-export:disabled {
+      background: var(--card);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* ── MAIN CANVAS ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 500px;
+    }
+
+    #canvas-wrap {
+      flex: 1;
+      position: relative;
+      background: radial-gradient(ellipse at 50% 30%, rgba(14,165,233,.06) 0%, transparent 70%);
+    }
+
+    .empty-state {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .empty-state.hidden { opacity: 0; }
+    .empty-icon {
+      font-size: 4rem;
+      margin-bottom: 12px;
+      filter: grayscale(1);
+      opacity: 0.25;
+    }
+    .empty-msg {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 4px;
+      color: var(--muted);
+      text-align: center;
+      line-height: 2;
+      opacity: 0.5;
+    }
+
+    /* Controls hint */
+    .controls-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      font-size: 0.55rem;
+      color: var(--muted);
+      opacity: 0.45;
+      text-align: right;
+      pointer-events: none;
+      line-height: 1.9;
+      letter-spacing: 0.5px;
+    }
+
+    /* Loader overlay */
+    #loader {
+      position: absolute;
+      inset: 0;
+      background: rgba(10,15,28,.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      backdrop-filter: blur(6px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #loader.show { opacity: 1; pointer-events: all; }
+    .spinner-wrap { text-align: center; }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--sun);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin: 0 auto 10px;
+    }
+    .spinner-label {
+      font-family: var(--font-display);
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      color: var(--sun);
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── STATUS BAR ── */
+    #statusbar {
+      background: rgba(17,24,39,.9);
+      border-top: 1px solid var(--border);
+      padding: 6px 16px;
+      font-size: 0.58rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.5px;
+      flex-shrink: 0;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--muted);
+    }
+    .dot.ok   { background: var(--jungle); box-shadow: 0 0 6px rgba(34,197,94,.5); }
+    .dot.err  { background: var(--coral);  box-shadow: 0 0 6px rgba(255,107,74,.5); }
+    .dot.busy {
+      background: var(--sun);
+      animation: blink 0.9s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+    /* ── FOOTER ── */
+    footer {
+      background: rgba(10,15,28,.95);
+      border-top: 1px solid var(--border);
+      padding: 10px 20px;
+      text-align: center;
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    footer a { color: var(--ocean); text-decoration: none; }
+    footer a:hover { color: var(--sun); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 680px) {
+      .app { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        min-width: unset;
+        max-height: 46vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .main { min-height: 54vh; }
+      .hero-title { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="header-left">
-            <div class="logo">
-                <div class="logo-icon">
-                    <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-                </div>
-                <div>
-                    <div class="logo-text">PROLED <span>3D</span></div>
-                    <div class="version">v2.271 - Generador de letras 3D</div>
-                </div>
-            </div>
-        </div>
-        <div class="header-right">
-            <button class="btn btn-google">
-                <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                <span>Iniciar sesión</span>
-            </button>
-            <select class="lang-selector">
-                <option value="es">ES</option>
-                <option value="en">EN</option>
-                <option value="pt">PT</option>
-            </select>
-        </div>
-    </header>
 
-    <!-- Main Container -->
-    <main class="main-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <!-- Input Section -->
-            <section class="panel-section">
-                <div class="panel-header" onclick="togglePanel(this)">
-                    <div class="panel-title">
-                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
-                        Ingresar Forma
-                    </div>
-                    <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                </div>
-                <div class="panel-content">
-                    <div class="toggle-group">
-                        <button class="toggle-btn" onclick="setInputMode('texto')" id="btn-texto">Texto</button>
-                        <button class="toggle-btn" onclick="setInputMode('svg')" id="btn-svg">SVG</button>
-                    </div>
+<!-- Stars canvas -->
+<canvas id="stars-canvas"></canvas>
 
-                    <div id="text-input-section">
-                        <div class="input-group">
-                            <label class="input-label">Escribe tu texto</label>
-                            <input type="text" class="input-field" id="text-input" placeholder="Escribe aquí..." value="3D">
-                        </div>
-                    </div>
+<!-- Header -->
+<header>
+  <a class="brand" href="https://printaplab3dstore.github.io/" style="text-decoration:none">
+    <div>
+      <div class="brand-name">PRINTAP<span>LAB</span> 3D</div>
+      <div class="brand-tag">STORE · PUERTO RICO 🇵🇷</div>
+    </div>
+  </a>
+  <div class="header-badge">
+    <span class="badge badge-tool">HERRAMIENTA</span>
+    <a class="badge badge-back" href="https://printaplab3dstore.github.io/">← INICIO</a>
+  </div>
+</header>
 
-                    <div id="svg-input-section" class="hidden">
-                        <div class="file-upload">
-                            <div class="file-dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-                                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-                                <p>Arrastra tu archivo SVG aquí o <span>busca</span></p>
-                            </div>
-                            <input type="file" id="file-input" accept=".svg" style="display: none;">
-                            <div class="file-name" id="file-name" style="display: none;">
-                                <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
-                                <span id="file-name-text"></span>
-                            </div>
-                        </div>
-                    </div>
+<!-- Hero -->
+<div class="hero">
+  <h1 class="hero-title">STAMP<em>LAB</em> 3D</h1>
+  <p class="hero-sub">SVG → <strong>RELIEVE 3D</strong> → STL · Listo para imprimir</p>
+</div>
 
-                    <div class="btn-row">
-                        <button class="btn btn-success" onclick="updateText()">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
-                            Actualizar
-                        </button>
-                        <button class="btn btn-danger" onclick="clearAll()">
-                            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                            Borrar
-                        </button>
-                    </div>
-                </div>
-            </section>
+<!-- App -->
+<div class="app">
 
-            <!-- Typography Section -->
-            <section class="panel-section">
-                <div class="panel-header" onclick="togglePanel(this)">
-                    <div class="panel-title">
-                        <svg viewBox="0 0 24 24"><path d="M5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82zM12 3L1 9l11 6 9-4.91V17h2V9L12 3z"/></svg>
-                        Tipografía
-                    </div>
-                    <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                </div>
-                <div class="panel-content">
-                    <div class="input-group">
-                        <label class="input-label">Fuente</label>
-                        <select class="select-field" id="font-select">
-                            <option value="Anton">Anton</option>
-                            <option value="Roboto">Roboto Bold</option>
-                            <option value="Open Sans">Open Sans</option>
-                            <option value="Montserrat">Montserrat Bold</option>
-                            <option value="Playfair Display">Playfair Display</option>
-                            <option value="Oswald">Oswald</option>
-                            <option value="Russo One">Russo One</option>
-                        </select>
-                    </div>
+  <!-- Sidebar -->
+  <aside class="sidebar">
 
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Altura</label>
-                            <span class="slider-value" id="height-value">100 mm</span>
-                        </div>
-                        <input type="range" id="height-slider" min="20" max="300" value="100" oninput="updateHeight()">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Espaciado</label>
-                            <span class="slider-value" id="spacing-value">5 mm</span>
-                        </div>
-                        <input type="range" id="spacing-slider" min="0" max="50" value="5" oninput="updateSpacing()">
-                    </div>
-
-                    <div class="input-group">
-                        <label class="input-label">Color del modelo</label>
-                        <div class="color-row">
-                            <input type="color" class="color-picker" id="model-color" value="#2563EB">
-                            <span class="color-hex" id="model-color-hex">#2563EB</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Structure Section -->
-            <section class="panel-section">
-                <div class="panel-header" onclick="togglePanel(this)">
-                    <div class="panel-title">
-                        <svg viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/></svg>
-                        Estructura
-                    </div>
-                    <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                </div>
-                <div class="panel-content">
-                    <div class="sub-section">
-                        <div class="sub-section-title">Tapa (Frente)</div>
-                        <div class="switch-row">
-                            <span class="switch-label">Habilitar tapa</span>
-                            <label class="switch">
-                                <input type="checkbox" id="tapa-enabled" checked onchange="updateStructure()">
-                                <span class="slider-toggle"></span>
-                            </label>
-                        </div>
-                        <div class="slider-group">
-                            <div class="slider-header">
-                                <label class="input-label">Grosor</label>
-                                <span class="slider-value" id="tapa-thickness-value">3 mm</span>
-                            </div>
-                            <input type="range" id="tapa-thickness-slider" min="1" max="10" value="3" oninput="updateStructure()">
-                        </div>
-                        <div class="color-row" style="margin-top: 8px;">
-                            <input type="color" class="color-picker" id="tapa-color" value="#2563EB">
-                            <span class="color-hex" id="tapa-color-hex">#2563EB</span>
-                        </div>
-                    </div>
-
-                    <div class="sub-section">
-                        <div class="sub-section-title">Base (Fondo)</div>
-                        <div class="switch-row">
-                            <span class="switch-label">Habilitar base</span>
-                            <label class="switch">
-                                <input type="checkbox" id="base-enabled" checked onchange="updateStructure()">
-                                <span class="slider-toggle"></span>
-                            </label>
-                        </div>
-                        <div class="slider-group">
-                            <div class="slider-header">
-                                <label class="input-label">Grosor</label>
-                                <span class="slider-value" id="base-thickness-value">5 mm</span>
-                            </div>
-                            <input type="range" id="base-thickness-slider" min="1" max="15" value="5" oninput="updateStructure()">
-                        </div>
-                        <div class="color-row" style="margin-top: 8px;">
-                            <input type="color" class="color-picker" id="base-color" value="#1E40AF">
-                            <span class="color-hex" id="base-color-hex">#1E40AF</span>
-                        </div>
-                    </div>
-
-                    <div class="sub-section">
-                        <div class="sub-section-title">Acrílico (Lateral)</div>
-                        <div class="switch-row">
-                            <span class="switch-label">Habilitar acrílico</span>
-                            <label class="switch">
-                                <input type="checkbox" id="acrylic-enabled" checked onchange="updateStructure()">
-                                <span class="slider-toggle"></span>
-                            </label>
-                        </div>
-                        <div class="slider-group">
-                            <div class="slider-header">
-                                <label class="input-label">Grosor</label>
-                                <span class="slider-value" id="acrylic-thickness-value">8 mm</span>
-                            </div>
-                            <input type="range" id="acrylic-thickness-slider" min="2" max="20" value="8" oninput="updateStructure()">
-                        </div>
-                        <div class="color-row" style="margin-top: 8px;">
-                            <input type="color" class="color-picker" id="acrylic-color" value="#3B82F6">
-                            <span class="color-hex" id="acrylic-color-hex">#3B82F6</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Visualization Section -->
-            <section class="panel-section">
-                <div class="panel-header" onclick="togglePanel(this)">
-                    <div class="panel-title">
-                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-                        Visualización
-                    </div>
-                    <svg class="chevron" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-                </div>
-                <div class="panel-content">
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Explotar pieza</label>
-                            <span class="slider-value" id="explode-value">0%</span>
-                        </div>
-                        <input type="range" id="explode-slider" min="0" max="100" value="0" oninput="updateExplode()">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Intensidad de luz</label>
-                            <span class="slider-value" id="light-intensity-value">70%</span>
-                        </div>
-                        <input type="range" id="light-intensity-slider" min="0" max="100" value="70" oninput="updateLighting()">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Posición horizontal luz</label>
-                            <span class="slider-value" id="light-h-value">45°</span>
-                        </div>
-                        <input type="range" id="light-h-slider" min="-180" max="180" value="45" oninput="updateLighting()">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label class="input-label">Altura de luz</label>
-                            <span class="slider-value" id="light-height-value">100%</span>
-                        </div>
-                        <input type="range" id="light-height-slider" min="10" max="200" value="100" oninput="updateLighting()">
-                    </div>
-                </div>
-            </section>
-        </aside>
-
-        <!-- Viewport -->
-        <div class="viewport-container">
-            <div id="canvas-container">
-                <canvas id="three-canvas"></canvas>
-
-                <!-- Navigation Cube -->
-                <div class="nav-cube">
-                    <button class="nav-cube-btn active" onclick="setView('top')" id="view-top">TOP</button>
-                    <button class="nav-cube-btn" onclick="setView('front')" id="view-front">FRONT</button>
-                    <button class="nav-cube-btn" onclick="setView('left')" id="view-left">LEFT</button>
-                    <button class="nav-cube-btn" onclick="setView('right')" id="view-right">RIGHT</button>
-                    <button class="nav-cube-btn" onclick="setView('iso')" id="view-iso">ISO</button>
-                </div>
-
-                <!-- View Controls -->
-                <div class="view-controls">
-                    <button class="view-btn" onclick="resetCamera()" title="Resetear vista">
-                        <svg viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
-                    </button>
-                    <button class="view-btn" onclick="toggleWireframe()" title="Wireframe">
-                        <svg viewBox="0 0 24 24"><path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99z"/></svg>
-                    </button>
-                    <button class="view-btn" onclick="toggleGrid()" title="Grid" id="grid-btn">
-                        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM8 20H4v-4h4v4zm0-6H4v-4h4v4zm0-6H4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4zm6 12h-4v-4h4v4zm0-6h-4v-4h4v4zm0-6h-4V4h4v4z"/></svg>
-                    </button>
-                </div>
-
-                <!-- Loading Overlay -->
-                <div class="loading-overlay" id="loading">
-                    <div class="spinner"></div>
-                    <p>Generando modelo 3D...</p>
-                </div>
-            </div>
-
-            <!-- Status Bar -->
-            <div class="status-bar">
-                <div class="status-info">
-                    <div class="status-item">
-                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14z"/></svg>
-                        <span class="status-label">Medida:</span>
-                        <span class="status-value" id="dimensions">0 mm x 0 mm</span>
-                    </div>
-                    <div class="status-success" id="status-message">2 pieza(s) generadas correctamente</div>
-                </div>
-                <button class="btn btn-export" onclick="exportProject()">
-                    <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
-                    Exportar Proyecto
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <!-- Toast -->
-    <div class="toast" id="toast">
-        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-        <span id="toast-message">Modelo actualizado</span>
+    <!-- 1. Upload -->
+    <div class="s-section">
+      <div class="s-label">01 · DISEÑO SVG</div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" id="svgFile" accept=".svg">
+        <span class="upload-icon">📐</span>
+        <div class="upload-text">Arrastrá tu SVG aquí<br>o tocá para subir</div>
+        <div class="upload-name" id="filename"></div>
+      </div>
     </div>
 
-    <!-- Three.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
-
-    <script>
-        // ============= THREE.JS SETUP =============
-        let scene, camera, renderer, controls;
-        let textMesh, letterGroup;
-        let gridHelper, wireframeMode = false, gridVisible = true;
-        let directionalLight;
-
-        // State
-        let currentInputMode = 'texto';
-        let currentFont = 'Anton';
-        let fontLoaded = false;
-        let currentView = 'top';
-
-        // Parameters
-        const params = {
-            text: '3D',
-            height: 100,
-            spacing: 5,
-            modelColor: 0x2563EB,
-            tapaEnabled: true,
-            tapaThickness: 3,
-            tapaColor: 0x2563EB,
-            baseEnabled: true,
-            baseThickness: 5,
-            baseColor: 0x1E40AF,
-            acrylicEnabled: true,
-            acrylicThickness: 8,
-            acrylicColor: 0x3B82F6,
-            explode: 0,
-            lightIntensity: 0.7,
-            lightAngle: 45,
-            lightHeight: 100
-        };
-
-        function init() {
-            const container = document.getElementById('canvas-container');
-            const canvas = document.getElementById('three-canvas');
-
-            // Scene
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x1a1a2e);
-
-            // Camera
-            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
-            camera.position.set(0, 200, 400);
-
-            // Renderer
-            renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
-            // Controls
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.minDistance = 100;
-            controls.maxDistance = 800;
-
-            // Lights
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-            scene.add(ambientLight);
-
-            directionalLight = new THREE.DirectionalLight(0xffffff, params.lightIntensity);
-            directionalLight.position.set(100, params.lightHeight, 100);
-            directionalLight.castShadow = true;
-            directionalLight.shadow.mapSize.width = 2048;
-            directionalLight.shadow.mapSize.height = 2048;
-            scene.add(directionalLight);
-
-            const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
-            fillLight.position.set(-50, 50, -50);
-            scene.add(fillLight);
-
-            // Grid
-            gridHelper = new THREE.GridHelper(500, 50, 0x444444, 0x333333);
-            gridHelper.position.y = 0;
-            scene.add(gridHelper);
-
-            // Letter Group
-            letterGroup = new THREE.Group();
-            scene.add(letterGroup);
-
-            // Load font and create model
-            loadFont(currentFont);
-
-            // Event listeners
-            window.addEventListener('resize', onWindowResize);
-            setupDragControls();
-
-            // Start animation loop
-            animate();
-        }
-
-        function onWindowResize() {
-            const container = document.getElementById('canvas-container');
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(container.clientWidth, container.clientHeight);
-        }
-
-        function animate() {
-            requestAnimationFrame(animate);
-            controls.update();
-            renderer.render(scene, camera);
-        }
-
-        // ============= FONT LOADING =============
-        function loadFont(fontName) {
-            showLoading(true);
-
-            const fontMap = {
-                'Anton': 'https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@latest/fonts/Anton-Regular.json',
-                'Roboto': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_bold.typeface.json',
-                'Open Sans': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json',
-                'Montserrat': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/droid/droid_serif_bold.typeface.json',
-                'Playfair Display': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/droid/droid_serif_regular.typeface.json',
-                'Oswald': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/optimer_bold.typeface.json',
-                'Russo One': 'https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/gentilis_bold.typeface.json'
-            };
-
-            const fontUrl = fontMap[fontName] || fontMap['Anton'];
-
-            const loader = new THREE.FontLoader();
-            loader.load(fontUrl,
-                (font) => {
-                    fontLoaded = true;
-                    createTextModel(font);
-                    showLoading(false);
-                },
-                (progress) => {},
-                (error) => {
-                    console.error('Error loading font:', error);
-                    // Fallback to helvetiker
-                    loader.load('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/fonts/helvetiker_bold.typeface.json',
-                        (font) => {
-                            fontLoaded = true;
-                            createTextModel(font);
-                            showLoading(false);
-                        });
-                }
-            );
-        }
-
-        // ============= MODEL CREATION =============
-        function createTextModel(font) {
-            // Clear previous model
-            while (letterGroup.children.length > 0) {
-                letterGroup.remove(letterGroup.children[0]);
-            }
-
-            if (!params.text.trim()) {
-                updateDimensions(0, 0);
-                return;
-            }
-
-            const height = params.height;
-            const thickness = params.tapaThickness + params.acrylicThickness + params.baseThickness;
-
-            // Text geometry
-            const textGeo = new THREE.TextGeometry(params.text, {
-                font: font,
-                size: height,
-                height: params.acrylicEnabled ? params.acrylicThickness : 1,
-                curveSegments: 12,
-                bevelEnabled: true,
-                bevelThickness: params.tapaEnabled ? params.tapaThickness : 0,
-                bevelSize: params.tapaEnabled ? params.tapaThickness * 0.5 : 0,
-                bevelOffset: 0,
-                bevelSegments: 5
-            });
-
-            textGeo.computeBoundingBox();
-            const boundingBox = textGeo.boundingBox;
-
-            // Create text mesh with acrylic color
-            const textMaterial = new THREE.MeshStandardMaterial({
-                color: params.acrylicEnabled ? params.acrylicColor : params.modelColor,
-                metalness: 0.1,
-                roughness: 0.4
-            });
-
-            textMesh = new THREE.Mesh(textGeo, textMaterial);
-            textMesh.castShadow = true;
-            textMesh.receiveShadow = true;
-            textMesh.name = 'text';
-
-            // Calculate center offset
-            const centerX = (boundingBox.max.x - boundingBox.min.x) / 2;
-            const centerY = (boundingBox.max.y - boundingBox.min.y) / 2;
-            const centerZ = (boundingBox.max.z - boundingBox.min.z) / 2;
-
-            textMesh.position.x = -centerX;
-            textMesh.position.y = -centerY + (params.baseEnabled ? params.baseThickness : 0);
-            textMesh.position.z = -centerZ;
-
-            letterGroup.add(textMesh);
-
-            // Apply explode effect
-            applyExplode();
-
-            // Update dimensions
-            const width = boundingBox.max.x - boundingBox.min.x;
-            const depth = boundingBox.max.z - boundingBox.min.z;
-            updateDimensions(Math.round(width), Math.round(depth));
-
-            showToast('Modelo generado correctamente');
-        }
-
-        function applyExplode() {
-            if (!letterGroup.children.length) return;
-
-            const explodeFactor = params.explode / 100;
-
-            letterGroup.children.forEach((child, index) => {
-                if (child.name === 'text') {
-                    const originalY = child.position.y;
-                    child.position.y = originalY + (explodeFactor * 20 * index);
-                }
-            });
-
-            letterGroup.rotation.y = 0;
-        }
-
-        // ============= UI FUNCTIONS =============
-        function togglePanel(header) {
-            header.classList.toggle('collapsed');
-            const content = header.nextElementSibling;
-            content.classList.toggle('hidden');
-        }
-
-        function setInputMode(mode) {
-            currentInputMode = mode;
-
-            document.getElementById('btn-texto').classList.toggle('active', mode === 'texto');
-            document.getElementById('btn-svg').classList.toggle('active', mode === 'svg');
-
-            document.getElementById('text-input-section').classList.toggle('hidden', mode !== 'texto');
-            document.getElementById('svg-input-section').classList.toggle('hidden', mode !== 'svg');
-        }
-
-        function setupDragControls() {
-            const dropzone = document.getElementById('dropzone');
-            const fileInput = document.getElementById('file-input');
-
-            dropzone.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                dropzone.classList.add('dragover');
-            });
-
-            dropzone.addEventListener('dragleave', () => {
-                dropzone.classList.remove('dragover');
-            });
-
-            dropzone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropzone.classList.remove('dragover');
-                const file = e.dataTransfer.files[0];
-                if (file && file.name.endsWith('.svg')) {
-                    handleFile(file);
-                }
-            });
-
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files[0]) {
-                    handleFile(e.target.files[0]);
-                }
-            });
-        }
-
-        function handleFile(file) {
-            document.getElementById('file-name-text').textContent = file.name;
-            document.getElementById('file-name').style.display = 'flex';
-            showToast(`Archivo ${file.name} cargado`);
-        }
-
-        function updateText() {
-            const text = document.getElementById('text-input').value || '3D';
-            params.text = text;
-
-            if (fontLoaded) {
-                loadFont(currentFont);
-            }
-        }
-
-        function clearAll() {
-            params.text = '';
-            document.getElementById('text-input').value = '';
-
-            while (letterGroup.children.length > 0) {
-                letterGroup.remove(letterGroup.children[0]);
-            }
-
-            updateDimensions(0, 0);
-            showToast('Modelo limpiado');
-        }
-
-        function updateHeight() {
-            const value = parseInt(document.getElementById('height-slider').value);
-            params.height = value;
-            document.getElementById('height-value').textContent = `${value} mm`;
-
-            if (fontLoaded && params.text) {
-                loadFont(currentFont);
-            }
-        }
-
-        function updateSpacing() {
-            const value = parseInt(document.getElementById('spacing-slider').value);
-            params.spacing = value;
-            document.getElementById('spacing-value').textContent = `${value} mm`;
-        }
-
-        function updateStructure() {
-            params.tapaEnabled = document.getElementById('tapa-enabled').checked;
-            params.tapaThickness = parseInt(document.getElementById('tapa-thickness-slider').value);
-            params.tapaColor = parseInt(document.getElementById('tapa-color').value.replace('#', ''), 16);
-            document.getElementById('tapa-thickness-value').textContent = `${params.tapaThickness} mm`;
-            document.getElementById('tapa-color-hex').textContent = document.getElementById('tapa-color').value.toUpperCase();
-
-            params.baseEnabled = document.getElementById('base-enabled').checked;
-            params.baseThickness = parseInt(document.getElementById('base-thickness-slider').value);
-            params.baseColor = parseInt(document.getElementById('base-color').value.replace('#', ''), 16);
-            document.getElementById('base-thickness-value').textContent = `${params.baseThickness} mm`;
-            document.getElementById('base-color-hex').textContent = document.getElementById('base-color').value.toUpperCase();
-
-            params.acrylicEnabled = document.getElementById('acrylic-enabled').checked;
-            params.acrylicThickness = parseInt(document.getElementById('acrylic-thickness-slider').value);
-            params.acrylicColor = parseInt(document.getElementById('acrylic-color').value.replace('#', ''), 16);
-            document.getElementById('acrylic-thickness-value').textContent = `${params.acrylicThickness} mm`;
-            document.getElementById('acrylic-color-hex').textContent = document.getElementById('acrylic-color').value.toUpperCase();
-
-            params.modelColor = parseInt(document.getElementById('model-color').value.replace('#', ''), 16);
-            document.getElementById('model-color-hex').textContent = document.getElementById('model-color').value.toUpperCase();
-
-            if (fontLoaded && params.text) {
-                loadFont(currentFont);
-            }
-        }
-
-        function updateExplode() {
-            const value = parseInt(document.getElementById('explode-slider').value);
-            params.explode = value;
-            document.getElementById('explode-value').textContent = `${value}%`;
-            applyExplode();
-        }
-
-        function updateLighting() {
-            const intensity = parseInt(document.getElementById('light-intensity-slider').value);
-            const angle = parseInt(document.getElementById('light-h-slider').value);
-            const height = parseInt(document.getElementById('light-height-slider').value);
-
-            params.lightIntensity = intensity / 100;
-            params.lightAngle = angle;
-            params.lightHeight = height;
-
-            document.getElementById('light-intensity-value').textContent = `${intensity}%`;
-            document.getElementById('light-h-value').textContent = `${angle}°`;
-            document.getElementById('light-height-value').textContent = `${height}%`;
-
-            directionalLight.intensity = params.lightIntensity;
-            const rad = THREE.MathUtils.degToRad(angle);
-            directionalLight.position.x = Math.cos(rad) * 100;
-            directionalLight.position.z = Math.sin(rad) * 100;
-            directionalLight.position.y = height;
-        }
-
-        function setView(view) {
-            currentView = view;
-
-            // Update buttons
-            document.querySelectorAll('.nav-cube-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`view-${view}`).classList.add('active');
-
-            // Animate camera
-            let targetPos = { x: 0, y: 200, z: 400 };
-            let targetLook = { x: 0, y: 0, z: 0 };
-
-            switch (view) {
-                case 'top':
-                    targetPos = { x: 0, y: 400, z: 0.1 };
-                    targetLook = { x: 0, y: 0, z: 0 };
-                    break;
-                case 'front':
-                    targetPos = { x: 0, y: 50, z: 400 };
-                    break;
-                case 'left':
-                    targetPos = { x: -400, y: 50, z: 0 };
-                    break;
-                case 'right':
-                    targetPos = { x: 400, y: 50, z: 0 };
-                    break;
-                case 'iso':
-                    targetPos = { x: 250, y: 200, z: 250 };
-                    break;
-            }
-
-            animateCamera(targetPos, targetLook);
-        }
-
-        function animateCamera(targetPos, targetLook) {
-            const startPos = { x: camera.position.x, y: camera.position.y, z: camera.position.z };
-            const startLook = { x: controls.target.x, y: controls.target.y, z: controls.target.z };
-            const duration = 500;
-            const startTime = Date.now();
-
-            function update() {
-                const elapsed = Date.now() - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                const eased = 1 - Math.pow(1 - progress, 3); // ease out cubic
-
-                camera.position.x = startPos.x + (targetPos.x - startPos.x) * eased;
-                camera.position.y = startPos.y + (targetPos.y - startPos.y) * eased;
-                camera.position.z = startPos.z + (targetPos.z - startPos.z) * eased;
-
-                controls.target.x = startLook.x + (targetLook.x - startLook.x) * eased;
-                controls.target.y = startLook.y + (targetLook.y - startLook.y) * eased;
-                controls.target.z = startLook.z + (targetLook.z - startLook.z) * eased;
-
-                if (progress < 1) {
-                    requestAnimationFrame(update);
-                }
-            }
-
-            update();
-        }
-
-        function resetCamera() {
-            setView('iso');
-        }
-
-        function toggleWireframe() {
-            wireframeMode = !wireframeMode;
-            letterGroup.traverse((child) => {
-                if (child.isMesh && child.material) {
-                    if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => mat.wireframe = wireframeMode);
-                    } else {
-                        child.material.wireframe = wireframeMode;
-                    }
-                }
-            });
-            showToast(wireframeMode ? 'Wireframe activado' : 'Wireframe desactivado');
-        }
-
-        function toggleGrid() {
-            gridVisible = !gridVisible;
-            gridHelper.visible = gridVisible;
-            document.getElementById('grid-btn').style.background = gridVisible ? '' : 'var(--primary)';
-            showToast(gridVisible ? 'Grid activado' : 'Grid desactivado');
-        }
-
-        function updateDimensions(width, height) {
-            document.getElementById('dimensions').textContent = `${width} mm x ${height} mm`;
-            const pieces = width > 0 && height > 0 ? 2 : 0;
-            document.getElementById('status-message').textContent = pieces > 0
-                ? `${pieces} pieza(s) generadas correctamente`
-                : 'Sin modelo';
-        }
-
-        function showLoading(show) {
-            document.getElementById('loading').classList.toggle('visible', show);
-        }
-
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-message').textContent = message;
-            toast.classList.add('visible');
-
-            setTimeout(() => {
-                toast.classList.remove('visible');
-            }, 2500);
-        }
-
-        // ============= EXPORT =============
-        function exportProject() {
-            showToast('Exportando proyecto...');
-
-            // Simple STL export simulation
-            setTimeout(() => {
-                const data = {
-                    text: params.text,
-                    dimensions: document.getElementById('dimensions').textContent,
-                    parameters: params,
-                    timestamp: new Date().toISOString()
-                };
-
-                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `proled3d_${params.text || 'model'}_${Date.now()}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-
-                showToast('Proyecto exportado correctamente');
-            }, 500);
-        }
-
-        // ============= EVENT LISTENERS =============
-        document.getElementById('font-select').addEventListener('change', (e) => {
-            currentFont = e.target.value;
-            if (fontLoaded) {
-                loadFont(currentFont);
-            }
-        });
-
-        document.getElementById('model-color').addEventListener('input', (e) => {
-            params.modelColor = parseInt(e.target.value.replace('#', ''), 16);
-            document.getElementById('model-color-hex').textContent = e.target.value.toUpperCase();
-            updateStructure();
-        });
-
-        document.getElementById('tapa-color').addEventListener('input', updateStructure);
-        document.getElementById('base-color').addEventListener('input', updateStructure);
-        document.getElementById('acrylic-color').addEventListener('input', updateStructure);
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            init();
-            setInputMode('texto');
-        });
-    </script>
+    <!-- 2. Dimensions -->
+    <div class="s-section">
+      <div class="s-label">02 · DIMENSIONES (mm)</div>
+
+      <div class="ctrl">
+        <div class="ctrl-label">Ancho del sello <span class="ctrl-val" id="wVal">50</span></div>
+        <input type="range" id="stampW" min="20" max="120" value="50" step="1">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label">Alto del sello <span class="ctrl-val" id="hVal">50</span></div>
+        <input type="range" id="stampH" min="20" max="120" value="50" step="1">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label">Grosor base <span class="ctrl-val" id="btVal">3.0</span></div>
+        <input type="range" id="baseThick" min="1" max="12" value="3" step="0.5">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label">Altura relieve <span class="ctrl-val" id="rhVal">1.50</span></div>
+        <input type="range" id="reliefH" min="0.5" max="5" value="1.5" step="0.25">
+      </div>
+      <div class="ctrl">
+        <div class="ctrl-label">Margen interno <span class="ctrl-val" id="padVal">3.0</span></div>
+        <input type="range" id="padding" min="0" max="20" value="3" step="0.5">
+      </div>
+    </div>
+
+    <!-- 3. Shape -->
+    <div class="s-section">
+      <div class="s-label">03 · FORMA BASE</div>
+      <div class="t-row">
+        <button class="t-btn active" data-shape="rect">RECT</button>
+        <button class="t-btn" data-shape="round">ROUND</button>
+        <button class="t-btn" data-shape="circle">CIRCULO</button>
+      </div>
+    </div>
+
+    <!-- 4. Mode -->
+    <div class="s-section">
+      <div class="s-label">04 · MODO</div>
+      <div class="t-row" style="margin-bottom:8px">
+        <button class="t-btn active" data-mode="normal">RELIEVE</button>
+        <button class="t-btn" data-mode="mirror">SELLO REAL</button>
+      </div>
+      <div class="tipbox">
+        <strong>SELLO REAL</strong> = espejo horizontal para que la impresión quede en la dirección correcta al presionar.
+      </div>
+    </div>
+
+    <!-- Tip -->
+    <div class="s-section">
+      <div class="tipbox">
+        <strong>💡 TIPS:</strong> SVGs con paths simples funcionan mejor. Logos monocromáticos, iconos, texto vectorizado. Exportá desde <em>Inkscape → Guardar como SVG plano</em>.
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="export-wrap">
+      <button class="btn-export" id="exportBtn" disabled>⬇ EXPORTAR STL</button>
+    </div>
+
+  </aside>
+
+  <!-- Canvas -->
+  <main class="main">
+    <div id="canvas-wrap">
+      <div id="loader">
+        <div class="spinner-wrap">
+          <div class="spinner"></div>
+          <div class="spinner-label">GENERANDO…</div>
+        </div>
+      </div>
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">🔲</div>
+        <div class="empty-msg">SUBÍ UN SVG<br>PARA COMENZAR</div>
+      </div>
+      <div class="controls-hint">
+        ROTAR · ARRASTRAR<br>
+        ZOOM · SCROLL<br>
+        PAN · SHIFT+DRAG
+      </div>
+    </div>
+    <div id="statusbar">
+      <div class="dot" id="sDot"></div>
+      <span id="sText">Esperando archivo SVG…</span>
+    </div>
+  </main>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <a href="https://printaplab3dstore.github.io/">PRINTAPLAB 3D STORE</a> · STAMPLB 3D TOOL · HECHO EN 🇵🇷 PUERTO RICO
+</footer>
+
+<!-- Three.js importmap -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script>
+/* ── STARS ANIMATION ── */
+(function(){
+  const canvas = document.getElementById('stars-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, stars = [];
+
+  function init(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    stars = Array.from({length: 120}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      r: Math.random()*1.4+0.3,
+      a: Math.random(),
+      speed: Math.random()*0.005+0.002,
+      phase: Math.random()*Math.PI*2
+    }));
+  }
+
+  function draw(t){
+    ctx.clearRect(0,0,W,H);
+    for(const s of stars){
+      const alpha = s.a * (0.5 + 0.5*Math.sin(t*s.speed+s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+      ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', init);
+  init();
+  requestAnimationFrame(draw);
+})();
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { SVGLoader }   from 'three/addons/loaders/SVGLoader.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+// ─── THREE.JS SETUP ───────────────────────────────────────────
+const wrap = document.getElementById('canvas-wrap');
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setClearColor(0x000000, 0);
+renderer.shadowMap.enabled = true;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+wrap.appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0x0A0F1C, 150, 600);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
+camera.position.set(0, -90, 70);
+camera.lookAt(0, 0, 0);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 10;
+controls.maxDistance = 400;
+
+// Lights
+scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+
+const sun = new THREE.DirectionalLight(0xFFEEAA, 1.0);
+sun.position.set(2, 2, 5);
+sun.castShadow = true;
+scene.add(sun);
+
+const fill = new THREE.DirectionalLight(0x0EA5E9, 0.3);
+fill.position.set(-3, -2, 2);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xFF6B4A, 0.2);
+rim.position.set(0, -4, -1);
+scene.add(rim);
+
+// Floor grid
+const grid = new THREE.GridHelper(400, 40, 0x1E2D45, 0x111827);
+grid.rotation.x = Math.PI / 2;
+grid.position.z = -0.5;
+scene.add(grid);
+
+// Resize
+function onResize() {
+  const w = wrap.clientWidth  || 400;
+  const h = wrap.clientHeight || 500;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+}
+window.addEventListener('resize', onResize);
+onResize();
+
+// Loop
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
+
+// ─── STATE ────────────────────────────────────────────────────
+let svgText   = null;
+let stampMesh = null;
+const params = {
+  width: 50, height: 50,
+  baseThickness: 3, reliefHeight: 1.5,
+  padding: 3, shape: 'rect', mirror: false,
+};
+
+// ─── UI BINDINGS ──────────────────────────────────────────────
+function bindRange(id, valId, key, dec) {
+  const el = document.getElementById(id);
+  const vl = document.getElementById(valId);
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    params[key] = v;
+    vl.textContent = dec ? v.toFixed(dec) : v;
+    if (svgText) scheduleRebuild();
+  });
+}
+bindRange('stampW',    'wVal',  'width',         0);
+bindRange('stampH',    'hVal',  'height',        0);
+bindRange('baseThick', 'btVal', 'baseThickness', 1);
+bindRange('reliefH',   'rhVal', 'reliefHeight',  2);
+bindRange('padding',   'padVal','padding',        1);
+
+document.querySelectorAll('[data-shape]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-shape]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    params.shape = btn.dataset.shape;
+    if (svgText) scheduleRebuild();
+  });
+});
+
+document.querySelectorAll('[data-mode]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    params.mirror = btn.dataset.mode === 'mirror';
+    if (svgText) scheduleRebuild();
+  });
+});
+
+// Upload
+const zone = document.getElementById('uploadZone');
+const fileEl = document.getElementById('svgFile');
+zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag');
+  const f = e.dataTransfer.files[0];
+  if (f) readFile(f);
+});
+fileEl.addEventListener('change', e => { if (e.target.files[0]) readFile(e.target.files[0]); });
+
+function readFile(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    svgText = e.target.result;
+    document.getElementById('filename').textContent = '📄 ' + file.name;
+    document.getElementById('emptyState').classList.add('hidden');
+    scheduleRebuild();
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById('exportBtn').addEventListener('click', exportSTL);
+
+// ─── BUILD ────────────────────────────────────────────────────
+let rebuildTimer = null;
+function scheduleRebuild() {
+  clearTimeout(rebuildTimer);
+  rebuildTimer = setTimeout(buildStamp, 100);
+}
+
+function buildStamp() {
+  if (!svgText) return;
+  setStatus('busy', 'GENERANDO MODELO 3D…');
+  showLoader(true);
+
+  requestAnimationFrame(() => {
+    try {
+      if (stampMesh) {
+        scene.remove(stampMesh);
+        stampMesh.geometry.dispose();
+        if (Array.isArray(stampMesh.material)) stampMesh.material.forEach(m => m.dispose());
+        else stampMesh.material.dispose();
+        stampMesh = null;
+      }
+
+      const geo = createStampGeo(svgText, params);
+      if (!geo) {
+        setStatus('err', '⚠️ No se encontraron paths en el SVG. Revisá que sea SVG con vectores.');
+        showLoader(false);
+        return;
+      }
+
+      geo.computeVertexNormals();
+
+      // Split into two materials: base and relief
+      const baseMat = new THREE.MeshPhongMaterial({
+        color: 0x22C55E, specular: 0x226644, shininess: 50,
+        side: THREE.DoubleSide,
+      });
+      const mat = baseMat;
+
+      stampMesh = new THREE.Mesh(geo, mat);
+      stampMesh.castShadow = true;
+      scene.add(stampMesh);
+
+      // Fit camera
+      const box = new THREE.Box3().setFromObject(stampMesh);
+      const ctr = box.getCenter(new THREE.Vector3());
+      const sz  = box.getSize(new THREE.Vector3());
+      const d   = Math.max(sz.x, sz.y, sz.z);
+
+      camera.position.set(ctr.x, ctr.y - d*1.7, ctr.z + d*0.9);
+      camera.lookAt(ctr);
+      controls.target.copy(ctr);
+
+      document.getElementById('exportBtn').disabled = false;
+      setStatus('ok', `✓ SELLO ${params.width}×${params.height}mm | BASE ${params.baseThickness}mm | RELIEVE ${params.reliefHeight}mm${params.mirror ? ' | MODO ESPEJO' : ''}`);
+
+    } catch(err) {
+      console.error(err);
+      setStatus('err', '⚠️ ERROR: ' + err.message);
+    }
+    showLoader(false);
+  });
+}
+
+// ─── SVG → GEOMETRÍA ──────────────────────────────────────────
+function createStampGeo(svgStr, p) {
+  const loader = new SVGLoader();
+  const data   = loader.parse(svgStr);
+
+  const allShapes = [];
+  for (const path of data.paths) {
+    SVGLoader.createShapes(path).forEach(s => allShapes.push(s));
+  }
+  if (!allShapes.length) return null;
+
+  // Bounding box in SVG space
+  const box2 = new THREE.Box2();
+  allShapes.forEach(sh => {
+    sh.getPoints(40).forEach(pt => box2.expandByPoint(pt));
+    sh.holes.forEach(h => h.getPoints(40).forEach(pt => box2.expandByPoint(pt)));
+  });
+
+  const svgSz = new THREE.Vector2();
+  box2.getSize(svgSz);
+  const svgCtr = new THREE.Vector2();
+  box2.getCenter(svgCtr);
+
+  if (svgSz.x < 1 || svgSz.y < 1) return null;
+
+  const targetW = Math.max(1, p.width - 2 * p.padding);
+  const targetH = Math.max(1, p.height - 2 * p.padding);
+  const scale   = Math.min(targetW / svgSz.x, targetH / svgSz.y);
+  const mirrorX = p.mirror ? -1 : 1;
+
+  const geos = [];
+
+  // Relief from SVG
+  for (const shape of allShapes) {
+    const xfShape = xfShape2D(shape, svgCtr, scale, mirrorX);
+    const extGeo  = new THREE.ExtrudeGeometry(xfShape, {
+      depth: p.reliefHeight,
+      bevelEnabled: false,
+      steps: 1,
+    });
+    extGeo.translate(0, 0, p.baseThickness);
+    geos.push(extGeo);
+  }
+
+  // Base
+  geos.push(buildBase(p));
+
+  return mergeGeometries(geos);
+}
+
+/**
+ * Transform SVG shape to Three.js XY plane.
+ * SVG Y goes DOWN → flip to Three.js Y going UP.
+ * x' = (x - cx) * scale * mirrorX
+ * y' = -(y - cy) * scale
+ */
+function xfShape2D(shape, center, scale, mirrorX) {
+  function xf(pts) {
+    return pts.map(p => new THREE.Vector2(
+      (p.x - center.x) * scale * mirrorX,
+      -(p.y - center.y) * scale
+    ));
+  }
+  const s = new THREE.Shape(xf(shape.getPoints(80)));
+  shape.holes.forEach(h => s.holes.push(new THREE.Path(xf(h.getPoints(80)))));
+  return s;
+}
+
+function buildBase(p) {
+  const { width: w, height: h, baseThickness: bt, shape } = p;
+
+  if (shape === 'circle') {
+    const r = Math.min(w, h) / 2;
+    const g = new THREE.CylinderGeometry(r, r, bt, 72);
+    g.rotateX(Math.PI / 2);
+    g.translate(0, 0, bt / 2);
+    return g;
+  }
+  if (shape === 'round') {
+    return buildRoundBase(w, h, bt, Math.min(w, h) * 0.1);
+  }
+  // Rectangle
+  const g = new THREE.BoxGeometry(w, h, bt);
+  g.translate(0, 0, bt / 2);
+  return g;
+}
+
+function buildRoundBase(w, h, depth, r) {
+  r = Math.min(r, w/2-0.1, h/2-0.1);
+  const hw = w/2, hh = h/2;
+  const sh = new THREE.Shape();
+  sh.moveTo(-hw+r, -hh);
+  sh.lineTo( hw-r, -hh);
+  sh.quadraticCurveTo( hw, -hh,  hw, -hh+r);
+  sh.lineTo( hw,  hh-r);
+  sh.quadraticCurveTo( hw,  hh,  hw-r,  hh);
+  sh.lineTo(-hw+r,  hh);
+  sh.quadraticCurveTo(-hw,  hh, -hw,  hh-r);
+  sh.lineTo(-hw, -hh+r);
+  sh.quadraticCurveTo(-hw, -hh, -hw+r, -hh);
+  return new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false, steps: 1 });
+}
+
+// ─── EXPORT ───────────────────────────────────────────────────
+function exportSTL() {
+  if (!stampMesh) return;
+  const stl  = new STLExporter().parse(stampMesh, { binary: true });
+  const blob = new Blob([stl], { type: 'application/octet-stream' });
+  const a    = Object.assign(document.createElement('a'), {
+    href:     URL.createObjectURL(blob),
+    download: `sello_printaplab3d_${params.width}x${params.height}mm.stl`,
+  });
+  a.click();
+  URL.revokeObjectURL(a.href);
+  setStatus('ok', `✓ STL EXPORTADO: sello_printaplab3d_${params.width}x${params.height}mm.stl — Abrilo en Bambu Studio`);
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────
+function setStatus(state, msg) {
+  document.getElementById('sDot').className = 'dot ' + (state||'');
+  document.getElementById('sText').textContent = msg;
+}
+function showLoader(v) {
+  document.getElementById('loader').classList.toggle('show', v);
+}
+</script>
 </body>
 </html>
