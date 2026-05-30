@@ -1,990 +1,1194 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StampLab 3D — Printaplab3D Store</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* ── PRINTAPLAB 3D PALETTE ── */
-    :root {
-      --bg:      #0A0F1C;
-      --surface: #111827;
-      --card:    #1A2235;
-      --border:  #1E2D45;
-      --sun:     #FFD600;
-      --coral:   #FF6B4A;
-      --ocean:   #0EA5E9;
-      --jungle:  #22C55E;
-      --purple:  #A855F7;
-      --text:    #E2E8F0;
-      --muted:   #64748B;
-      --font-display: 'Bebas Neue', sans-serif;
-      --font-accent:  'Pacifico', cursive;
-      --font-mono:    'Space Mono', monospace;
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Texture → 3MF | Printaplab3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+  :root {
+    --coral:    #FF6B6B;
+    --ocean:    #0077B6;
+    --sun:      #FFD166;
+    --jungle:   #2DC653;
+    --dark:     #0D1B2A;
+    --darker:   #060D14;
+    --card:     #122035;
+    --border:   #1E3A5F;
+    --text:     #E8F4FD;
+    --muted:    #7BA7C4;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--darker);
+    color: var(--text);
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-    body {
-      font-family: var(--font-mono);
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-    }
+  /* BG waves */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 20%, rgba(0,119,182,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(45,198,83,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 60% at 50% 110%, rgba(255,107,107,0.10) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
 
-    /* ── STARS CANVAS ── */
-    #stars-canvas {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-    }
+  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
 
-    /* ── GRID OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(14,165,233,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(14,165,233,.05) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
+  /* HEADER */
+  header {
+    text-align: center;
+    padding: 48px 20px 32px;
+    position: relative;
+  }
+  .logo-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--jungle);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    display: block;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 8vw, 80px);
+    letter-spacing: 3px;
+    line-height: 1;
+    background: linear-gradient(135deg, var(--coral) 0%, var(--sun) 50%, var(--jungle) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    font-family: 'Nunito', sans-serif;
+    color: var(--muted);
+    margin-top: 10px;
+    font-size: 15px;
+    max-width: 560px;
+    margin-inline: auto;
+  }
+  .badge {
+    display: inline-block;
+    background: linear-gradient(90deg, var(--ocean), var(--jungle));
+    color: #fff;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 14px;
+  }
 
-    /* All content above background */
-    header, .app, footer { position: relative; z-index: 1; }
+  /* STEPS */
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin: 32px 0;
+  }
+  .step {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 16px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .step::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .step:nth-child(1)::before { background: var(--coral); }
+  .step:nth-child(2)::before { background: var(--ocean); }
+  .step:nth-child(3)::before { background: var(--sun); }
+  .step:nth-child(4)::before { background: var(--jungle); }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    opacity: 0.15;
+    position: absolute; top: 8px; right: 14px;
+  }
+  .step-icon { font-size: 28px; margin-bottom: 8px; }
+  .step h3 { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+  .step p { font-size: 13px; color: var(--text); opacity: 0.8; }
 
-    /* ── HEADER ── */
-    header {
-      background: rgba(17,24,39,.92);
-      backdrop-filter: blur(12px);
-      border-bottom: 2px solid var(--sun);
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
+  /* MAIN GRID */
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width: 700px) { .grid { grid-template-columns: 1fr; } }
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-    }
-    .brand-name {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: var(--sun);
-      letter-spacing: 3px;
-      line-height: 1;
-    }
-    .brand-name span { color: var(--coral); }
-    .brand-tag {
-      font-size: 0.55rem;
-      color: var(--muted);
-      letter-spacing: 1.5px;
-      line-height: 1.4;
-    }
+  /* CARDS */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 24px;
+  }
+  .card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--sun);
+    margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title span { font-size: 20px; }
 
-    .header-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .badge {
-      font-size: 0.6rem;
-      padding: 3px 10px;
-      border-radius: 20px;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-    }
-    .badge-tool {
-      background: rgba(14,165,233,.15);
-      color: var(--ocean);
-      border: 1px solid rgba(14,165,233,.3);
-    }
-    .badge-back {
-      background: rgba(255,214,0,.1);
-      color: var(--sun);
-      border: 1px solid rgba(255,214,0,.25);
-      text-decoration: none;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .badge-back:hover { background: rgba(255,214,0,.2); }
+  /* DROP ZONES */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 12px;
+    padding: 28px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    margin-bottom: 14px;
+    background: rgba(255,255,255,0.02);
+  }
+  .drop-zone:hover, .drop-zone.drag-over {
+    border-color: var(--ocean);
+    background: rgba(0,119,182,0.08);
+  }
+  .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-zone .dz-icon { font-size: 32px; margin-bottom: 8px; }
+  .drop-zone .dz-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+  .drop-zone .dz-sub { font-size: 12px; color: var(--muted); opacity: 0.6; margin-top: 4px; }
+  .drop-zone.loaded { border-color: var(--jungle); background: rgba(45,198,83,0.06); }
+  .drop-zone.loaded .dz-icon::after { content: ' ✓'; color: var(--jungle); font-size: 16px; }
 
-    /* ── HERO BANNER ── */
-    .hero {
-      text-align: center;
-      padding: 28px 20px 20px;
-      position: relative;
-    }
-    .hero-title {
-      font-family: var(--font-display);
-      font-size: clamp(2.5rem, 8vw, 4.5rem);
-      letter-spacing: 6px;
-      line-height: 1;
-      color: var(--text);
-    }
-    .hero-title em {
-      font-style: normal;
-      color: var(--sun);
-      text-shadow: 0 0 30px rgba(255,214,0,.4);
-    }
-    .hero-sub {
-      margin-top: 8px;
-      font-size: 0.72rem;
-      color: var(--muted);
-      letter-spacing: 2px;
-    }
-    .hero-sub strong { color: var(--ocean); }
+  /* CONTROLS */
+  label.ctrl-label {
+    display: block;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    margin-top: 14px;
+  }
+  input[type=range] {
+    width: 100%; accent-color: var(--coral);
+    height: 4px; margin-bottom: 4px;
+  }
+  .range-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--coral);
+    line-height: 1;
+  }
+  select, input[type=number] {
+    width: 100%;
+    background: var(--darker);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 10px 12px;
+    border-radius: 10px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  select:focus, input[type=number]:focus { border-color: var(--ocean); }
 
-    /* ── APP LAYOUT ── */
-    .app {
-      display: flex;
-      flex: 1;
-      gap: 0;
-      min-height: 0;
-    }
+  /* FILAMENT COLORS */
+  .filament-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+  .fil-item {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--darker); border: 1px solid var(--border);
+    border-radius: 10px; padding: 8px 10px;
+  }
+  .fil-item input[type=color] {
+    width: 32px; height: 32px; border: none; border-radius: 8px;
+    cursor: pointer; background: none; padding: 0;
+  }
+  .fil-item span { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
 
-    /* ── SIDEBAR ── */
-    .sidebar {
-      width: 280px;
-      min-width: 280px;
-      background: rgba(17,24,39,.8);
-      backdrop-filter: blur(8px);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-    .sidebar::-webkit-scrollbar { width: 3px; }
-    .sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  /* BUTTONS */
+  .btn {
+    display: block; width: 100%;
+    padding: 14px;
+    border: none; border-radius: 12px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; letter-spacing: 2px;
+    cursor: pointer; transition: all 0.2s;
+    margin-top: 14px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--coral), #ff4444);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(255,107,107,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,107,107,0.45); }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .btn-secondary {
+    background: linear-gradient(135deg, var(--ocean), #005588);
+    color: #fff;
+    box-shadow: 0 4px 20px rgba(0,119,182,0.3);
+  }
+  .btn-secondary:hover { transform: translateY(-2px); }
+  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
-    .s-section {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-    }
+  /* PREVIEW */
+  #preview-wrap {
+    width: 100%; aspect-ratio: 1;
+    background: #080f18;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 14px;
+  }
+  #preview-canvas { width: 100% !important; height: 100% !important; display: block; }
+  .preview-hint {
+    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    color: rgba(255,255,255,0.3); letter-spacing: 1px; pointer-events: none;
+    white-space: nowrap;
+  }
+  #preview-empty {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 13px; gap: 8px;
+  }
+  #preview-empty .big { font-size: 40px; }
 
-    .s-label {
-      font-family: var(--font-display);
-      font-size: 0.85rem;
-      letter-spacing: 3px;
-      color: var(--sun);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .s-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: linear-gradient(90deg, var(--border), transparent);
-    }
+  /* COLOR PALETTE DISPLAY */
+  #palette-wrap { margin-top: 14px; }
+  .palette-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .palette-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch {
+    width: 42px; height: 42px; border-radius: 10px;
+    border: 2px solid rgba(255,255,255,0.1);
+    display: flex; align-items: flex-end; justify-content: center;
+    padding-bottom: 3px;
+    font-family: 'Space Mono', monospace; font-size: 8px; color: rgba(255,255,255,0.7);
+    position: relative; cursor: default;
+    transition: transform 0.15s;
+  }
+  .swatch:hover { transform: scale(1.15); }
+  .swatch .tri-count {
+    position: absolute; top: -8px; right: -6px;
+    background: var(--darker); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1px 5px;
+    font-size: 9px; color: var(--muted); white-space: nowrap;
+  }
 
-    /* Upload zone */
-    .upload-zone {
-      border: 2px dashed var(--border);
-      border-radius: 8px;
-      padding: 18px 12px;
-      text-align: center;
-      cursor: pointer;
-      transition: all 0.2s;
-      position: relative;
-    }
-    .upload-zone:hover, .upload-zone.drag {
-      border-color: var(--sun);
-      background: rgba(255,214,0,.04);
-      box-shadow: 0 0 20px rgba(255,214,0,.08);
-    }
-    .upload-zone input {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      font-size: 0;
-    }
-    .upload-icon { font-size: 2rem; margin-bottom: 6px; display: block; }
-    .upload-text { font-size: 0.68rem; color: var(--muted); line-height: 1.6; }
-    .upload-name {
-      margin-top: 7px;
-      font-size: 0.6rem;
-      color: var(--jungle);
-      word-break: break-all;
-      font-weight: 700;
-    }
+  /* LOG */
+  #log-wrap {
+    margin-top: 20px;
+    background: var(--darker);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    max-height: 180px;
+    overflow-y: auto;
+  }
+  .log-line {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex; gap: 10px;
+  }
+  .log-line .ts { color: var(--muted); }
+  .log-line .msg { color: var(--text); }
+  .log-line.ok .msg { color: var(--jungle); }
+  .log-line.warn .msg { color: var(--sun); }
+  .log-line.err .msg { color: var(--coral); }
 
-    /* Range controls */
-    .ctrl {
-      margin-bottom: 11px;
-    }
-    .ctrl:last-child { margin-bottom: 0; }
-    .ctrl-label {
-      font-size: 0.62rem;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      letter-spacing: 0.5px;
-    }
-    .ctrl-val {
-      color: var(--ocean);
-      font-weight: 700;
-      min-width: 38px;
-      text-align: right;
-    }
-    input[type="range"] {
-      width: 100%;
-      height: 3px;
-      appearance: none;
-      background: var(--border);
-      border-radius: 2px;
-      outline: none;
-      cursor: pointer;
-    }
-    input[type="range"]::-webkit-slider-thumb {
-      appearance: none;
-      width: 13px; height: 13px;
-      background: var(--sun);
-      border-radius: 50%;
-      border: 2px solid var(--bg);
-      box-shadow: 0 0 6px rgba(255,214,0,.5);
-      transition: transform 0.1s;
-    }
-    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.3); }
+  /* PROGRESS */
+  #progress-bar-wrap { display: none; margin-top: 14px; }
+  .prog-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; }
+  .prog-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, var(--coral), var(--sun)); border-radius: 3px; width: 0%; transition: width 0.3s; }
 
-    /* Toggle buttons */
-    .t-row {
-      display: flex;
-      gap: 5px;
-    }
-    .t-btn {
-      flex: 1;
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      letter-spacing: 1.5px;
-      padding: 7px 4px;
-      background: var(--card);
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 5px;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .t-btn:hover { border-color: rgba(255,214,0,.4); color: var(--text); }
-    .t-btn.active {
-      background: var(--sun);
-      color: #0A0F1C;
-      border-color: var(--sun);
-      box-shadow: 0 0 12px rgba(255,214,0,.3);
-    }
+  /* FULL-WIDTH CARD */
+  .card-full { grid-column: 1 / -1; }
 
-    /* Tip box */
-    .tipbox {
-      background: rgba(14,165,233,.07);
-      border-left: 2px solid var(--ocean);
-      border-radius: 0 6px 6px 0;
-      padding: 8px 10px;
-      font-size: 0.63rem;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-    .tipbox strong { color: var(--ocean); }
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab {
+    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
+    padding: 8px 16px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--border); background: transparent;
+    color: var(--muted); transition: all 0.15s;
+  }
+  .tab.active { background: var(--ocean); border-color: var(--ocean); color: #fff; }
 
-    /* Export button */
-    .export-wrap { padding: 14px 16px; margin-top: auto; }
+  /* INFO BOX */
+  .info-box {
+    background: rgba(0,119,182,0.1);
+    border: 1px solid rgba(0,119,182,0.3);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.6;
+  }
+  .info-box strong { color: var(--sun); }
 
-    .btn-export {
-      width: 100%;
-      padding: 14px;
-      font-family: var(--font-display);
-      font-size: 1.3rem;
-      letter-spacing: 5px;
-      background: linear-gradient(135deg, var(--coral), #e84c29);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 4px 20px rgba(255,107,74,.3);
-    }
-    .btn-export:hover:not(:disabled) {
-      background: linear-gradient(135deg, var(--sun), #e6b800);
-      color: #0A0F1C;
-      box-shadow: 0 4px 25px rgba(255,214,0,.4);
-      transform: translateY(-1px);
-    }
-    .btn-export:active:not(:disabled) { transform: translateY(0); }
-    .btn-export:disabled {
-      background: var(--card);
-      color: var(--muted);
-      border: 1px solid var(--border);
-      box-shadow: none;
-      cursor: not-allowed;
-    }
-
-    /* ── MAIN CANVAS ── */
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-width: 0;
-      min-height: 500px;
-    }
-
-    #canvas-wrap {
-      flex: 1;
-      position: relative;
-      background: radial-gradient(ellipse at 50% 30%, rgba(14,165,233,.06) 0%, transparent 70%);
-    }
-
-    .empty-state {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      transition: opacity 0.4s;
-    }
-    .empty-state.hidden { opacity: 0; }
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 12px;
-      filter: grayscale(1);
-      opacity: 0.25;
-    }
-    .empty-msg {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      letter-spacing: 4px;
-      color: var(--muted);
-      text-align: center;
-      line-height: 2;
-      opacity: 0.5;
-    }
-
-    /* Controls hint */
-    .controls-hint {
-      position: absolute;
-      bottom: 14px;
-      right: 14px;
-      font-size: 0.55rem;
-      color: var(--muted);
-      opacity: 0.45;
-      text-align: right;
-      pointer-events: none;
-      line-height: 1.9;
-      letter-spacing: 0.5px;
-    }
-
-    /* Loader overlay */
-    #loader {
-      position: absolute;
-      inset: 0;
-      background: rgba(10,15,28,.75);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 10;
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-    #loader.show { opacity: 1; pointer-events: all; }
-    .spinner-wrap { text-align: center; }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--sun);
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      margin: 0 auto 10px;
-    }
-    .spinner-label {
-      font-family: var(--font-display);
-      font-size: 0.8rem;
-      letter-spacing: 3px;
-      color: var(--sun);
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── STATUS BAR ── */
-    #statusbar {
-      background: rgba(17,24,39,.9);
-      border-top: 1px solid var(--border);
-      padding: 6px 16px;
-      font-size: 0.58rem;
-      color: var(--muted);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      letter-spacing: 0.5px;
-      flex-shrink: 0;
-    }
-    .dot {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      background: var(--muted);
-    }
-    .dot.ok   { background: var(--jungle); box-shadow: 0 0 6px rgba(34,197,94,.5); }
-    .dot.err  { background: var(--coral);  box-shadow: 0 0 6px rgba(255,107,74,.5); }
-    .dot.busy {
-      background: var(--sun);
-      animation: blink 0.9s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-    /* ── FOOTER ── */
-    footer {
-      background: rgba(10,15,28,.95);
-      border-top: 1px solid var(--border);
-      padding: 10px 20px;
-      text-align: center;
-      font-size: 0.58rem;
-      color: var(--muted);
-      letter-spacing: 1px;
-    }
-    footer a { color: var(--ocean); text-decoration: none; }
-    footer a:hover { color: var(--sun); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 680px) {
-      .app { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        min-width: unset;
-        max-height: 46vh;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-      }
-      .main { min-height: 54vh; }
-      .hero-title { font-size: 2rem; }
-    }
-  </style>
+  footer {
+    text-align: center;
+    padding: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+  footer a { color: var(--coral); text-decoration: none; }
+</style>
 </head>
 <body>
+<div class="wrap">
 
-<!-- Stars canvas -->
-<canvas id="stars-canvas"></canvas>
+  <header>
+    <span class="logo-tag">Printaplab3D Tools</span>
+    <h1>Texture → 3MF</h1>
+    <p>Convierte tus modelos OBJ/STL con textura en archivos multicolor listos para Bambu Studio</p>
+    <span class="badge">BAMBU LAB COMPATIBLE</span>
+  </header>
 
-<!-- Header -->
-<header>
-  <a class="brand" href="https://printaplab3dstore.github.io/" style="text-decoration:none">
-    <div>
-      <div class="brand-name">PRINTAP<span>LAB</span> 3D</div>
-      <div class="brand-tag">STORE · PUERTO RICO 🇵🇷</div>
-    </div>
-  </a>
-  <div class="header-badge">
-    <span class="badge badge-tool">HERRAMIENTA</span>
-    <a class="badge badge-back" href="https://printaplab3dstore.github.io/">← INICIO</a>
+  <div class="steps">
+    <div class="step"><span class="step-num">1</span><div class="step-icon">📦</div><h3>Carga</h3><p>Sube tu OBJ + textura o STL</p></div>
+    <div class="step"><span class="step-num">2</span><div class="step-icon">🎨</div><h3>Analiza</h3><p>Detecta colores en la textura</p></div>
+    <div class="step"><span class="step-num">3</span><div class="step-icon">🧵</div><h3>Mapea</h3><p>Agrupa triángulos por filamento</p></div>
+    <div class="step"><span class="step-num">4</span><div class="step-icon">🏭</div><h3>Exporta</h3><p>Genera .3mf para Bambu Studio</p></div>
   </div>
-</header>
 
-<!-- Hero -->
-<div class="hero">
-  <h1 class="hero-title">STAMP<em>LAB</em> 3D</h1>
-  <p class="hero-sub">SVG → <strong>RELIEVE 3D</strong> → STL · Listo para imprimir</p>
-</div>
+  <div class="grid">
 
-<!-- App -->
-<div class="app">
+    <!-- LEFT: INPUT -->
+    <div class="card">
+      <div class="card-title"><span>📂</span> Modelo & Textura</div>
 
-  <!-- Sidebar -->
-  <aside class="sidebar">
-
-    <!-- 1. Upload -->
-    <div class="s-section">
-      <div class="s-label">01 · DISEÑO SVG</div>
-      <div class="upload-zone" id="uploadZone">
-        <input type="file" id="svgFile" accept=".svg">
-        <span class="upload-icon">📐</span>
-        <div class="upload-text">Arrastrá tu SVG aquí<br>o tocá para subir</div>
-        <div class="upload-name" id="filename"></div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchMode('obj')">OBJ + Textura</button>
+        <button class="tab" onclick="switchMode('stl')">STL + Imagen</button>
       </div>
-    </div>
 
-    <!-- 2. Dimensions -->
-    <div class="s-section">
-      <div class="s-label">02 · DIMENSIONES (mm)</div>
-
-      <div class="ctrl">
-        <div class="ctrl-label">Ancho del sello <span class="ctrl-val" id="wVal">50</span></div>
-        <input type="range" id="stampW" min="20" max="120" value="50" step="1">
-      </div>
-      <div class="ctrl">
-        <div class="ctrl-label">Alto del sello <span class="ctrl-val" id="hVal">50</span></div>
-        <input type="range" id="stampH" min="20" max="120" value="50" step="1">
-      </div>
-      <div class="ctrl">
-        <div class="ctrl-label">Grosor base <span class="ctrl-val" id="btVal">3.0</span></div>
-        <input type="range" id="baseThick" min="1" max="12" value="3" step="0.5">
-      </div>
-      <div class="ctrl">
-        <div class="ctrl-label">Altura relieve <span class="ctrl-val" id="rhVal">1.50</span></div>
-        <input type="range" id="reliefH" min="0.5" max="5" value="1.5" step="0.25">
-      </div>
-      <div class="ctrl">
-        <div class="ctrl-label">Margen interno <span class="ctrl-val" id="padVal">3.0</span></div>
-        <input type="range" id="padding" min="0" max="20" value="3" step="0.5">
-      </div>
-    </div>
-
-    <!-- 3. Shape -->
-    <div class="s-section">
-      <div class="s-label">03 · FORMA BASE</div>
-      <div class="t-row">
-        <button class="t-btn active" data-shape="rect">RECT</button>
-        <button class="t-btn" data-shape="round">ROUND</button>
-        <button class="t-btn" data-shape="circle">CIRCULO</button>
-      </div>
-    </div>
-
-    <!-- 4. Mode -->
-    <div class="s-section">
-      <div class="s-label">04 · MODO</div>
-      <div class="t-row" style="margin-bottom:8px">
-        <button class="t-btn active" data-mode="normal">RELIEVE</button>
-        <button class="t-btn" data-mode="mirror">SELLO REAL</button>
-      </div>
-      <div class="tipbox">
-        <strong>SELLO REAL</strong> = espejo horizontal para que la impresión quede en la dirección correcta al presionar.
-      </div>
-    </div>
-
-    <!-- Tip -->
-    <div class="s-section">
-      <div class="tipbox">
-        <strong>💡 TIPS:</strong> SVGs con paths simples funcionan mejor. Logos monocromáticos, iconos, texto vectorizado. Exportá desde <em>Inkscape → Guardar como SVG plano</em>.
-      </div>
-    </div>
-
-    <!-- Export -->
-    <div class="export-wrap">
-      <button class="btn-export" id="exportBtn" disabled>⬇ EXPORTAR STL</button>
-    </div>
-
-  </aside>
-
-  <!-- Canvas -->
-  <main class="main">
-    <div id="canvas-wrap">
-      <div id="loader">
-        <div class="spinner-wrap">
-          <div class="spinner"></div>
-          <div class="spinner-label">GENERANDO…</div>
+      <!-- OBJ MODE -->
+      <div id="mode-obj">
+        <div class="drop-zone" id="dz-obj" ondragover="dzOver(event,'dz-obj')" ondragleave="dzLeave('dz-obj')" ondrop="dzDrop(event,'dz-obj')">
+          <input type="file" accept=".obj" onchange="handleOBJ(this.files[0])"/>
+          <div class="dz-icon" id="icon-obj">🧱</div>
+          <div class="dz-label">Archivo OBJ</div>
+          <div class="dz-sub" id="name-obj">Arrastra o haz click</div>
+        </div>
+        <div class="drop-zone" id="dz-mtl" ondragover="dzOver(event,'dz-mtl')" ondragleave="dzLeave('dz-mtl')" ondrop="dzDrop(event,'dz-mtl')">
+          <input type="file" accept=".mtl" onchange="handleMTL(this.files[0])"/>
+          <div class="dz-icon" id="icon-mtl">📄</div>
+          <div class="dz-label">Archivo MTL (opcional)</div>
+          <div class="dz-sub" id="name-mtl">Arrastra o haz click</div>
+        </div>
+        <div class="drop-zone" id="dz-tex" ondragover="dzOver(event,'dz-tex')" ondragleave="dzLeave('dz-tex')" ondrop="dzDrop(event,'dz-tex')">
+          <input type="file" accept="image/*" onchange="handleTexture(this.files[0])"/>
+          <div class="dz-icon" id="icon-tex">🖼️</div>
+          <div class="dz-label">Textura PNG / JPG</div>
+          <div class="dz-sub" id="name-tex">Arrastra o haz click</div>
         </div>
       </div>
-      <div class="empty-state" id="emptyState">
-        <div class="empty-icon">🔲</div>
-        <div class="empty-msg">SUBÍ UN SVG<br>PARA COMENZAR</div>
+
+      <!-- STL MODE -->
+      <div id="mode-stl" style="display:none">
+        <div class="drop-zone" id="dz-stl" ondragover="dzOver(event,'dz-stl')" ondragleave="dzLeave('dz-stl')" ondrop="dzDrop(event,'dz-stl')">
+          <input type="file" accept=".stl" onchange="handleSTL(this.files[0])"/>
+          <div class="dz-icon" id="icon-stl">🧱</div>
+          <div class="dz-label">Archivo STL</div>
+          <div class="dz-sub" id="name-stl">Arrastra o haz click</div>
+        </div>
+        <div class="drop-zone" id="dz-stl-tex" ondragover="dzOver(event,'dz-stl-tex')" ondragleave="dzLeave('dz-stl-tex')" ondrop="dzDrop(event,'dz-stl-tex')">
+          <input type="file" accept="image/*" onchange="handleTexture(this.files[0])"/>
+          <div class="dz-icon" id="icon-stl-tex">🖼️</div>
+          <div class="dz-label">Imagen de referencia de colores</div>
+          <div class="dz-sub" id="name-stl-tex">Arrastra o haz click</div>
+        </div>
+        <div class="info-box">
+          <strong>STL Mode:</strong> Los STL no tienen UV mapping. La textura se usa para extraer la paleta de colores. La asignación de color se hace por posición espacial (proyección esférica automática).
+        </div>
       </div>
-      <div class="controls-hint">
-        ROTAR · ARRASTRAR<br>
-        ZOOM · SCROLL<br>
-        PAN · SHIFT+DRAG
+
+      <!-- SETTINGS -->
+      <label class="ctrl-label">Número de filamentos</label>
+      <div class="range-val" id="fil-val">4</div>
+      <input type="range" min="2" max="16" value="4" id="fil-count" oninput="updateFilCount(this.value)"/>
+
+      <label class="ctrl-label">Colores de filamento</label>
+      <div class="filament-grid" id="fil-colors"></div>
+
+      <label class="ctrl-label">Algoritmo de cuantización</label>
+      <select id="quant-algo">
+        <option value="kmeans">K-Means (más preciso)</option>
+        <option value="median">Median Cut (más rápido)</option>
+      </select>
+
+      <label class="ctrl-label">Muestras de textura</label>
+      <select id="sample-size">
+        <option value="5000">5,000 píxeles (rápido)</option>
+        <option value="20000" selected>20,000 píxeles (balanceado)</option>
+        <option value="50000">50,000 píxeles (preciso)</option>
+      </select>
+
+      <button class="btn btn-primary" id="btn-process" onclick="processModel()" disabled>
+        ⚡ PROCESAR MODELO
+      </button>
+    </div>
+
+    <!-- RIGHT: PREVIEW -->
+    <div class="card">
+      <div class="card-title"><span>👁️</span> Vista Previa</div>
+      <div id="preview-wrap">
+        <canvas id="preview-canvas"></canvas>
+        <div id="preview-empty">
+          <div class="big">🎨</div>
+          <div>Carga un modelo para ver la vista previa</div>
+        </div>
+        <div class="preview-hint">Click + drag para rotar • Scroll para zoom</div>
+      </div>
+
+      <div id="palette-wrap" style="display:none">
+        <div class="palette-title">Paleta detectada</div>
+        <div class="palette-swatches" id="palette-swatches"></div>
+      </div>
+
+      <div id="progress-bar-wrap">
+        <div class="prog-label" id="prog-label">Procesando...</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      </div>
+
+      <button class="btn btn-secondary" id="btn-export" onclick="exportMF()" disabled>
+        💾 EXPORTAR .3MF
+      </button>
+
+      <div id="log-wrap">
+        <div id="log-lines"></div>
       </div>
     </div>
-    <div id="statusbar">
-      <div class="dot" id="sDot"></div>
-      <span id="sText">Esperando archivo SVG…</span>
-    </div>
-  </main>
 
-</div>
+  </div><!-- /grid -->
 
-<!-- Footer -->
+  <div class="info-box" style="margin-top:20px">
+    <strong>Cómo usar en Bambu Studio:</strong> Abre el .3mf exportado → verás N objetos separados (uno por color) → en el panel de filamentos asigna Filamento 1, 2, 3... a cada objeto → imprime en multicolor 🎨
+  </div>
+
+</div><!-- /wrap -->
+
 <footer>
-  <a href="https://printaplab3dstore.github.io/">PRINTAPLAB 3D STORE</a> · STAMPLB 3D TOOL · HECHO EN 🇵🇷 PUERTO RICO
+  <a href="https://printaplab3dstore.github.io" target="_blank">printaplab3dstore.github.io</a> &nbsp;·&nbsp;
+  <a href="https://cults3d.com/en/users/printaplab3dstore" target="_blank">Cults3D</a> &nbsp;·&nbsp;
+  Hecho con 🤍 en Puerto Rico
 </footer>
 
-<!-- Three.js importmap -->
-<script type="importmap">
-{
-  "imports": {
-    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-  }
-}
-</script>
-
 <script>
-/* ── STARS ANIMATION ── */
-(function(){
-  const canvas = document.getElementById('stars-canvas');
-  const ctx = canvas.getContext('2d');
-  let W, H, stars = [];
-
-  function init(){
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
-    stars = Array.from({length: 120}, () => ({
-      x: Math.random()*W, y: Math.random()*H,
-      r: Math.random()*1.4+0.3,
-      a: Math.random(),
-      speed: Math.random()*0.005+0.002,
-      phase: Math.random()*Math.PI*2
-    }));
-  }
-
-  function draw(t){
-    ctx.clearRect(0,0,W,H);
-    for(const s of stars){
-      const alpha = s.a * (0.5 + 0.5*Math.sin(t*s.speed+s.phase));
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-      ctx.fill();
-    }
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize', init);
-  init();
-  requestAnimationFrame(draw);
-})();
-</script>
-
-<script type="module">
-import * as THREE from 'three';
-import { SVGLoader }   from 'three/addons/loaders/SVGLoader.js';
-import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-
-// ─── THREE.JS SETUP ───────────────────────────────────────────
-const wrap = document.getElementById('canvas-wrap');
-const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-renderer.setClearColor(0x000000, 0);
-renderer.shadowMap.enabled = true;
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure = 1.1;
-wrap.appendChild(renderer.domElement);
-
-const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x0A0F1C, 150, 600);
-
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 2000);
-camera.position.set(0, -90, 70);
-camera.lookAt(0, 0, 0);
-
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.07;
-controls.minDistance = 10;
-controls.maxDistance = 400;
-
-// Lights
-scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-
-const sun = new THREE.DirectionalLight(0xFFEEAA, 1.0);
-sun.position.set(2, 2, 5);
-sun.castShadow = true;
-scene.add(sun);
-
-const fill = new THREE.DirectionalLight(0x0EA5E9, 0.3);
-fill.position.set(-3, -2, 2);
-scene.add(fill);
-
-const rim = new THREE.DirectionalLight(0xFF6B4A, 0.2);
-rim.position.set(0, -4, -1);
-scene.add(rim);
-
-// Floor grid
-const grid = new THREE.GridHelper(400, 40, 0x1E2D45, 0x111827);
-grid.rotation.x = Math.PI / 2;
-grid.position.z = -0.5;
-scene.add(grid);
-
-// Resize
-function onResize() {
-  const w = wrap.clientWidth  || 400;
-  const h = wrap.clientHeight || 500;
-  renderer.setSize(w, h, false);
-  camera.aspect = w / h;
-  camera.updateProjectionMatrix();
-}
-window.addEventListener('resize', onResize);
-onResize();
-
-// Loop
-(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene, camera); })();
-
-// ─── STATE ────────────────────────────────────────────────────
-let svgText   = null;
-let stampMesh = null;
-const params = {
-  width: 50, height: 50,
-  baseThickness: 3, reliefHeight: 1.5,
-  padding: 3, shape: 'rect', mirror: false,
+// ─── STATE ─────────────────────────────────────────────────────────────────
+const state = {
+  mode: 'obj',        // 'obj' | 'stl'
+  objText: null,
+  mtlText: null,
+  textureImg: null,
+  textureCanvas: null,
+  stlBuffer: null,
+  parsedMesh: null,   // { vertices, faces, uvs } normalized
+  colorGroups: null,  // [ {color, triangles:[...]} ]
+  ready: false,
 };
 
-// ─── UI BINDINGS ──────────────────────────────────────────────
-function bindRange(id, valId, key, dec) {
-  const el = document.getElementById(id);
-  const vl = document.getElementById(valId);
-  el.addEventListener('input', () => {
-    const v = parseFloat(el.value);
-    params[key] = v;
-    vl.textContent = dec ? v.toFixed(dec) : v;
-    if (svgText) scheduleRebuild();
+// ─── THREE.JS PREVIEW ──────────────────────────────────────────────────────
+let renderer, scene, camera, controls, previewMesh;
+
+function initThree() {
+  const wrap = document.getElementById('preview-wrap');
+  const canvas = document.getElementById('preview-canvas');
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+  renderer.setClearColor(0x080f18, 1);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(45, 1, 0.01, 10000);
+  camera.position.set(0, 0, 5);
+
+  // Lights
+  const amb = new THREE.AmbientLight(0xffffff, 0.5);
+  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+  dir.position.set(1, 2, 3);
+  scene.add(amb, dir);
+
+  // Orbit controls (manual, no import needed)
+  let isDragging = false, prevMouse = {x:0,y:0}, spherical = {theta:0.3, phi:1.2, r:5};
+  canvas.addEventListener('mousedown', e => { isDragging = true; prevMouse = {x:e.clientX,y:e.clientY}; });
+  window.addEventListener('mouseup', () => isDragging = false);
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
+    spherical.theta -= dx * 0.01;
+    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi + dy * 0.01));
+    prevMouse = {x:e.clientX, y:e.clientY};
+    updateCam();
   });
-}
-bindRange('stampW',    'wVal',  'width',         0);
-bindRange('stampH',    'hVal',  'height',        0);
-bindRange('baseThick', 'btVal', 'baseThickness', 1);
-bindRange('reliefH',   'rhVal', 'reliefHeight',  2);
-bindRange('padding',   'padVal','padding',        1);
+  canvas.addEventListener('wheel', e => {
+    spherical.r = Math.max(0.5, spherical.r * (1 + e.deltaY * 0.001));
+    updateCam(); e.preventDefault();
+  }, {passive: false});
+  // Touch support
+  let prevTouch = null;
+  canvas.addEventListener('touchstart', e => { prevTouch = e.touches[0]; });
+  canvas.addEventListener('touchmove', e => {
+    if (!prevTouch) return;
+    const t = e.touches[0];
+    const dx = t.clientX - prevTouch.clientX, dy = t.clientY - prevTouch.clientY;
+    spherical.theta -= dx * 0.01;
+    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi + dy * 0.01));
+    prevTouch = t;
+    updateCam(); e.preventDefault();
+  }, {passive: false});
 
-document.querySelectorAll('[data-shape]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-shape]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    params.shape = btn.dataset.shape;
-    if (svgText) scheduleRebuild();
-  });
-});
-
-document.querySelectorAll('[data-mode]').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('[data-mode]').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    params.mirror = btn.dataset.mode === 'mirror';
-    if (svgText) scheduleRebuild();
-  });
-});
-
-// Upload
-const zone = document.getElementById('uploadZone');
-const fileEl = document.getElementById('svgFile');
-zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag'); });
-zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
-zone.addEventListener('drop', e => {
-  e.preventDefault(); zone.classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if (f) readFile(f);
-});
-fileEl.addEventListener('change', e => { if (e.target.files[0]) readFile(e.target.files[0]); });
-
-function readFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => {
-    svgText = e.target.result;
-    document.getElementById('filename').textContent = '📄 ' + file.name;
-    document.getElementById('emptyState').classList.add('hidden');
-    scheduleRebuild();
-  };
-  reader.readAsText(file);
-}
-
-document.getElementById('exportBtn').addEventListener('click', exportSTL);
-
-// ─── BUILD ────────────────────────────────────────────────────
-let rebuildTimer = null;
-function scheduleRebuild() {
-  clearTimeout(rebuildTimer);
-  rebuildTimer = setTimeout(buildStamp, 100);
-}
-
-function buildStamp() {
-  if (!svgText) return;
-  setStatus('busy', 'GENERANDO MODELO 3D…');
-  showLoader(true);
-
-  requestAnimationFrame(() => {
-    try {
-      if (stampMesh) {
-        scene.remove(stampMesh);
-        stampMesh.geometry.dispose();
-        if (Array.isArray(stampMesh.material)) stampMesh.material.forEach(m => m.dispose());
-        else stampMesh.material.dispose();
-        stampMesh = null;
-      }
-
-      const geo = createStampGeo(svgText, params);
-      if (!geo) {
-        setStatus('err', '⚠️ No se encontraron paths en el SVG. Revisá que sea SVG con vectores.');
-        showLoader(false);
-        return;
-      }
-
-      geo.computeVertexNormals();
-
-      // Split into two materials: base and relief
-      const baseMat = new THREE.MeshPhongMaterial({
-        color: 0x22C55E, specular: 0x226644, shininess: 50,
-        side: THREE.DoubleSide,
-      });
-      const mat = baseMat;
-
-      stampMesh = new THREE.Mesh(geo, mat);
-      stampMesh.castShadow = true;
-      scene.add(stampMesh);
-
-      // Fit camera
-      const box = new THREE.Box3().setFromObject(stampMesh);
-      const ctr = box.getCenter(new THREE.Vector3());
-      const sz  = box.getSize(new THREE.Vector3());
-      const d   = Math.max(sz.x, sz.y, sz.z);
-
-      camera.position.set(ctr.x, ctr.y - d*1.7, ctr.z + d*0.9);
-      camera.lookAt(ctr);
-      controls.target.copy(ctr);
-
-      document.getElementById('exportBtn').disabled = false;
-      setStatus('ok', `✓ SELLO ${params.width}×${params.height}mm | BASE ${params.baseThickness}mm | RELIEVE ${params.reliefHeight}mm${params.mirror ? ' | MODO ESPEJO' : ''}`);
-
-    } catch(err) {
-      console.error(err);
-      setStatus('err', '⚠️ ERROR: ' + err.message);
-    }
-    showLoader(false);
-  });
-}
-
-// ─── SVG → GEOMETRÍA ──────────────────────────────────────────
-function createStampGeo(svgStr, p) {
-  const loader = new SVGLoader();
-  const data   = loader.parse(svgStr);
-
-  const allShapes = [];
-  for (const path of data.paths) {
-    SVGLoader.createShapes(path).forEach(s => allShapes.push(s));
+  function updateCam() {
+    camera.position.set(
+      spherical.r * Math.sin(spherical.phi) * Math.sin(spherical.theta),
+      spherical.r * Math.cos(spherical.phi),
+      spherical.r * Math.sin(spherical.phi) * Math.cos(spherical.theta)
+    );
+    camera.lookAt(0, 0, 0);
   }
-  if (!allShapes.length) return null;
 
-  // Bounding box in SVG space
-  const box2 = new THREE.Box2();
-  allShapes.forEach(sh => {
-    sh.getPoints(40).forEach(pt => box2.expandByPoint(pt));
-    sh.holes.forEach(h => h.getPoints(40).forEach(pt => box2.expandByPoint(pt)));
-  });
+  (function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); })();
+  window.spherical = spherical;
+}
 
-  const svgSz = new THREE.Vector2();
-  box2.getSize(svgSz);
-  const svgCtr = new THREE.Vector2();
-  box2.getCenter(svgCtr);
+function showModelInPreview(geo, colorsPerFace) {
+  document.getElementById('preview-empty').style.display = 'none';
+  if (previewMesh) scene.remove(previewMesh);
 
-  if (svgSz.x < 1 || svgSz.y < 1) return null;
+  // Color each face
+  const colors = [];
+  const posArr = geo.attributes.position.array;
+  const n = posArr.length / 3;
 
-  const targetW = Math.max(1, p.width - 2 * p.padding);
-  const targetH = Math.max(1, p.height - 2 * p.padding);
-  const scale   = Math.min(targetW / svgSz.x, targetH / svgSz.y);
-  const mirrorX = p.mirror ? -1 : 1;
-
-  const geos = [];
-
-  // Relief from SVG
-  for (const shape of allShapes) {
-    const xfShape = xfShape2D(shape, svgCtr, scale, mirrorX);
-    const extGeo  = new THREE.ExtrudeGeometry(xfShape, {
-      depth: p.reliefHeight,
-      bevelEnabled: false,
-      steps: 1,
+  if (colorsPerFace && colorsPerFace.length) {
+    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colorsPerFace.length * 3), 3));
+    const ca = geo.attributes.color;
+    colorsPerFace.forEach((c, i) => {
+      ca.setXYZ(i, c[0]/255, c[1]/255, c[2]/255);
     });
-    extGeo.translate(0, 0, p.baseThickness);
-    geos.push(extGeo);
+    const mat = new THREE.MeshPhongMaterial({ vertexColors: true, side: THREE.DoubleSide });
+    previewMesh = new THREE.Mesh(geo, mat);
+  } else {
+    const mat = new THREE.MeshPhongMaterial({ color: 0x0077b6, side: THREE.DoubleSide });
+    previewMesh = new THREE.Mesh(geo, mat);
   }
 
-  // Base
-  geos.push(buildBase(p));
+  // Center & scale
+  geo.computeBoundingBox();
+  const box = geo.boundingBox;
+  const center = new THREE.Vector3();
+  box.getCenter(center);
+  const size = new THREE.Vector3();
+  box.getSize(size);
+  const maxDim = Math.max(size.x, size.y, size.z);
+  previewMesh.position.copy(center.negate());
+  previewMesh.scale.setScalar(4 / maxDim);
+  window.spherical.r = 5;
 
-  return mergeGeometries(geos);
+  scene.add(previewMesh);
 }
 
-/**
- * Transform SVG shape to Three.js XY plane.
- * SVG Y goes DOWN → flip to Three.js Y going UP.
- * x' = (x - cx) * scale * mirrorX
- * y' = -(y - cy) * scale
- */
-function xfShape2D(shape, center, scale, mirrorX) {
-  function xf(pts) {
-    return pts.map(p => new THREE.Vector2(
-      (p.x - center.x) * scale * mirrorX,
-      -(p.y - center.y) * scale
-    ));
+// ─── DRAG & DROP ────────────────────────────────────────────────────────────
+function dzOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
+function dzLeave(id) { document.getElementById(id).classList.remove('drag-over'); }
+function dzDrop(e, id) {
+  e.preventDefault(); dzLeave(id);
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  if (id === 'dz-obj') handleOBJ(file);
+  else if (id === 'dz-mtl') handleMTL(file);
+  else if (id === 'dz-tex' || id === 'dz-stl-tex') handleTexture(file);
+  else if (id === 'dz-stl') handleSTL(file);
+}
+
+// ─── MODE SWITCH ───────────────────────────────────────────────────────────
+function switchMode(m) {
+  state.mode = m;
+  document.getElementById('mode-obj').style.display = m === 'obj' ? '' : 'none';
+  document.getElementById('mode-stl').style.display = m === 'stl' ? '' : 'none';
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&m==='obj')||(i===1&&m==='stl')));
+  checkReady();
+}
+
+// ─── FILE HANDLERS ──────────────────────────────────────────────────────────
+function handleOBJ(file) {
+  if (!file) return;
+  log(`OBJ cargado: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+  setDZ('dz-obj','icon-obj','name-obj', file.name);
+  const r = new FileReader();
+  r.onload = e => { state.objText = e.target.result; checkReady(); loadPreviewOBJ(); };
+  r.readAsText(file);
+}
+function handleMTL(file) {
+  if (!file) return;
+  setDZ('dz-mtl','icon-mtl','name-mtl', file.name);
+  const r = new FileReader();
+  r.onload = e => { state.mtlText = e.target.result; };
+  r.readAsText(file);
+}
+function handleTexture(file) {
+  if (!file) return;
+  log(`Textura cargada: ${file.name}`);
+  const id1 = state.mode === 'obj' ? 'dz-tex' : 'dz-stl-tex';
+  const id2 = state.mode === 'obj' ? 'icon-tex' : 'icon-stl-tex';
+  const id3 = state.mode === 'obj' ? 'name-tex' : 'name-stl-tex';
+  setDZ(id1, id2, id3, file.name);
+  const url = URL.createObjectURL(file);
+  const img = new Image();
+  img.onload = () => {
+    state.textureImg = img;
+    const c = document.createElement('canvas');
+    c.width = img.width; c.height = img.height;
+    c.getContext('2d').drawImage(img, 0, 0);
+    state.textureCanvas = c;
+    log(`Textura: ${img.width}x${img.height}px`, 'ok');
+    checkReady();
+  };
+  img.src = url;
+}
+function handleSTL(file) {
+  if (!file) return;
+  log(`STL cargado: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
+  setDZ('dz-stl','icon-stl','name-stl', file.name);
+  const r = new FileReader();
+  r.onload = e => { state.stlBuffer = e.target.result; checkReady(); loadPreviewSTL(); };
+  r.readAsArrayBuffer(file);
+}
+
+function setDZ(dzId, iconId, nameId, name) {
+  document.getElementById(dzId).classList.add('loaded');
+  document.getElementById(nameId).textContent = name;
+}
+
+function checkReady() {
+  const ok = (state.mode === 'obj' && state.objText && state.textureImg) ||
+             (state.mode === 'stl' && state.stlBuffer && state.textureImg);
+  state.ready = ok;
+  document.getElementById('btn-process').disabled = !ok;
+}
+
+// ─── FILAMENT COLOR UI ──────────────────────────────────────────────────────
+const defaultColors = ['#FF6B6B','#0077B6','#FFD166','#2DC653','#9B5DE5','#F15BB5','#FEE440','#00BBF9',
+                       '#00F5D4','#FF6B35','#8338EC','#3A86FF','#FB5607','#FFBE0B','#06D6A0','#EF476F'];
+function updateFilCount(v) {
+  document.getElementById('fil-val').textContent = v;
+  buildFilColors(parseInt(v));
+}
+function buildFilColors(n) {
+  const grid = document.getElementById('fil-colors');
+  grid.innerHTML = '';
+  for (let i = 0; i < n; i++) {
+    grid.innerHTML += `<div class="fil-item">
+      <input type="color" value="${defaultColors[i]}" id="fc-${i}" title="Filamento ${i+1}"/>
+      <span>Fil. ${i+1}</span>
+    </div>`;
   }
-  const s = new THREE.Shape(xf(shape.getPoints(80)));
-  shape.holes.forEach(h => s.holes.push(new THREE.Path(xf(h.getPoints(80)))));
-  return s;
 }
+buildFilColors(4);
 
-function buildBase(p) {
-  const { width: w, height: h, baseThickness: bt, shape } = p;
-
-  if (shape === 'circle') {
-    const r = Math.min(w, h) / 2;
-    const g = new THREE.CylinderGeometry(r, r, bt, 72);
-    g.rotateX(Math.PI / 2);
-    g.translate(0, 0, bt / 2);
-    return g;
+// ─── OBJ PARSER ─────────────────────────────────────────────────────────────
+function parseOBJ(text) {
+  const verts = [], uvs = [], faces = [];
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const parts = line.trim().split(/\s+/);
+    if (parts[0] === 'v') {
+      verts.push([parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3])]);
+    } else if (parts[0] === 'vt') {
+      uvs.push([parseFloat(parts[1]), parseFloat(parts[2])]);
+    } else if (parts[0] === 'f') {
+      const fv = [];
+      for (let i = 1; i < parts.length; i++) {
+        const tok = parts[i].split('/');
+        fv.push({
+          vi: parseInt(tok[0]) - 1,
+          ti: tok[1] ? parseInt(tok[1]) - 1 : -1,
+        });
+      }
+      // Triangulate polygon
+      for (let i = 1; i < fv.length - 1; i++) {
+        faces.push([fv[0], fv[i], fv[i+1]]);
+      }
+    }
   }
-  if (shape === 'round') {
-    return buildRoundBase(w, h, bt, Math.min(w, h) * 0.1);
+  return { verts, uvs, faces };
+}
+
+// ─── STL PARSER ─────────────────────────────────────────────────────────────
+function parseSTL(buffer) {
+  const view = new DataView(buffer);
+  // Check if ASCII
+  const header = new Uint8Array(buffer, 0, 80);
+  const headerStr = String.fromCharCode(...header);
+  const isBinary = !headerStr.trim().startsWith('solid') || buffer.byteLength > 80 + 4;
+
+  const verts = [], faces = [];
+
+  if (isBinary || buffer.byteLength > 84) {
+    // Try binary first
+    try {
+      const numTri = view.getUint32(80, true);
+      if (84 + numTri * 50 === buffer.byteLength || numTri > 0) {
+        for (let i = 0; i < numTri; i++) {
+          const off = 84 + i * 50;
+          const v0idx = verts.length;
+          for (let j = 0; j < 3; j++) {
+            const x = view.getFloat32(off + 12 + j*12, true);
+            const y = view.getFloat32(off + 12 + j*12 + 4, true);
+            const z = view.getFloat32(off + 12 + j*12 + 8, true);
+            verts.push([x, y, z]);
+          }
+          faces.push([{vi:v0idx}, {vi:v0idx+1}, {vi:v0idx+2}]);
+        }
+        log(`STL binario: ${faces.length} triángulos`, 'ok');
+        return { verts, uvs: [], faces, hasSphereUV: true };
+      }
+    } catch(e) {}
   }
-  // Rectangle
-  const g = new THREE.BoxGeometry(w, h, bt);
-  g.translate(0, 0, bt / 2);
-  return g;
+
+  // ASCII STL
+  const text = new TextDecoder().decode(buffer);
+  const triMatches = text.matchAll(/vertex\s+([\d.e+\-]+)\s+([\d.e+\-]+)\s+([\d.e+\-]+)/g);
+  let tmp = [];
+  for (const m of triMatches) {
+    tmp.push([parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])]);
+    if (tmp.length === 3) {
+      const v0 = verts.length;
+      verts.push(...tmp);
+      faces.push([{vi:v0},{vi:v0+1},{vi:v0+2}]);
+      tmp = [];
+    }
+  }
+  log(`STL ASCII: ${faces.length} triángulos`, 'ok');
+  return { verts, uvs: [], faces, hasSphereUV: true };
 }
 
-function buildRoundBase(w, h, depth, r) {
-  r = Math.min(r, w/2-0.1, h/2-0.1);
-  const hw = w/2, hh = h/2;
-  const sh = new THREE.Shape();
-  sh.moveTo(-hw+r, -hh);
-  sh.lineTo( hw-r, -hh);
-  sh.quadraticCurveTo( hw, -hh,  hw, -hh+r);
-  sh.lineTo( hw,  hh-r);
-  sh.quadraticCurveTo( hw,  hh,  hw-r,  hh);
-  sh.lineTo(-hw+r,  hh);
-  sh.quadraticCurveTo(-hw,  hh, -hw,  hh-r);
-  sh.lineTo(-hw, -hh+r);
-  sh.quadraticCurveTo(-hw, -hh, -hw+r, -hh);
-  return new THREE.ExtrudeGeometry(sh, { depth, bevelEnabled: false, steps: 1 });
+// ─── LOAD PREVIEW ──────────────────────────────────────────────────────────
+function loadPreviewOBJ() {
+  if (!state.objText) return;
+  const {verts, uvs, faces} = parseOBJ(state.objText);
+  const geo = buildThreeGeo(verts, faces, uvs, false);
+  showModelInPreview(geo, null);
+  log(`Preview OBJ: ${faces.length} tris, ${verts.length} verts`);
+}
+function loadPreviewSTL() {
+  if (!state.stlBuffer) return;
+  const parsed = parseSTL(state.stlBuffer);
+  const geo = buildThreeGeo(parsed.verts, parsed.faces, [], true);
+  showModelInPreview(geo, null);
 }
 
-// ─── EXPORT ───────────────────────────────────────────────────
-function exportSTL() {
-  if (!stampMesh) return;
-  const stl  = new STLExporter().parse(stampMesh, { binary: true });
-  const blob = new Blob([stl], { type: 'application/octet-stream' });
-  const a    = Object.assign(document.createElement('a'), {
-    href:     URL.createObjectURL(blob),
-    download: `sello_printaplab3d_${params.width}x${params.height}mm.stl`,
+function buildThreeGeo(verts, faces, uvs, sphereUV) {
+  const posArr = new Float32Array(faces.length * 9);
+  const uvArr  = new Float32Array(faces.length * 6);
+  faces.forEach((tri, fi) => {
+    for (let j = 0; j < 3; j++) {
+      const v = verts[tri[j].vi];
+      posArr[fi*9+j*3]   = v[0];
+      posArr[fi*9+j*3+1] = v[1];
+      posArr[fi*9+j*3+2] = v[2];
+      if (!sphereUV && uvs.length && tri[j].ti >= 0) {
+        uvArr[fi*6+j*2]   = uvs[tri[j].ti][0];
+        uvArr[fi*6+j*2+1] = uvs[tri[j].ti][1];
+      }
+    }
   });
-  a.click();
-  URL.revokeObjectURL(a.href);
-  setStatus('ok', `✓ STL EXPORTADO: sello_printaplab3d_${params.width}x${params.height}mm.stl — Abrilo en Bambu Studio`);
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+  if (uvs.length || sphereUV) geo.setAttribute('uv', new THREE.BufferAttribute(uvArr, 2));
+  geo.computeVertexNormals();
+  return geo;
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────
-function setStatus(state, msg) {
-  document.getElementById('sDot').className = 'dot ' + (state||'');
-  document.getElementById('sText').textContent = msg;
+// ─── COLOR QUANTIZATION ─────────────────────────────────────────────────────
+function sampleTextureColors(n) {
+  const ctx = state.textureCanvas.getContext('2d');
+  const w = state.textureCanvas.width, h = state.textureCanvas.height;
+  const samples = parseInt(document.getElementById('sample-size').value);
+  const pixels = [];
+  for (let i = 0; i < samples; i++) {
+    const x = Math.floor(Math.random() * w);
+    const y = Math.floor(Math.random() * h);
+    const d = ctx.getImageData(x, y, 1, 1).data;
+    if (d[3] > 10) pixels.push([d[0], d[1], d[2]]);
+  }
+  return pixels;
 }
-function showLoader(v) {
-  document.getElementById('loader').classList.toggle('show', v);
+
+function kMeans(pixels, k, iters = 20) {
+  // Init centroids from random pixels
+  let centroids = [];
+  const step = Math.floor(pixels.length / k);
+  for (let i = 0; i < k; i++) centroids.push([...pixels[i * step]]);
+
+  for (let iter = 0; iter < iters; iter++) {
+    const clusters = Array.from({length: k}, () => []);
+    for (const p of pixels) {
+      let best = 0, bestD = Infinity;
+      for (let ci = 0; ci < k; ci++) {
+        const d = colorDist(p, centroids[ci]);
+        if (d < bestD) { bestD = d; best = ci; }
+      }
+      clusters[best].push(p);
+    }
+    const newC = clusters.map((cl, i) => {
+      if (!cl.length) return centroids[i];
+      return [
+        cl.reduce((s,p) => s+p[0], 0) / cl.length,
+        cl.reduce((s,p) => s+p[1], 0) / cl.length,
+        cl.reduce((s,p) => s+p[2], 0) / cl.length,
+      ];
+    });
+    centroids = newC;
+  }
+  return centroids.map(c => [Math.round(c[0]), Math.round(c[1]), Math.round(c[2])]);
 }
+
+function medianCut(pixels, k) {
+  function cut(bucket, depth) {
+    if (depth === 0 || bucket.length === 0) {
+      const avg = [0,0,0];
+      bucket.forEach(p => { avg[0]+=p[0]; avg[1]+=p[1]; avg[2]+=p[2]; });
+      const n = bucket.length || 1;
+      return [[Math.round(avg[0]/n), Math.round(avg[1]/n), Math.round(avg[2]/n)]];
+    }
+    // Find widest channel
+    let ranges = [0,1,2].map(ch => {
+      const vals = bucket.map(p => p[ch]);
+      return Math.max(...vals) - Math.min(...vals);
+    });
+    const ch = ranges.indexOf(Math.max(...ranges));
+    bucket.sort((a,b) => a[ch]-b[ch]);
+    const mid = Math.floor(bucket.length/2);
+    return [...cut(bucket.slice(0,mid), depth-1), ...cut(bucket.slice(mid), depth-1)];
+  }
+  const depth = Math.ceil(Math.log2(k));
+  return cut(pixels, depth).slice(0, k);
+}
+
+function colorDist(a, b) {
+  return (a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2;
+}
+
+function nearestCentroid(color, centroids) {
+  let best = 0, bestD = Infinity;
+  centroids.forEach((c, i) => {
+    const d = colorDist(color, c);
+    if (d < bestD) { bestD = d; best = i; }
+  });
+  return best;
+}
+
+// ─── UV SAMPLING ──────────────────────────────────────────────────────────
+function sampleUVColor(u, v) {
+  const ctx = state.textureCanvas.getContext('2d');
+  const w = state.textureCanvas.width, h = state.textureCanvas.height;
+  const px = Math.floor(((u % 1 + 1) % 1) * w);
+  const py = Math.floor((1 - ((v % 1 + 1) % 1)) * h);
+  const d = ctx.getImageData(Math.min(px, w-1), Math.min(py, h-1), 1, 1).data;
+  return [d[0], d[1], d[2]];
+}
+
+function sphericalUV(vx, vy, vz) {
+  const len = Math.sqrt(vx*vx + vy*vy + vz*vz) || 1;
+  const nx = vx/len, ny = vy/len, nz = vz/len;
+  const u = 0.5 + Math.atan2(nz, nx) / (2 * Math.PI);
+  const v = 0.5 - Math.asin(Math.max(-1,Math.min(1,ny))) / Math.PI;
+  return [u, v];
+}
+
+// ─── MAIN PROCESS ──────────────────────────────────────────────────────────
+async function processModel() {
+  if (!state.ready) return;
+  document.getElementById('btn-process').disabled = true;
+  document.getElementById('btn-export').disabled = true;
+  document.getElementById('progress-bar-wrap').style.display = 'block';
+
+  const k = parseInt(document.getElementById('fil-count').value);
+  const algo = document.getElementById('quant-algo').value;
+
+  setProgress(5, 'Parseando modelo...');
+  await tick();
+
+  let parsed;
+  if (state.mode === 'obj') {
+    parsed = parseOBJ(state.objText);
+    log(`OBJ: ${parsed.verts.length} verts, ${parsed.faces.length} tris`);
+  } else {
+    parsed = parseSTL(state.stlBuffer);
+  }
+
+  setProgress(20, 'Muestreando textura...');
+  await tick();
+
+  const pixels = sampleTextureColors(k);
+  log(`${pixels.length} píxeles muestreados`);
+
+  setProgress(35, `Cuantizando a ${k} colores (${algo})...`);
+  await tick();
+
+  let centroids;
+  if (algo === 'kmeans') {
+    centroids = kMeans(pixels, k);
+  } else {
+    centroids = medianCut(pixels, k);
+  }
+  log(`Paleta detectada: ${centroids.length} colores`, 'ok');
+  showPalette(centroids, parsed.faces.length);
+
+  setProgress(50, 'Asignando triángulos por color...');
+  await tick();
+
+  // Assign each triangle to nearest centroid
+  const groups = Array.from({length: k}, () => []);
+  const {verts, uvs, faces} = parsed;
+  const hasSphereUV = parsed.hasSphereUV;
+
+  const colorsPerVertex = new Array(faces.length * 3);
+  let processed = 0;
+
+  for (let fi = 0; fi < faces.length; fi++) {
+    const tri = faces[fi];
+    let color;
+
+    if (!hasSphereUV && uvs.length > 0 && tri[0].ti >= 0) {
+      // Average UV of triangle centroid
+      let cu = 0, cv = 0;
+      for (let j = 0; j < 3; j++) {
+        const uv = uvs[tri[j].ti];
+        cu += uv[0]; cv += uv[1];
+      }
+      color = sampleUVColor(cu/3, cv/3);
+    } else {
+      // Spherical UV from centroid position
+      let cx = 0, cy = 0, cz = 0;
+      for (let j = 0; j < 3; j++) {
+        const v = verts[tri[j].vi];
+        cx += v[0]; cy += v[1]; cz += v[2];
+      }
+      const [su, sv] = sphericalUV(cx/3, cy/3, cz/3);
+      color = sampleUVColor(su, sv);
+    }
+
+    const ci = nearestCentroid(color, centroids);
+    groups[ci].push(fi);
+
+    // For preview coloring
+    const c = centroids[ci];
+    for (let j = 0; j < 3; j++) colorsPerVertex[fi*3+j] = c;
+
+    processed++;
+    if (fi % 5000 === 0) {
+      setProgress(50 + (fi/faces.length)*30, `Asignando... ${fi}/${faces.length} tris`);
+      await tick();
+    }
+  }
+
+  log(`Grupos: ${groups.map((g,i) => `G${i+1}:${g.length}`).join(', ')}`, 'ok');
+
+  // Update preview with colors
+  const geo = buildThreeGeo(verts, faces, uvs, hasSphereUV);
+  showModelInPreview(geo, colorsPerVertex);
+
+  setProgress(85, 'Preparando exportación...');
+  await tick();
+
+  state.parsedMesh = parsed;
+  state.colorGroups = groups.map((triIdxs, i) => ({
+    color: centroids[i],
+    filamentIdx: i,
+    triangles: triIdxs,
+  }));
+
+  setProgress(100, '¡Listo para exportar!');
+  document.getElementById('btn-export').disabled = false;
+  document.getElementById('btn-process').disabled = false;
+  log('Procesamiento completo ✓', 'ok');
+}
+
+// ─── SHOW PALETTE ──────────────────────────────────────────────────────────
+function showPalette(centroids, totalFaces) {
+  document.getElementById('palette-wrap').style.display = 'block';
+  const sw = document.getElementById('palette-swatches');
+  sw.innerHTML = '';
+  centroids.forEach((c, i) => {
+    const hex = rgbToHex(c[0], c[1], c[2]);
+    sw.innerHTML += `<div class="swatch" style="background:${hex}" title="Filamento ${i+1}: ${hex}">
+      <span>${hex}</span>
+    </div>`;
+  });
+}
+
+function rgbToHex(r,g,b) {
+  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+}
+
+// ─── EXPORT 3MF ────────────────────────────────────────────────────────────
+async function exportMF() {
+  if (!state.colorGroups) return;
+  document.getElementById('btn-export').disabled = true;
+  setProgress(0, 'Generando 3MF...');
+  await tick();
+
+  const {verts, faces} = state.parsedMesh;
+  const groups = state.colorGroups;
+
+  // Build 3MF XML
+  const filColors = [];
+  for (let i = 0; i < groups.length; i++) {
+    const inp = document.getElementById(`fc-${i}`);
+    if (inp) filColors.push(inp.value);
+    else filColors.push(rgbToHex(...groups[i].color));
+  }
+
+  setProgress(20, 'Construyendo objetos...');
+  await tick();
+
+  let objectsXML = '';
+  let buildXML = '';
+  let objectId = 1;
+
+  for (let gi = 0; gi < groups.length; gi++) {
+    const grp = groups[gi];
+    if (!grp.triangles.length) continue;
+
+    // Collect unique vertices for this group
+    const usedVerts = new Map();
+    const localVerts = [];
+    const localTris = [];
+
+    for (const fi of grp.triangles) {
+      const tri = faces[fi];
+      const localIdx = [];
+      for (let j = 0; j < 3; j++) {
+        const vi = tri[j].vi;
+        if (!usedVerts.has(vi)) {
+          usedVerts.set(vi, localVerts.length);
+          localVerts.push(verts[vi]);
+        }
+        localIdx.push(usedVerts.get(vi));
+      }
+      localTris.push(localIdx);
+    }
+
+    const vertsXML = localVerts.map(v =>
+      `<vertex x="${v[0].toFixed(6)}" y="${v[1].toFixed(6)}" z="${v[2].toFixed(6)}"/>`
+    ).join('\n          ');
+
+    const trisXML = localTris.map(t =>
+      `<triangle v1="${t[0]}" v2="${t[1]}" v3="${t[2]}"/>`
+    ).join('\n          ');
+
+    const color = filColors[gi] || '#888888';
+
+    objectsXML += `
+  <object id="${objectId}" type="model" name="Filamento_${gi+1}_${color}">
+    <mesh>
+      <vertices>
+          ${vertsXML}
+      </vertices>
+      <triangles>
+          ${trisXML}
+      </triangles>
+    </mesh>
+  </object>`;
+
+    buildXML += `\n  <item objectid="${objectId}"/>`;
+    objectId++;
+
+    setProgress(20 + (gi / groups.length) * 60, `Objeto ${gi+1}/${groups.length}...`);
+    await tick();
+  }
+
+  setProgress(85, 'Empacando ZIP...');
+  await tick();
+
+  const modelXML = `<?xml version="1.0" encoding="UTF-8"?>
+<model unit="millimeter" xml:lang="en-US"
+  xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
+  xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06">
+  <metadata name="Application">Printaplab3D Texture-to-3MF</metadata>
+  <metadata name="CreationDate">${new Date().toISOString()}</metadata>
+  <resources>${objectsXML}
+  </resources>
+  <build>${buildXML}
+  </build>
+</model>`;
+
+  const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
+</Types>`;
+
+  const rels = `<?xml version="1.0" encoding="UTF-8"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
+</Relationships>`;
+
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', contentTypes);
+  zip.folder('_rels').file('.rels', rels);
+  zip.folder('3D').file('3dmodel.model', modelXML);
+
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+
+  setProgress(100, 'Descargando...');
+  await tick();
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `printaplab3d_multicolor_${groups.length}filamentos.3mf`;
+  a.click();
+  URL.revokeObjectURL(url);
+
+  document.getElementById('btn-export').disabled = false;
+  log(`3MF exportado: ${groups.length} objetos, ${(blob.size/1024).toFixed(1)} KB`, 'ok');
+}
+
+// ─── UTILS ─────────────────────────────────────────────────────────────────
+function setProgress(pct, label) {
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-label').textContent = label;
+}
+
+function log(msg, type = '') {
+  const now = new Date();
+  const ts = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
+  const div = document.createElement('div');
+  div.className = `log-line ${type}`;
+  div.innerHTML = `<span class="ts">[${ts}]</span><span class="msg">${msg}</span>`;
+  const container = document.getElementById('log-lines');
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function tick() { return new Promise(r => setTimeout(r, 0)); }
+
+// ─── INIT ──────────────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  initThree();
+  log('Herramienta lista. Carga un modelo para comenzar.');
+});
 </script>
 </body>
 </html>
