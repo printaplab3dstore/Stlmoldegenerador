@@ -1,1193 +1,1554 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Texture → 3MF | Printaplab3D</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Space+Mono:wght@400;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora FDM — PRINTAPLAB 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --coral:    #FF6B6B;
-    --ocean:    #0077B6;
-    --sun:      #FFD166;
-    --jungle:   #2DC653;
-    --dark:     #0D1B2A;
-    --darker:   #060D14;
-    --card:     #122035;
-    --border:   #1E3A5F;
-    --text:     #E8F4FD;
-    --muted:    #7BA7C4;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+/* ══════════════════════════════════════════
+   TOKENS
+══════════════════════════════════════════ */
+:root {
+  --bg:           #060810;
+  --bg2:          #0a0d16;
+  --panel:        rgba(14,18,28,0.92);
+  --panel2:       rgba(18,22,34,0.95);
+  --glass:        rgba(255,255,255,0.03);
+  --glass2:       rgba(255,255,255,0.055);
+  --border:       rgba(255,255,255,0.06);
+  --border2:      rgba(255,255,255,0.11);
+  --border-focus: rgba(99,179,255,0.55);
 
-  body {
-    background: var(--darker);
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  --c:   #63b3ff;       /* blue accent  */
+  --cg:  #3dffa8;       /* green accent */
+  --cp:  #b06fff;       /* purple accent*/
+  --co:  #ff8547;       /* orange warm  */
+  --cw:  #ff4d6d;       /* red warning  */
 
-  /* BG waves */
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 80% 50% at 10% 20%, rgba(0,119,182,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(45,198,83,0.10) 0%, transparent 55%),
-      radial-gradient(ellipse 50% 60% at 50% 110%, rgba(255,107,107,0.10) 0%, transparent 50%);
-    pointer-events: none; z-index: 0;
-  }
+  --c-dim:  rgba(99,179,255,0.10);
+  --cg-dim: rgba(61,255,168,0.10);
+  --cp-dim: rgba(176,111,255,0.10);
 
-  .wrap { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 0 20px 60px; }
+  --text:   #dde4f0;
+  --text2:  #8d99b0;
+  --text3:  #4d5a72;
 
-  /* HEADER */
-  header {
-    text-align: center;
-    padding: 48px 20px 32px;
-    position: relative;
-  }
-  .logo-tag {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--jungle);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    display: block;
-  }
-  header h1 {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(42px, 8vw, 80px);
-    letter-spacing: 3px;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--coral) 0%, var(--sun) 50%, var(--jungle) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-  header p {
-    font-family: 'Nunito', sans-serif;
-    color: var(--muted);
-    margin-top: 10px;
-    font-size: 15px;
-    max-width: 560px;
-    margin-inline: auto;
-  }
-  .badge {
-    display: inline-block;
-    background: linear-gradient(90deg, var(--ocean), var(--jungle));
-    color: #fff;
-    font-family: 'Space Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 2px;
-    padding: 4px 12px;
-    border-radius: 20px;
-    margin-top: 14px;
-  }
+  --r:  18px;
+  --r2: 12px;
+  --r3: 8px;
 
-  /* STEPS */
-  .steps {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-    margin: 32px 0;
-  }
-  .step {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 18px 16px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .step::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  }
-  .step:nth-child(1)::before { background: var(--coral); }
-  .step:nth-child(2)::before { background: var(--ocean); }
-  .step:nth-child(3)::before { background: var(--sun); }
-  .step:nth-child(4)::before { background: var(--jungle); }
-  .step-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 36px;
-    line-height: 1;
-    opacity: 0.15;
-    position: absolute; top: 8px; right: 14px;
-  }
-  .step-icon { font-size: 28px; margin-bottom: 8px; }
-  .step h3 { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
-  .step p { font-size: 13px; color: var(--text); opacity: 0.8; }
+  --mono: 'DM Mono', monospace;
+  --sans: 'Outfit', sans-serif;
 
-  /* MAIN GRID */
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-  @media(max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+  --ease: cubic-bezier(0.22,1,0.36,1);
+}
 
-  /* CARDS */
-  .card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    padding: 24px;
-  }
-  .card-title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 2px;
-    color: var(--sun);
-    margin-bottom: 18px;
-    display: flex; align-items: center; gap: 8px;
-  }
-  .card-title span { font-size: 20px; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
 
-  /* DROP ZONES */
-  .drop-zone {
-    border: 2px dashed var(--border);
-    border-radius: 12px;
-    padding: 28px 16px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    margin-bottom: 14px;
-    background: rgba(255,255,255,0.02);
-  }
-  .drop-zone:hover, .drop-zone.drag-over {
-    border-color: var(--ocean);
-    background: rgba(0,119,182,0.08);
-  }
-  .drop-zone input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .drop-zone .dz-icon { font-size: 32px; margin-bottom: 8px; }
-  .drop-zone .dz-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
-  .drop-zone .dz-sub { font-size: 12px; color: var(--muted); opacity: 0.6; margin-top: 4px; }
-  .drop-zone.loaded { border-color: var(--jungle); background: rgba(45,198,83,0.06); }
-  .drop-zone.loaded .dz-icon::after { content: ' ✓'; color: var(--jungle); font-size: 16px; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
 
-  /* CONTROLS */
-  label.ctrl-label {
-    display: block;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    color: var(--muted);
-    text-transform: uppercase;
-    margin-bottom: 6px;
-    margin-top: 14px;
-  }
-  input[type=range] {
-    width: 100%; accent-color: var(--coral);
-    height: 4px; margin-bottom: 4px;
-  }
-  .range-val {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
-    color: var(--coral);
-    line-height: 1;
-  }
-  select, input[type=number] {
-    width: 100%;
-    background: var(--darker);
-    border: 1px solid var(--border);
-    color: var(--text);
-    padding: 10px 12px;
-    border-radius: 10px;
-    font-family: 'Nunito', sans-serif;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  select:focus, input[type=number]:focus { border-color: var(--ocean); }
+/* ══════════════════════════════════════════
+   FONDO
+══════════════════════════════════════════ */
+.bg-layer {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 8%  18%,  rgba(99,179,255,0.065) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 92% 78%,  rgba(61,255,168,0.05)  0%, transparent 55%),
+    radial-gradient(ellipse 40% 35% at 55% 95%,  rgba(176,111,255,0.04) 0%, transparent 50%),
+    radial-gradient(ellipse 30% 25% at 80% 5%,   rgba(255,133,71,0.035) 0%, transparent 45%),
+    var(--bg);
+}
 
-  /* FILAMENT COLORS */
-  .filament-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-  .fil-item {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--darker); border: 1px solid var(--border);
-    border-radius: 10px; padding: 8px 10px;
-  }
-  .fil-item input[type=color] {
-    width: 32px; height: 32px; border: none; border-radius: 8px;
-    cursor: pointer; background: none; padding: 0;
-  }
-  .fil-item span { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+#vcanvas {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+}
 
-  /* BUTTONS */
-  .btn {
-    display: block; width: 100%;
-    padding: 14px;
-    border: none; border-radius: 12px;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 20px; letter-spacing: 2px;
-    cursor: pointer; transition: all 0.2s;
-    margin-top: 14px;
-  }
-  .btn-primary {
-    background: linear-gradient(135deg, var(--coral), #ff4444);
-    color: #fff;
-    box-shadow: 0 4px 20px rgba(255,107,107,0.3);
-  }
-  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(255,107,107,0.45); }
-  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-  .btn-secondary {
-    background: linear-gradient(135deg, var(--ocean), #005588);
-    color: #fff;
-    box-shadow: 0 4px 20px rgba(0,119,182,0.3);
-  }
-  .btn-secondary:hover { transform: translateY(-2px); }
-  .btn-secondary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+/* ══════════════════════════════════════════
+   TOPBAR
+══════════════════════════════════════════ */
+.topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: 58px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 28px;
+  background: rgba(6,8,16,0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+}
 
-  /* PREVIEW */
-  #preview-wrap {
-    width: 100%; aspect-ratio: 1;
-    background: #080f18;
-    border-radius: 12px;
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 14px;
-  }
-  #preview-canvas { width: 100% !important; height: 100% !important; display: block; }
-  .preview-hint {
-    position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
-    font-family: 'Space Mono', monospace; font-size: 10px;
-    color: rgba(255,255,255,0.3); letter-spacing: 1px; pointer-events: none;
-    white-space: nowrap;
-  }
-  #preview-empty {
-    position: absolute; inset: 0;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    color: var(--muted); font-size: 13px; gap: 8px;
-  }
-  #preview-empty .big { font-size: 40px; }
+.topbar-brand {
+  display: flex; align-items: center; gap: 10px;
+  text-decoration: none;
+}
 
-  /* COLOR PALETTE DISPLAY */
-  #palette-wrap { margin-top: 14px; }
-  .palette-title { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
-  .palette-swatches { display: flex; gap: 8px; flex-wrap: wrap; }
-  .swatch {
-    width: 42px; height: 42px; border-radius: 10px;
-    border: 2px solid rgba(255,255,255,0.1);
-    display: flex; align-items: flex-end; justify-content: center;
-    padding-bottom: 3px;
-    font-family: 'Space Mono', monospace; font-size: 8px; color: rgba(255,255,255,0.7);
-    position: relative; cursor: default;
-    transition: transform 0.15s;
-  }
-  .swatch:hover { transform: scale(1.15); }
-  .swatch .tri-count {
-    position: absolute; top: -8px; right: -6px;
-    background: var(--darker); border: 1px solid var(--border);
-    border-radius: 8px; padding: 1px 5px;
-    font-size: 9px; color: var(--muted); white-space: nowrap;
-  }
+.brand-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, var(--c), var(--cg));
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.85rem;
+  box-shadow: 0 4px 16px rgba(99,179,255,0.25);
+  flex-shrink: 0;
+}
 
-  /* LOG */
-  #log-wrap {
-    margin-top: 20px;
-    background: var(--darker);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    max-height: 180px;
-    overflow-y: auto;
-  }
-  .log-line {
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    padding: 3px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
-    display: flex; gap: 10px;
-  }
-  .log-line .ts { color: var(--muted); }
-  .log-line .msg { color: var(--text); }
-  .log-line.ok .msg { color: var(--jungle); }
-  .log-line.warn .msg { color: var(--sun); }
-  .log-line.err .msg { color: var(--coral); }
+.brand-text {
+  font-family: var(--sans);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text);
+}
 
-  /* PROGRESS */
-  #progress-bar-wrap { display: none; margin-top: 14px; }
-  .prog-label { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); margin-bottom: 6px; letter-spacing: 1px; }
-  .prog-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .prog-fill { height: 100%; background: linear-gradient(90deg, var(--coral), var(--sun)); border-radius: 3px; width: 0%; transition: width 0.3s; }
+.brand-text em {
+  color: var(--c);
+  font-style: normal;
+}
 
-  /* FULL-WIDTH CARD */
-  .card-full { grid-column: 1 / -1; }
+.topbar-right { display: flex; align-items: center; gap: 10px; }
 
-  /* TABS */
-  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
-  .tab {
-    font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 1px;
-    padding: 8px 16px; border-radius: 8px; cursor: pointer;
-    border: 1px solid var(--border); background: transparent;
-    color: var(--muted); transition: all 0.15s;
-  }
-  .tab.active { background: var(--ocean); border-color: var(--ocean); color: #fff; }
+.nav-pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--glass2);
+  border: 1px solid var(--border2);
+  border-radius: 100px;
+  padding: 7px 16px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text2);
+  text-decoration: none;
+  transition: all 0.25s var(--ease);
+}
 
-  /* INFO BOX */
-  .info-box {
-    background: rgba(0,119,182,0.1);
-    border: 1px solid rgba(0,119,182,0.3);
-    border-radius: 10px;
-    padding: 12px 14px;
-    font-size: 13px;
-    color: var(--muted);
-    margin-top: 10px;
-    line-height: 1.6;
-  }
-  .info-box strong { color: var(--sun); }
+.nav-pill:hover {
+  border-color: rgba(99,179,255,0.35);
+  color: var(--c);
+  background: var(--c-dim);
+  transform: translateY(-1px);
+}
 
-  footer {
-    text-align: center;
-    padding: 24px;
-    font-family: 'Space Mono', monospace;
-    font-size: 11px;
-    color: var(--muted);
-    letter-spacing: 1px;
-    border-top: 1px solid var(--border);
-    margin-top: 40px;
-  }
-  footer a { color: var(--coral); text-decoration: none; }
+.nav-pill svg { width: 13px; height: 13px; }
+
+/* ══════════════════════════════════════════
+   WRAPPER + LAYOUT
+══════════════════════════════════════════ */
+.wrapper {
+  position: relative; z-index: 1;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 94px 24px 80px;
+}
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hero {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--c-dim);
+  border: 1px solid rgba(99,179,255,0.22);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--c);
+  margin-bottom: 22px;
+  opacity: 0; animation: rise 0.7s 0.1s var(--ease) forwards;
+}
+
+.pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%; background: var(--c);
+  animation: pdot 2s ease-in-out infinite;
+}
+@keyframes pdot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.3;transform:scale(.7)} }
+
+.hero h1 {
+  font-size: clamp(2.6rem, 6vw, 4.4rem);
+  font-weight: 800;
+  line-height: 1.0;
+  letter-spacing: -2px;
+  margin-bottom: 16px;
+  opacity: 0; animation: rise 0.7s 0.2s var(--ease) forwards;
+}
+
+.hero h1 .line1 { display: block; color: var(--text); }
+.hero h1 .line2 {
+  display: block;
+  background: linear-gradient(100deg, var(--c) 0%, var(--cg) 55%, var(--cp) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 32px rgba(99,179,255,0.3));
+}
+
+.hero-sub {
+  font-size: 1rem;
+  color: var(--text2);
+  font-weight: 400;
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+  opacity: 0; animation: rise 0.7s 0.3s var(--ease) forwards;
+}
+
+/* ══════════════════════════════════════════
+   MAIN GRID (form + resultado)
+══════════════════════════════════════════ */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 820px) {
+  .main-grid { grid-template-columns: 1fr; }
+}
+
+/* ══════════════════════════════════════════
+   PANEL (card base)
+══════════════════════════════════════════ */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  overflow: hidden;
+  position: relative;
+  opacity: 0; animation: rise 0.65s var(--ease) forwards;
+}
+
+.panel::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99,179,255,0.18), transparent);
+}
+
+.panel-form  { animation-delay: 0.35s; }
+.panel-right { animation-delay: 0.45s; }
+
+/* ══════════════════════════════════════════
+   TOOLBAR INSIDE FORM
+══════════════════════════════════════════ */
+.form-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.form-toolbar-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--text2);
+}
+
+.toolbar-btns { display: flex; gap: 8px; }
+
+.tbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--glass2);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 6px 13px;
+  font-family: var(--sans);
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tbtn:hover {
+  border-color: var(--border2);
+  color: var(--text);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+.tbtn svg { width: 12px; height: 12px; }
+
+/* ══════════════════════════════════════════
+   SECCIONES DEL FORM
+══════════════════════════════════════════ */
+.form-section {
+  padding: 22px 24px 0;
+}
+
+.form-section:last-of-type { padding-bottom: 24px; }
+
+.section-head {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 16px;
+}
+
+.section-num {
+  width: 22px; height: 22px;
+  border-radius: 6px;
+  background: var(--c-dim);
+  border: 1px solid rgba(99,179,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  color: var(--c);
+  flex-shrink: 0;
+}
+
+.section-label-text {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+}
+
+.section-line {
+  flex: 1; height: 1px;
+  background: linear-gradient(to right, var(--border2), transparent);
+}
+
+.fields-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+@media (max-width: 500px) { .fields-row { grid-template-columns: 1fr; } }
+
+.field-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 16px 0 0;
+}
+
+/* ══════════════════════════════════════════
+   FIELD
+══════════════════════════════════════════ */
+.field { position: relative; }
+
+.field-lbl {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 0.71rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 7px;
+}
+
+.lbl-icon { font-size: 0.82rem; line-height: 1; }
+
+.tip-icon {
+  margin-left: auto;
+  cursor: help;
+  position: relative;
+  color: var(--text3);
+  font-size: 0.68rem;
+  font-family: var(--mono);
+  background: var(--glass2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  transition: color 0.2s;
+}
+
+.tip-icon:hover { color: var(--c); }
+
+.tip-icon::after {
+  content: attr(data-t);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  background: #141928;
+  border: 1px solid var(--border2);
+  color: var(--text2);
+  padding: 8px 12px;
+  border-radius: 9px;
+  font-size: 0.68rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 99;
+  font-family: var(--mono);
+  letter-spacing: 0;
+  font-weight: 400;
+  text-transform: none;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+.tip-icon:hover::after { opacity: 1; }
+
+/* Input wrapper con ícono izquierdo */
+.input-box {
+  position: relative;
+  display: flex; align-items: center;
+}
+
+.input-prefix {
+  position: absolute; left: 12px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--text3);
+  pointer-events: none;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.input-box input,
+.input-box select {
+  width: 100%;
+  background: var(--glass);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r3);
+  padding: 11px 14px 11px 32px;
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+  -webkit-appearance: none;
+}
+
+.input-box.no-prefix input,
+.input-box.no-prefix select {
+  padding-left: 14px;
+}
+
+.input-box input::placeholder { color: var(--text3); font-weight: 400; }
+
+.input-box select option { background: #141928; color: var(--text); }
+
+.input-box input:focus,
+.input-box select:focus {
+  border-color: var(--border-focus);
+  background: rgba(99,179,255,0.04);
+  box-shadow: 0 0 0 3px rgba(99,179,255,0.08), 0 2px 12px rgba(99,179,255,0.06);
+}
+
+.input-box:focus-within .input-prefix { color: var(--c); }
+
+.input-box input.ok  { border-color: rgba(61,255,168,0.3); }
+.input-box input.err { border-color: rgba(255,77,109,0.45); }
+
+.ferr {
+  font-family: var(--mono);
+  font-size: 0.66rem;
+  color: var(--cw);
+  margin-top: 4px;
+  display: none;
+}
+.ferr.on { display: block; }
+
+/* ══════════════════════════════════════════
+   BOTÓN CALCULAR
+══════════════════════════════════════════ */
+.calc-wrap {
+  padding: 20px 24px 24px;
+  border-top: 1px solid var(--border);
+}
+
+.calc-btn {
+  width: 100%;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  background: linear-gradient(135deg, #2d84e8 0%, #63b3ff 40%, #3dffa8 100%);
+  border: none;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-family: var(--sans);
+  font-size: 0.97rem;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  color: #05080f;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease), box-shadow 0.25s var(--ease), opacity 0.2s;
+  box-shadow: 0 8px 28px rgba(99,179,255,0.2), 0 2px 8px rgba(61,255,168,0.1);
+}
+
+.calc-btn::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.18) 50%, transparent 70%);
+  transform: translateX(-150%) skewX(-20deg);
+  transition: transform 0.7s;
+}
+
+.calc-btn:hover::before { transform: translateX(200%) skewX(-20deg); }
+
+.calc-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 44px rgba(99,179,255,0.28), 0 4px 16px rgba(61,255,168,0.14);
+}
+
+.calc-btn:active { transform: translateY(0); }
+.calc-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.calc-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Spinner en botón */
+.btn-spinner {
+  display: none; width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid rgba(5,8,15,0.3);
+  border-top-color: #05080f;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading .btn-spinner { display: block; }
+.loading .btn-txt    { display: none; }
+
+/* ══════════════════════════════════════════
+   COLUMNA DERECHA (sticky)
+══════════════════════════════════════════ */
+.right-col {
+  display: flex; flex-direction: column; gap: 16px;
+  position: sticky; top: 78px;
+}
+
+/* ── QUICK STATS ── */
+.stats-card {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  opacity: 0; animation: rise 0.65s 0.55s var(--ease) forwards;
+}
+
+.stats-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+
+.stats-header-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.stat-cell {
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s;
+}
+
+.stat-cell:nth-child(even) { border-right: none; }
+.stat-cell:nth-last-child(-n+2) { border-bottom: none; }
+.stat-cell:hover { background: var(--glass2); }
+
+.stat-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--text3);
+  margin-bottom: 6px;
+  display: flex; align-items: center; gap: 5px;
+}
+
+.stat-value {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--text);
+  transition: color 0.4s, transform 0.4s;
+}
+
+.stat-value.updated {
+  color: var(--cg);
+  transform: scale(1.04);
+}
+
+/* ── RESULTADO PRINCIPAL ── */
+.result-panel {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+  opacity: 0; animation: rise 0.65s 0.65s var(--ease) forwards;
+  transition: border-color 0.5s;
+}
+
+.result-panel.lit {
+  border-color: rgba(61,255,168,0.25);
+  box-shadow: 0 0 0 1px rgba(61,255,168,0.06), 0 20px 60px rgba(61,255,168,0.06);
+}
+
+.result-hero-block {
+  padding: 28px 24px 22px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(61,255,168,0.05) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border);
+  position: relative; overflow: hidden;
+}
+
+.result-hero-block::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(61,255,168,0.08), transparent);
+  pointer-events: none;
+}
+
+.result-eyebrow {
+  font-family: var(--mono);
+  font-size: 0.6rem;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--cg);
+  margin-bottom: 10px;
+  opacity: 0.8;
+}
+
+.result-amount {
+  font-family: var(--mono);
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 500;
+  color: var(--cg);
+  letter-spacing: -1px;
+  line-height: 1;
+  text-shadow: 0 0 40px rgba(61,255,168,0.35);
+  transition: all 0.5s var(--ease);
+}
+
+.result-amount.bump {
+  transform: scale(1.04);
+  text-shadow: 0 0 60px rgba(61,255,168,0.55);
+}
+
+.result-curr {
+  margin-top: 7px;
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text3);
+}
+
+.result-empty {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: var(--text3);
+  font-weight: 400;
+}
+
+/* Acciones resultado */
+.result-actions {
+  display: flex; gap: 8px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.act-btn {
+  flex: 1; min-width: 70px;
+  display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+  background: var(--glass2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.act-btn:hover {
+  border-color: var(--border2);
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+  transform: translateY(-1px);
+}
+
+.act-btn svg { width: 12px; height: 12px; }
+
+/* Desglose */
+.breakdown-block { padding: 18px 20px 20px; }
+
+.breakdown-ttl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+
+.brow {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  cursor: default;
+  transition: background 0.15s;
+}
+
+.brow:hover { background: var(--glass2); }
+
+.brow + .brow { border-top: 1px solid var(--border); }
+
+.brow .bl { display: flex; align-items: center; gap: 7px; color: var(--text2); }
+.brow .bl .ei { font-size: 0.85rem; }
+.brow .bv { font-family: var(--mono); font-size: 0.78rem; color: var(--text); }
+
+.brow.b-sub { background: rgba(99,179,255,0.05); border-color: transparent !important; border-radius: 8px; margin: 5px 0; }
+.brow.b-sub .bv { color: var(--c); }
+
+.brow.b-tot {
+  background: linear-gradient(135deg, rgba(61,255,168,0.08), rgba(99,179,255,0.05));
+  border: 1px solid rgba(61,255,168,0.2) !important;
+  border-radius: 10px;
+  margin-top: 8px;
+  padding: 12px 14px;
+}
+
+.brow.b-tot .bl { color: var(--text); font-weight: 700; font-size: 0.85rem; }
+.brow.b-tot .bv { color: var(--cg); font-size: 0.88rem; font-weight: 500; }
+
+/* ── DISTRIBUCIÓN VISUAL ── */
+.dist-block {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.dist-ttl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text3);
+  padding-top: 16px;
+  margin-bottom: 14px;
+}
+
+.dist-bar-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+
+.dist-lbl { font-size: 0.7rem; color: var(--text2); width: 90px; flex-shrink: 0; font-weight: 500; }
+.dist-track { flex: 1; height: 5px; background: var(--glass2); border-radius: 99px; overflow: hidden; }
+.dist-fill  { height: 100%; border-radius: 99px; width: 0; transition: width 0.9s var(--ease); }
+.dist-pct   { font-family: var(--mono); font-size: 0.65rem; color: var(--text3); width: 32px; text-align: right; flex-shrink: 0; }
+
+/* ── SITE CARD ── */
+.site-card {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  text-align: center;
+  opacity: 0; animation: rise 0.65s 0.75s var(--ease) forwards;
+}
+
+.site-card p {
+  font-size: 0.78rem;
+  color: var(--text2);
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+
+.site-cta {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%;
+  background: var(--glass2);
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-family: var(--sans);
+  font-size: 0.83rem;
+  font-weight: 700;
+  color: var(--c);
+  text-decoration: none;
+  transition: all 0.25s var(--ease);
+}
+
+.site-cta:hover {
+  background: var(--c-dim);
+  border-color: rgba(99,179,255,0.35);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(99,179,255,0.15);
+}
+
+.site-cta svg { width: 14px; height: 14px; }
+
+.arrow-icon { transition: transform 0.25s; }
+.site-cta:hover .arrow-icon { transform: translateX(3px); }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+.footer {
+  text-align: center;
+  margin-top: 60px;
+  padding-top: 28px;
+  border-top: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: var(--text3);
+  line-height: 2;
+  opacity: 0; animation: rise 0.6s 0.8s var(--ease) forwards;
+}
+
+.footer a { color: var(--c); text-decoration: none; }
+.footer a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: #151b2a;
+  border: 1px solid var(--border2);
+  border-radius: 10px;
+  padding: 11px 18px;
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--cg);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  transform: translateY(80px) scale(0.95);
+  opacity: 0;
+  transition: transform 0.35s var(--ease), opacity 0.35s;
+  pointer-events: none;
+}
+
+.toast.on { transform: translateY(0) scale(1); opacity: 1; }
+
+/* ══════════════════════════════════════════
+   ANIMATIONS
+══════════════════════════════════════════ */
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ══════════════════════════════════════════
+   SCROLLBAR
+══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+/* ══════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .topbar-brand .brand-text span { display: none; }
+  .result-amount { font-size: 2rem; }
+  .nav-pill span { display: none; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
 
-  <header>
-    <span class="logo-tag">Printaplab3D Tools</span>
-    <h1>Texture → 3MF</h1>
-    <p>Convierte tus modelos OBJ/STL con textura en archivos multicolor listos para Bambu Studio</p>
-    <span class="badge">BAMBU LAB COMPATIBLE</span>
-  </header>
+<div class="bg-layer"></div>
+<canvas id="vcanvas"></canvas>
+<div class="toast" id="toast"></div>
 
-  <div class="steps">
-    <div class="step"><span class="step-num">1</span><div class="step-icon">📦</div><h3>Carga</h3><p>Sube tu OBJ + textura o STL</p></div>
-    <div class="step"><span class="step-num">2</span><div class="step-icon">🎨</div><h3>Analiza</h3><p>Detecta colores en la textura</p></div>
-    <div class="step"><span class="step-num">3</span><div class="step-icon">🧵</div><h3>Mapea</h3><p>Agrupa triángulos por filamento</p></div>
-    <div class="step"><span class="step-num">4</span><div class="step-icon">🏭</div><h3>Exporta</h3><p>Genera .3mf para Bambu Studio</p></div>
+<!-- ══════ TOPBAR ══════ -->
+<nav class="topbar">
+  <a href="https://printaplab3dstore.github.io/" target="_blank" class="topbar-brand">
+    <div class="brand-icon">🖨️</div>
+    <div class="brand-text">PRINTAP<em>LAB</em> <span>3D STORE</span></div>
+  </a>
+  <div class="topbar-right">
+    <a href="https://printaplab3dstore.github.io/" target="_blank" class="nav-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      <span>Sitio oficial</span>
+    </a>
+    <a href="https://cults3d.com/es/usuarios/printaplab3d/modelos-3d" target="_blank" class="nav-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      <span>Modelos 3D</span>
+    </a>
+  </div>
+</nav>
+
+<!-- ══════ WRAPPER ══════ -->
+<div class="wrapper">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">
+      <span class="pulse-dot"></span>
+      Printaplab 3D Store
+    </div>
+    <h1>
+      <span class="line1">Calculadora de</span>
+      <span class="line2">Costos FDM</span>
+    </h1>
+    <p class="hero-sub">Calcula el precio real de tus impresiones — material, energía, mano de obra, amortización y margen de ganancia.</p>
   </div>
 
-  <div class="grid">
+  <!-- GRID PRINCIPAL -->
+  <div class="main-grid">
 
-    <!-- LEFT: INPUT -->
-    <div class="card">
-      <div class="card-title"><span>📂</span> Modelo & Textura</div>
+    <!-- ══ COLUMNA IZQUIERDA: FORMULARIO ══ -->
+    <div class="panel panel-form">
 
-      <div class="tabs">
-        <button class="tab active" onclick="switchMode('obj')">OBJ + Textura</button>
-        <button class="tab" onclick="switchMode('stl')">STL + Imagen</button>
-      </div>
-
-      <!-- OBJ MODE -->
-      <div id="mode-obj">
-        <div class="drop-zone" id="dz-obj" ondragover="dzOver(event,'dz-obj')" ondragleave="dzLeave('dz-obj')" ondrop="dzDrop(event,'dz-obj')">
-          <input type="file" accept=".obj" onchange="handleOBJ(this.files[0])"/>
-          <div class="dz-icon" id="icon-obj">🧱</div>
-          <div class="dz-label">Archivo OBJ</div>
-          <div class="dz-sub" id="name-obj">Arrastra o haz click</div>
-        </div>
-        <div class="drop-zone" id="dz-mtl" ondragover="dzOver(event,'dz-mtl')" ondragleave="dzLeave('dz-mtl')" ondrop="dzDrop(event,'dz-mtl')">
-          <input type="file" accept=".mtl" onchange="handleMTL(this.files[0])"/>
-          <div class="dz-icon" id="icon-mtl">📄</div>
-          <div class="dz-label">Archivo MTL (opcional)</div>
-          <div class="dz-sub" id="name-mtl">Arrastra o haz click</div>
-        </div>
-        <div class="drop-zone" id="dz-tex" ondragover="dzOver(event,'dz-tex')" ondragleave="dzLeave('dz-tex')" ondrop="dzDrop(event,'dz-tex')">
-          <input type="file" accept="image/*" onchange="handleTexture(this.files[0])"/>
-          <div class="dz-icon" id="icon-tex">🖼️</div>
-          <div class="dz-label">Textura PNG / JPG</div>
-          <div class="dz-sub" id="name-tex">Arrastra o haz click</div>
+      <!-- Toolbar -->
+      <div class="form-toolbar">
+        <span class="form-toolbar-title">Parámetros de impresión</span>
+        <div class="toolbar-btns">
+          <button class="tbtn" onclick="saveConfig()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            Guardar
+          </button>
+          <button class="tbtn" onclick="loadConfig()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Cargar
+          </button>
+          <button class="tbtn" onclick="resetForm()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.59"/></svg>
+            Reset
+          </button>
         </div>
       </div>
 
-      <!-- STL MODE -->
-      <div id="mode-stl" style="display:none">
-        <div class="drop-zone" id="dz-stl" ondragover="dzOver(event,'dz-stl')" ondragleave="dzLeave('dz-stl')" ondrop="dzDrop(event,'dz-stl')">
-          <input type="file" accept=".stl" onchange="handleSTL(this.files[0])"/>
-          <div class="dz-icon" id="icon-stl">🧱</div>
-          <div class="dz-label">Archivo STL</div>
-          <div class="dz-sub" id="name-stl">Arrastra o haz click</div>
+      <!-- SECCIÓN 01 -->
+      <div class="form-section">
+        <div class="section-head">
+          <div class="section-num">01</div>
+          <span class="section-label-text">Filamento &amp; Pieza</span>
+          <div class="section-line"></div>
         </div>
-        <div class="drop-zone" id="dz-stl-tex" ondragover="dzOver(event,'dz-stl-tex')" ondragleave="dzLeave('dz-stl-tex')" ondrop="dzDrop(event,'dz-stl-tex')">
-          <input type="file" accept="image/*" onchange="handleTexture(this.files[0])"/>
-          <div class="dz-icon" id="icon-stl-tex">🖼️</div>
-          <div class="dz-label">Imagen de referencia de colores</div>
-          <div class="dz-sub" id="name-stl-tex">Arrastra o haz click</div>
+        <div class="fields-row">
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">🌎</span> Moneda</div>
+            <div class="input-box no-prefix">
+              <select id="currency">
+                <option value="ARS">ARS — Peso Argentino ($)</option>
+                <option value="USD">USD — Dólar ($)</option>
+                <option value="EUR">EUR — Euro (€)</option>
+                <option value="MXN">MXN — Peso Mexicano ($)</option>
+                <option value="COP">COP — Peso Colombiano ($)</option>
+                <option value="PEN">PEN — Sol Peruano (S/)</option>
+                <option value="CLP">CLP — Peso Chileno ($)</option>
+                <option value="UYU">UYU — Peso Uruguayo ($)</option>
+                <option value="BOB">BOB — Boliviano (Bs.)</option>
+                <option value="CRC">CRC — Colón (₡)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">🧵</span> Filamento / kg <span class="tip-icon" data-t="Precio de tu rollo de 1 kg">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix" id="sym1">$</span>
+              <input type="number" id="materialCost" value="25000" min="0" step="0.01" required>
+            </div>
+            <div class="ferr" id="fe-materialCost"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">⚖️</span> Peso de la pieza <span class="tip-icon" data-t="Peso del modelo ya impreso en gramos">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">g</span>
+              <input type="number" id="weight" value="10" min="0" step="0.01" required>
+            </div>
+            <div class="ferr" id="fe-weight"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">⏱️</span> Tiempo de impresión <span class="tip-icon" data-t="Horas totales estimadas en el slicer">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">h</span>
+              <input type="number" id="printTime" value="1" min="0" step="0.01" required>
+            </div>
+            <div class="ferr" id="fe-printTime"></div>
+          </div>
+
         </div>
-        <div class="info-box">
-          <strong>STL Mode:</strong> Los STL no tienen UV mapping. La textura se usa para extraer la paleta de colores. La asignación de color se hace por posición espacial (proyección esférica automática).
+        <div class="field-divider"></div>
+      </div>
+
+      <!-- SECCIÓN 02 -->
+      <div class="form-section">
+        <div class="section-head">
+          <div class="section-num">02</div>
+          <span class="section-label-text">Energía &amp; Máquina</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="fields-row">
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">⚡</span> Costo energía / kWh <span class="tip-icon" data-t="Tarifa eléctrica de tu proveedor">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix" id="sym2">$</span>
+              <input type="number" id="powerCost" value="80" min="0" step="0.001" required>
+            </div>
+            <div class="ferr" id="fe-powerCost"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">🔌</span> Consumo impresora <span class="tip-icon" data-t="Vatios típicos durante impresión">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">W</span>
+              <input type="number" id="powerConsumption" value="100" min="0" step="1" required>
+            </div>
+            <div class="ferr" id="fe-powerConsumption"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">🖨️</span> Costo de la máquina <span class="tip-icon" data-t="Precio de compra de tu impresora 3D">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix" id="sym3">$</span>
+              <input type="number" id="machinePrice" value="0" min="0" step="0.01" placeholder="0">
+            </div>
+            <div class="ferr" id="fe-machinePrice"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">📦</span> Horas para amortizar <span class="tip-icon" data-t="En cuántas horas de impresión quieres recuperar la máquina">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">h</span>
+              <input type="number" id="recoveryHours" value="0" min="0" step="1" placeholder="500">
+            </div>
+            <div class="ferr" id="fe-recoveryHours"></div>
+          </div>
+
+        </div>
+        <div class="field-divider"></div>
+      </div>
+
+      <!-- SECCIÓN 03 -->
+      <div class="form-section">
+        <div class="section-head">
+          <div class="section-num">03</div>
+          <span class="section-label-text">Trabajo &amp; Márgenes</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="fields-row">
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">👷</span> Mano de obra / hora <span class="tip-icon" data-t="Valor de tu tiempo por hora de trabajo">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix" id="sym4">$</span>
+              <input type="number" id="laborCostPerHour" value="1500" min="0" step="0.01" required>
+            </div>
+            <div class="ferr" id="fe-laborCostPerHour"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">🔧</span> Materiales extra <span class="tip-icon" data-t="Adhesivos, soportes, limpieza, etc.">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix" id="sym5">$</span>
+              <input type="number" id="extraMaterialsCost" value="0" min="0" step="0.01">
+            </div>
+            <div class="ferr" id="fe-extraMaterialsCost"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">⚠️</span> % Margen de error <span class="tip-icon" data-t="Cubre impresiones fallidas. 5% = 1 falla c/ 20 piezas">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">%</span>
+              <input type="number" id="failureRate" value="5" min="0" max="100" step="0.5">
+            </div>
+            <div class="ferr" id="fe-failureRate"></div>
+          </div>
+
+          <div class="field">
+            <div class="field-lbl"><span class="lbl-icon">📈</span> Margen de ganancia <span class="tip-icon" data-t="Porcentaje de profit sobre el costo total">?</span></div>
+            <div class="input-box">
+              <span class="input-prefix">%</span>
+              <input type="number" id="markup" value="30" min="0" max="1000" step="0.01" required>
+            </div>
+            <div class="ferr" id="fe-markup"></div>
+          </div>
+
         </div>
       </div>
 
-      <!-- SETTINGS -->
-      <label class="ctrl-label">Número de filamentos</label>
-      <div class="range-val" id="fil-val">4</div>
-      <input type="range" min="2" max="16" value="4" id="fil-count" oninput="updateFilCount(this.value)"/>
+      <!-- BOTÓN CALCULAR -->
+      <div class="calc-wrap">
+        <button class="calc-btn" id="calcBtn" onclick="triggerCalc()">
+          <div class="btn-spinner"></div>
+          <svg class="btn-txt" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 4v2h6V6H9zm0 4v2h2v-2H9zm4 0v2h2v-2h-2zm-4 4v2h2v-2H9zm4 0v2h2v-2h-2z"/></svg>
+          <span class="btn-txt">Calcular precio de venta</span>
+        </button>
+      </div>
 
-      <label class="ctrl-label">Colores de filamento</label>
-      <div class="filament-grid" id="fil-colors"></div>
+    </div><!-- /panel-form -->
 
-      <label class="ctrl-label">Algoritmo de cuantización</label>
-      <select id="quant-algo">
-        <option value="kmeans">K-Means (más preciso)</option>
-        <option value="median">Median Cut (más rápido)</option>
-      </select>
+    <!-- ══ COLUMNA DERECHA ══ -->
+    <div class="right-col">
 
-      <label class="ctrl-label">Muestras de textura</label>
-      <select id="sample-size">
-        <option value="5000">5,000 píxeles (rápido)</option>
-        <option value="20000" selected>20,000 píxeles (balanceado)</option>
-        <option value="50000">50,000 píxeles (preciso)</option>
-      </select>
-
-      <button class="btn btn-primary" id="btn-process" onclick="processModel()" disabled>
-        ⚡ PROCESAR MODELO
-      </button>
-    </div>
-
-    <!-- RIGHT: PREVIEW -->
-    <div class="card">
-      <div class="card-title"><span>👁️</span> Vista Previa</div>
-      <div id="preview-wrap">
-        <canvas id="preview-canvas"></canvas>
-        <div id="preview-empty">
-          <div class="big">🎨</div>
-          <div>Carga un modelo para ver la vista previa</div>
+      <!-- QUICK STATS (se actualizan en tiempo real) -->
+      <div class="stats-card panel">
+        <div class="stats-header">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--text3)"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          <span class="stats-header-title">Resumen en vivo</span>
         </div>
-        <div class="preview-hint">Click + drag para rotar • Scroll para zoom</div>
+        <div class="stats-grid">
+          <div class="stat-cell">
+            <div class="stat-label">🧵 Material</div>
+            <div class="stat-value" id="sv-mat">—</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label">⚡ Energía</div>
+            <div class="stat-value" id="sv-ene">—</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label">👷 Mano obra</div>
+            <div class="stat-value" id="sv-lab">—</div>
+          </div>
+          <div class="stat-cell">
+            <div class="stat-label">🖨️ Amortiz.</div>
+            <div class="stat-value" id="sv-amo">—</div>
+          </div>
+        </div>
       </div>
 
-      <div id="palette-wrap" style="display:none">
-        <div class="palette-title">Paleta detectada</div>
-        <div class="palette-swatches" id="palette-swatches"></div>
+      <!-- RESULTADO FINAL -->
+      <div class="result-panel panel" id="resultPanel">
+        <div class="result-hero-block">
+          <div class="result-eyebrow">Precio de venta sugerido</div>
+          <div class="result-amount" id="resultAmt">—</div>
+          <div class="result-curr" id="resultCurr"></div>
+          <div class="result-empty" id="resultEmpty">Completá los datos y calculá</div>
+        </div>
+
+        <div class="result-actions" id="resultActions" style="display:none">
+          <button class="act-btn" onclick="exportTxt()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar
+          </button>
+          <button class="act-btn" onclick="shareResult()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+            Compartir
+          </button>
+          <button class="act-btn" onclick="copyResult()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+
+        <div class="breakdown-block" id="breakdownBlock" style="display:none">
+          <div class="breakdown-ttl">Desglose detallado</div>
+          <div id="bRows"></div>
+        </div>
+
+        <div class="dist-block" id="distBlock" style="display:none">
+          <div class="dist-ttl">Distribución del costo</div>
+          <div id="distBars"></div>
+        </div>
       </div>
 
-      <div id="progress-bar-wrap">
-        <div class="prog-label" id="prog-label">Procesando...</div>
-        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      <!-- SITIO OFICIAL -->
+      <div class="site-card panel">
+        <p>Explorá el catálogo completo de modelos 3D listos para imprimir en nuestro sitio oficial.</p>
+        <a href="https://printaplab3dstore.github.io/" target="_blank" class="site-cta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Ir al sitio oficial
+          <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
       </div>
 
-      <button class="btn btn-secondary" id="btn-export" onclick="exportMF()" disabled>
-        💾 EXPORTAR .3MF
-      </button>
+    </div><!-- /right-col -->
+  </div><!-- /main-grid -->
 
-      <div id="log-wrap">
-        <div id="log-lines"></div>
-      </div>
-    </div>
-
-  </div><!-- /grid -->
-
-  <div class="info-box" style="margin-top:20px">
-    <strong>Cómo usar en Bambu Studio:</strong> Abre el .3mf exportado → verás N objetos separados (uno por color) → en el panel de filamentos asigna Filamento 1, 2, 3... a cada objeto → imprime en multicolor 🎨
+  <div class="footer">
+    <p>© 2024 <a href="https://printaplab3dstore.github.io/" target="_blank">PRINTAPLAB 3D STORE</a> — Calculadora de Costos FDM</p>
+    <p>Hecho con ❤️ para la comunidad maker boricua</p>
   </div>
 
-</div><!-- /wrap -->
-
-<footer>
-  <a href="https://printaplab3dstore.github.io" target="_blank">printaplab3dstore.github.io</a> &nbsp;·&nbsp;
-  <a href="https://cults3d.com/en/users/printaplab3dstore" target="_blank">Cults3D</a> &nbsp;·&nbsp;
-  Hecho con 🤍 en Puerto Rico
-</footer>
+</div><!-- /wrapper -->
 
 <script>
-// ─── STATE ─────────────────────────────────────────────────────────────────
-const state = {
-  mode: 'obj',        // 'obj' | 'stl'
-  objText: null,
-  mtlText: null,
-  textureImg: null,
-  textureCanvas: null,
-  stlBuffer: null,
-  parsedMesh: null,   // { vertices, faces, uvs } normalized
-  colorGroups: null,  // [ {color, triangles:[...]} ]
-  ready: false,
+/* ══════════════════════════════════════════
+   CANVAS — partículas + grilla
+══════════════════════════════════════════ */
+(function(){
+  const c = document.getElementById('vcanvas');
+  const ctx = c.getContext('2d');
+  let W, H, pts = [];
+  const BLUE='99,179,255', GREEN='61,255,168', ORANGE='255,133,71';
+
+  function resize(){
+    W = c.width  = innerWidth;
+    H = c.height = innerHeight;
+    build();
+  }
+
+  function build(){
+    const n = Math.floor(W*H/18000);
+    pts = Array.from({length:n}, ()=>({
+      x: Math.random()*W, y: Math.random()*H,
+      vx:(Math.random()-.5)*.3, vy:(Math.random()-.5)*.3,
+      r: Math.random()<.15 ? 2 : 1.4,
+      col: Math.random()<.1 ? ORANGE : Math.random()<.2 ? GREEN : BLUE,
+      ph: Math.random()*Math.PI*2,
+      ps: .012+Math.random()*.018,
+    }));
+  }
+
+  const D=110, D2=D*D;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // grilla sutil
+    ctx.strokeStyle='rgba(99,179,255,0.028)';
+    ctx.lineWidth=1;
+    for(let x=0;x<W;x+=64){ ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke(); }
+    for(let y=0;y<H;y+=64){ ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke(); }
+
+    // mover puntos
+    for(const p of pts){
+      p.x+=p.vx; p.y+=p.vy; p.ph+=p.ps;
+      if(p.x<0||p.x>W) p.vx*=-1;
+      if(p.y<0||p.y>H) p.vy*=-1;
+    }
+
+    // conexiones
+    for(let i=0;i<pts.length;i++){
+      const a=pts[i];
+      for(let j=i+1;j<pts.length;j++){
+        const b=pts[j];
+        const dx=a.x-b.x, dy=a.y-b.y, d2=dx*dx+dy*dy;
+        if(d2>D2) continue;
+        const t=1-Math.sqrt(d2)/D;
+        const col=a.col===ORANGE||b.col===ORANGE ? ORANGE : a.col===GREEN||b.col===GREEN ? GREEN : BLUE;
+        ctx.beginPath();
+        ctx.strokeStyle=`rgba(${col},${t*.28})`;
+        ctx.lineWidth=t*.8;
+        ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+      }
+    }
+
+    // puntos
+    for(const p of pts){
+      const g=.6+.4*Math.sin(p.ph);
+      const gr=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*5);
+      gr.addColorStop(0,`rgba(${p.col},${.25*g})`);
+      gr.addColorStop(1,`rgba(${p.col},0)`);
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*5,0,Math.PI*2);
+      ctx.fillStyle=gr; ctx.fill();
+      ctx.beginPath(); ctx.arc(p.x,p.y,p.r*g,0,Math.PI*2);
+      ctx.fillStyle=`rgba(${p.col},${.85*g})`; ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  resize();
+  draw();
+  let t; window.addEventListener('resize',()=>{ clearTimeout(t); t=setTimeout(resize,200); });
+})();
+
+/* ══════════════════════════════════════════
+   DATOS DE MONEDAS
+══════════════════════════════════════════ */
+const CUR = {
+  ARS:{sym:'$',  name:'Peso Argentino'},
+  USD:{sym:'$',  name:'Dólar'},
+  EUR:{sym:'€',  name:'Euro'},
+  MXN:{sym:'$',  name:'Peso Mexicano'},
+  COP:{sym:'$',  name:'Peso Colombiano'},
+  PEN:{sym:'S/', name:'Sol Peruano'},
+  CLP:{sym:'$',  name:'Peso Chileno'},
+  UYU:{sym:'$',  name:'Peso Uruguayo'},
+  BOB:{sym:'Bs.',name:'Boliviano'},
+  CRC:{sym:'₡',  name:'Colón'},
 };
 
-// ─── THREE.JS PREVIEW ──────────────────────────────────────────────────────
-let renderer, scene, camera, controls, previewMesh;
+let lastCalc = null;
+let liveTimer = null;
 
-function initThree() {
-  const wrap = document.getElementById('preview-wrap');
-  const canvas = document.getElementById('preview-canvas');
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(window.devicePixelRatio);
-  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
-  renderer.setClearColor(0x080f18, 1);
-
-  scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(45, 1, 0.01, 10000);
-  camera.position.set(0, 0, 5);
-
-  // Lights
-  const amb = new THREE.AmbientLight(0xffffff, 0.5);
-  const dir = new THREE.DirectionalLight(0xffffff, 0.8);
-  dir.position.set(1, 2, 3);
-  scene.add(amb, dir);
-
-  // Orbit controls (manual, no import needed)
-  let isDragging = false, prevMouse = {x:0,y:0}, spherical = {theta:0.3, phi:1.2, r:5};
-  canvas.addEventListener('mousedown', e => { isDragging = true; prevMouse = {x:e.clientX,y:e.clientY}; });
-  window.addEventListener('mouseup', () => isDragging = false);
-  window.addEventListener('mousemove', e => {
-    if (!isDragging) return;
-    const dx = e.clientX - prevMouse.x, dy = e.clientY - prevMouse.y;
-    spherical.theta -= dx * 0.01;
-    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi + dy * 0.01));
-    prevMouse = {x:e.clientX, y:e.clientY};
-    updateCam();
+/* ══════════════════════════════════════════
+   ACTUALIZAR SÍMBOLO EN PREFIJOS
+══════════════════════════════════════════ */
+document.getElementById('currency').addEventListener('change', function(){
+  const sym = CUR[this.value].sym;
+  ['sym1','sym2','sym3','sym4','sym5'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el) el.textContent=sym;
   });
-  canvas.addEventListener('wheel', e => {
-    spherical.r = Math.max(0.5, spherical.r * (1 + e.deltaY * 0.001));
-    updateCam(); e.preventDefault();
-  }, {passive: false});
-  // Touch support
-  let prevTouch = null;
-  canvas.addEventListener('touchstart', e => { prevTouch = e.touches[0]; });
-  canvas.addEventListener('touchmove', e => {
-    if (!prevTouch) return;
-    const t = e.touches[0];
-    const dx = t.clientX - prevTouch.clientX, dy = t.clientY - prevTouch.clientY;
-    spherical.theta -= dx * 0.01;
-    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi + dy * 0.01));
-    prevTouch = t;
-    updateCam(); e.preventDefault();
-  }, {passive: false});
+  updateLive();
+});
 
-  function updateCam() {
-    camera.position.set(
-      spherical.r * Math.sin(spherical.phi) * Math.sin(spherical.theta),
-      spherical.r * Math.cos(spherical.phi),
-      spherical.r * Math.sin(spherical.phi) * Math.cos(spherical.theta)
-    );
-    camera.lookAt(0, 0, 0);
+/* ══════════════════════════════════════════
+   VALIDACIÓN
+══════════════════════════════════════════ */
+function val(id, req=true){
+  const el=document.getElementById(id);
+  const fe=document.getElementById('fe-'+id);
+  if(!el) return true;
+  const v=parseFloat(el.value);
+  let msg='';
+  if(req && el.value.trim()==='') msg='Campo requerido';
+  else if(!isNaN(v)&&v<0) msg='Debe ser ≥ 0';
+  if(msg){
+    el.classList.add('err'); el.classList.remove('ok');
+    if(fe){fe.textContent=msg; fe.classList.add('on');}
+    return false;
+  }
+  el.classList.remove('err'); el.classList.add('ok');
+  if(fe){fe.textContent=''; fe.classList.remove('on');}
+  return true;
+}
+
+const REQ=['materialCost','weight','printTime','powerCost','powerConsumption','laborCostPerHour','markup'];
+const OPT=['extraMaterialsCost','machinePrice','recoveryHours','failureRate'];
+
+[...REQ,...OPT].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('input',()=>{ val(id,REQ.includes(id)); updateLive(); });
+});
+
+/* ══════════════════════════════════════════
+   LIVE STATS (quick stats card)
+══════════════════════════════════════════ */
+function g(id){ return parseFloat(document.getElementById(id).value)||0; }
+
+function updateLive(){
+  const cur=document.getElementById('currency').value;
+  const {sym}=CUR[cur];
+  const fmt=n=>n>0?`${sym}${n.toFixed(2)}`:'—';
+
+  const matCost  = (g('materialCost')*g('weight'))/1000;
+  const eneCost  = (g('powerConsumption')/1000)*g('printTime')*g('powerCost');
+  const labCost  = g('laborCostPerHour')*g('printTime');
+  const amoH     = g('recoveryHours')>0 ? g('machinePrice')/g('recoveryHours') : 0;
+  const amoCost  = amoH*g('printTime');
+
+  animStatVal('sv-mat', fmt(matCost));
+  animStatVal('sv-ene', fmt(eneCost));
+  animStatVal('sv-lab', fmt(labCost));
+  animStatVal('sv-amo', fmt(amoCost));
+}
+
+function animStatVal(id, newVal){
+  const el=document.getElementById(id);
+  if(!el||el.textContent===newVal) return;
+  el.textContent=newVal;
+  el.classList.add('updated');
+  setTimeout(()=>el.classList.remove('updated'),500);
+}
+
+/* ══════════════════════════════════════════
+   CALCULAR
+══════════════════════════════════════════ */
+function triggerCalc(){
+  let ok=true;
+  REQ.forEach(id=>{ if(!val(id,true)) ok=false; });
+  if(!ok){ toast('⚠ Revisá los campos marcados'); return; }
+
+  const btn=document.getElementById('calcBtn');
+  btn.disabled=true; btn.classList.add('loading');
+
+  setTimeout(()=>{
+    doCalc();
+    btn.disabled=false; btn.classList.remove('loading');
+  }, 700);
+}
+
+function doCalc(){
+  const cur=document.getElementById('currency').value;
+  const {sym,name}=CUR[cur];
+  const fmt=n=>`${sym}${n.toFixed(2)}`;
+
+  const matCost  = (g('materialCost')*g('weight'))/1000;
+  const eneCost  = (g('powerConsumption')/1000)*g('printTime')*g('powerCost');
+  const labCost  = g('laborCostPerHour')*g('printTime');
+  const extraMat = g('extraMaterialsCost');
+  const amoH     = g('recoveryHours')>0 ? g('machinePrice')/g('recoveryHours') : 0;
+  const amoCost  = amoH*g('printTime');
+  const sub      = matCost+eneCost+labCost+extraMat+amoCost;
+  const failRate = g('failureRate');
+  const failCost = sub*(failRate/100);
+  const baseAll  = sub+failCost;
+  const markup   = g('markup');
+  const profit   = baseAll*(markup/100);
+  const total    = baseAll+profit;
+
+  lastCalc={matCost,eneCost,labCost,extraMat,amoCost,sub,failRate,failCost,baseAll,markup,profit,total,cur,ts:new Date().toISOString()};
+
+  /* Resultado principal */
+  const ra=document.getElementById('resultAmt');
+  ra.textContent=fmt(total);
+  ra.classList.add('bump'); setTimeout(()=>ra.classList.remove('bump'),600);
+  document.getElementById('resultCurr').textContent=`${cur} — ${name}`;
+  document.getElementById('resultEmpty').style.display='none';
+  document.getElementById('resultPanel').classList.add('lit');
+
+  /* Mostrar bloques */
+  ['resultActions','breakdownBlock','distBlock'].forEach(id=>document.getElementById(id).style.display='');
+
+  /* Filas desglose */
+  const rows=[
+    {ei:'🧵',lbl:'Material',       val:matCost,  cls:''},
+    {ei:'⚡',lbl:'Energía',         val:eneCost,  cls:''},
+    {ei:'👷',lbl:'Mano de obra',    val:labCost,  cls:''},
+    {ei:'🔧',lbl:'Materiales extra',val:extraMat, cls:''},
+  ];
+  if(amoCost>0) rows.push({ei:'🖨️',lbl:'Amortización',val:amoCost,cls:''});
+  rows.push({ei:'📊',lbl:'Subtotal',val:sub,cls:'b-sub'});
+  if(failCost>0) rows.push({ei:'⚠️',lbl:`Error/falla (${failRate}%)`,val:failCost,cls:''});
+  rows.push({ei:'📈',lbl:`Ganancia (${markup}%)`,val:profit,cls:''});
+  rows.push({ei:'🎯',lbl:'TOTAL',val:total,cls:'b-tot'});
+
+  document.getElementById('bRows').innerHTML=rows.map(r=>`
+    <div class="brow ${r.cls}">
+      <span class="bl"><span class="ei">${r.ei}</span>${r.lbl}</span>
+      <span class="bv">${fmt(r.val)}</span>
+    </div>`).join('');
+
+  /* Barras distribución */
+  const bars=[
+    {lbl:'Material',   val:matCost, col:'var(--c)'},
+    {lbl:'Energía',    val:eneCost, col:'var(--cp)'},
+    {lbl:'Mano obra',  val:labCost, col:'var(--co)'},
+    {lbl:'Ganancia',   val:profit,  col:'var(--cg)'},
+  ].filter(b=>b.val>0);
+
+  const maxB=Math.max(...bars.map(b=>b.val),1);
+  document.getElementById('distBars').innerHTML=bars.map(b=>`
+    <div class="dist-bar-row">
+      <div class="dist-lbl">${b.lbl}</div>
+      <div class="dist-track"><div class="dist-fill" data-w="${(b.val/maxB*100).toFixed(1)}" style="background:${b.col}"></div></div>
+      <div class="dist-pct">${(b.val/total*100).toFixed(0)}%</div>
+    </div>`).join('');
+
+  setTimeout(()=>{
+    document.querySelectorAll('.dist-fill').forEach(el=>el.style.width=el.dataset.w+'%');
+  }, 80);
+
+  /* Scroll en móvil */
+  if(window.innerWidth<820){
+    document.getElementById('resultPanel').scrollIntoView({behavior:'smooth',block:'start'});
   }
 
-  (function animate() { requestAnimationFrame(animate); renderer.render(scene, camera); })();
-  window.spherical = spherical;
+  updateLive();
 }
 
-function showModelInPreview(geo, colorsPerFace) {
-  document.getElementById('preview-empty').style.display = 'none';
-  if (previewMesh) scene.remove(previewMesh);
+/* ══════════════════════════════════════════
+   GUARDAR / CARGAR
+══════════════════════════════════════════ */
+const FIELDS=['materialCost','weight','printTime','powerCost','powerConsumption',
+              'laborCostPerHour','extraMaterialsCost','machinePrice','recoveryHours',
+              'failureRate','markup','currency'];
 
-  // Color each face
-  const colors = [];
-  const posArr = geo.attributes.position.array;
-  const n = posArr.length / 3;
-
-  if (colorsPerFace && colorsPerFace.length) {
-    geo.setAttribute('color', new THREE.BufferAttribute(new Float32Array(colorsPerFace.length * 3), 3));
-    const ca = geo.attributes.color;
-    colorsPerFace.forEach((c, i) => {
-      ca.setXYZ(i, c[0]/255, c[1]/255, c[2]/255);
-    });
-    const mat = new THREE.MeshPhongMaterial({ vertexColors: true, side: THREE.DoubleSide });
-    previewMesh = new THREE.Mesh(geo, mat);
-  } else {
-    const mat = new THREE.MeshPhongMaterial({ color: 0x0077b6, side: THREE.DoubleSide });
-    previewMesh = new THREE.Mesh(geo, mat);
-  }
-
-  // Center & scale
-  geo.computeBoundingBox();
-  const box = geo.boundingBox;
-  const center = new THREE.Vector3();
-  box.getCenter(center);
-  const size = new THREE.Vector3();
-  box.getSize(size);
-  const maxDim = Math.max(size.x, size.y, size.z);
-  previewMesh.position.copy(center.negate());
-  previewMesh.scale.setScalar(4 / maxDim);
-  window.spherical.r = 5;
-
-  scene.add(previewMesh);
+function saveConfig(){
+  const cfg={};
+  FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e) cfg[id]=e.value; });
+  localStorage.setItem('fdm3_cfg',JSON.stringify(cfg));
+  toast('✓ Configuración guardada');
 }
 
-// ─── DRAG & DROP ────────────────────────────────────────────────────────────
-function dzOver(e, id) { e.preventDefault(); document.getElementById(id).classList.add('drag-over'); }
-function dzLeave(id) { document.getElementById(id).classList.remove('drag-over'); }
-function dzDrop(e, id) {
-  e.preventDefault(); dzLeave(id);
-  const file = e.dataTransfer.files[0];
-  if (!file) return;
-  if (id === 'dz-obj') handleOBJ(file);
-  else if (id === 'dz-mtl') handleMTL(file);
-  else if (id === 'dz-tex' || id === 'dz-stl-tex') handleTexture(file);
-  else if (id === 'dz-stl') handleSTL(file);
+function loadConfig(){
+  const raw=localStorage.getItem('fdm3_cfg');
+  if(!raw){ toast('⚠ Sin configuración guardada'); return; }
+  const cfg=JSON.parse(raw);
+  FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e&&cfg[id]!==undefined) e.value=cfg[id]; });
+  const sym=CUR[document.getElementById('currency').value].sym;
+  ['sym1','sym2','sym3','sym4','sym5'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent=sym; });
+  updateLive();
+  toast('✓ Configuración cargada');
 }
 
-// ─── MODE SWITCH ───────────────────────────────────────────────────────────
-function switchMode(m) {
-  state.mode = m;
-  document.getElementById('mode-obj').style.display = m === 'obj' ? '' : 'none';
-  document.getElementById('mode-stl').style.display = m === 'stl' ? '' : 'none';
-  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', (i===0&&m==='obj')||(i===1&&m==='stl')));
-  checkReady();
+function resetForm(){
+  const defaults={materialCost:25000,weight:10,printTime:1,powerCost:80,
+    powerConsumption:100,laborCostPerHour:1500,extraMaterialsCost:0,
+    machinePrice:0,recoveryHours:0,failureRate:5,markup:30,currency:'ARS'};
+  FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e) e.value=defaults[id]??''; e&&e.classList.remove('ok','err'); });
+  const sym=CUR['ARS'].sym;
+  ['sym1','sym2','sym3','sym4','sym5'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent=sym; });
+  document.getElementById('resultPanel').classList.remove('lit');
+  document.getElementById('resultAmt').textContent='—';
+  document.getElementById('resultCurr').textContent='';
+  document.getElementById('resultEmpty').style.display='';
+  ['resultActions','breakdownBlock','distBlock'].forEach(id=>document.getElementById(id).style.display='none');
+  updateLive();
 }
 
-// ─── FILE HANDLERS ──────────────────────────────────────────────────────────
-function handleOBJ(file) {
-  if (!file) return;
-  log(`OBJ cargado: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
-  setDZ('dz-obj','icon-obj','name-obj', file.name);
-  const r = new FileReader();
-  r.onload = e => { state.objText = e.target.result; checkReady(); loadPreviewOBJ(); };
-  r.readAsText(file);
-}
-function handleMTL(file) {
-  if (!file) return;
-  setDZ('dz-mtl','icon-mtl','name-mtl', file.name);
-  const r = new FileReader();
-  r.onload = e => { state.mtlText = e.target.result; };
-  r.readAsText(file);
-}
-function handleTexture(file) {
-  if (!file) return;
-  log(`Textura cargada: ${file.name}`);
-  const id1 = state.mode === 'obj' ? 'dz-tex' : 'dz-stl-tex';
-  const id2 = state.mode === 'obj' ? 'icon-tex' : 'icon-stl-tex';
-  const id3 = state.mode === 'obj' ? 'name-tex' : 'name-stl-tex';
-  setDZ(id1, id2, id3, file.name);
-  const url = URL.createObjectURL(file);
-  const img = new Image();
-  img.onload = () => {
-    state.textureImg = img;
-    const c = document.createElement('canvas');
-    c.width = img.width; c.height = img.height;
-    c.getContext('2d').drawImage(img, 0, 0);
-    state.textureCanvas = c;
-    log(`Textura: ${img.width}x${img.height}px`, 'ok');
-    checkReady();
-  };
-  img.src = url;
-}
-function handleSTL(file) {
-  if (!file) return;
-  log(`STL cargado: ${file.name} (${(file.size/1024).toFixed(1)} KB)`);
-  setDZ('dz-stl','icon-stl','name-stl', file.name);
-  const r = new FileReader();
-  r.onload = e => { state.stlBuffer = e.target.result; checkReady(); loadPreviewSTL(); };
-  r.readAsArrayBuffer(file);
-}
+// Autoload
+document.addEventListener('DOMContentLoaded',()=>{
+  const raw=localStorage.getItem('fdm3_cfg');
+  if(raw){ const cfg=JSON.parse(raw); FIELDS.forEach(id=>{ const e=document.getElementById(id); if(e&&cfg[id]!==undefined) e.value=cfg[id]; }); }
+  const sym=CUR[document.getElementById('currency').value].sym;
+  ['sym1','sym2','sym3','sym4','sym5'].forEach(id=>{ const e=document.getElementById(id); if(e) e.textContent=sym; });
+  updateLive();
+});
 
-function setDZ(dzId, iconId, nameId, name) {
-  document.getElementById(dzId).classList.add('loaded');
-  document.getElementById(nameId).textContent = name;
-}
-
-function checkReady() {
-  const ok = (state.mode === 'obj' && state.objText && state.textureImg) ||
-             (state.mode === 'stl' && state.stlBuffer && state.textureImg);
-  state.ready = ok;
-  document.getElementById('btn-process').disabled = !ok;
-}
-
-// ─── FILAMENT COLOR UI ──────────────────────────────────────────────────────
-const defaultColors = ['#FF6B6B','#0077B6','#FFD166','#2DC653','#9B5DE5','#F15BB5','#FEE440','#00BBF9',
-                       '#00F5D4','#FF6B35','#8338EC','#3A86FF','#FB5607','#FFBE0B','#06D6A0','#EF476F'];
-function updateFilCount(v) {
-  document.getElementById('fil-val').textContent = v;
-  buildFilColors(parseInt(v));
-}
-function buildFilColors(n) {
-  const grid = document.getElementById('fil-colors');
-  grid.innerHTML = '';
-  for (let i = 0; i < n; i++) {
-    grid.innerHTML += `<div class="fil-item">
-      <input type="color" value="${defaultColors[i]}" id="fc-${i}" title="Filamento ${i+1}"/>
-      <span>Fil. ${i+1}</span>
-    </div>`;
-  }
-}
-buildFilColors(4);
-
-// ─── OBJ PARSER ─────────────────────────────────────────────────────────────
-function parseOBJ(text) {
-  const verts = [], uvs = [], faces = [];
-  const lines = text.split('\n');
-  for (const line of lines) {
-    const parts = line.trim().split(/\s+/);
-    if (parts[0] === 'v') {
-      verts.push([parseFloat(parts[1]), parseFloat(parts[2]), parseFloat(parts[3])]);
-    } else if (parts[0] === 'vt') {
-      uvs.push([parseFloat(parts[1]), parseFloat(parts[2])]);
-    } else if (parts[0] === 'f') {
-      const fv = [];
-      for (let i = 1; i < parts.length; i++) {
-        const tok = parts[i].split('/');
-        fv.push({
-          vi: parseInt(tok[0]) - 1,
-          ti: tok[1] ? parseInt(tok[1]) - 1 : -1,
-        });
-      }
-      // Triangulate polygon
-      for (let i = 1; i < fv.length - 1; i++) {
-        faces.push([fv[0], fv[i], fv[i+1]]);
-      }
-    }
-  }
-  return { verts, uvs, faces };
-}
-
-// ─── STL PARSER ─────────────────────────────────────────────────────────────
-function parseSTL(buffer) {
-  const view = new DataView(buffer);
-  // Check if ASCII
-  const header = new Uint8Array(buffer, 0, 80);
-  const headerStr = String.fromCharCode(...header);
-  const isBinary = !headerStr.trim().startsWith('solid') || buffer.byteLength > 80 + 4;
-
-  const verts = [], faces = [];
-
-  if (isBinary || buffer.byteLength > 84) {
-    // Try binary first
-    try {
-      const numTri = view.getUint32(80, true);
-      if (84 + numTri * 50 === buffer.byteLength || numTri > 0) {
-        for (let i = 0; i < numTri; i++) {
-          const off = 84 + i * 50;
-          const v0idx = verts.length;
-          for (let j = 0; j < 3; j++) {
-            const x = view.getFloat32(off + 12 + j*12, true);
-            const y = view.getFloat32(off + 12 + j*12 + 4, true);
-            const z = view.getFloat32(off + 12 + j*12 + 8, true);
-            verts.push([x, y, z]);
-          }
-          faces.push([{vi:v0idx}, {vi:v0idx+1}, {vi:v0idx+2}]);
-        }
-        log(`STL binario: ${faces.length} triángulos`, 'ok');
-        return { verts, uvs: [], faces, hasSphereUV: true };
-      }
-    } catch(e) {}
-  }
-
-  // ASCII STL
-  const text = new TextDecoder().decode(buffer);
-  const triMatches = text.matchAll(/vertex\s+([\d.e+\-]+)\s+([\d.e+\-]+)\s+([\d.e+\-]+)/g);
-  let tmp = [];
-  for (const m of triMatches) {
-    tmp.push([parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])]);
-    if (tmp.length === 3) {
-      const v0 = verts.length;
-      verts.push(...tmp);
-      faces.push([{vi:v0},{vi:v0+1},{vi:v0+2}]);
-      tmp = [];
-    }
-  }
-  log(`STL ASCII: ${faces.length} triángulos`, 'ok');
-  return { verts, uvs: [], faces, hasSphereUV: true };
-}
-
-// ─── LOAD PREVIEW ──────────────────────────────────────────────────────────
-function loadPreviewOBJ() {
-  if (!state.objText) return;
-  const {verts, uvs, faces} = parseOBJ(state.objText);
-  const geo = buildThreeGeo(verts, faces, uvs, false);
-  showModelInPreview(geo, null);
-  log(`Preview OBJ: ${faces.length} tris, ${verts.length} verts`);
-}
-function loadPreviewSTL() {
-  if (!state.stlBuffer) return;
-  const parsed = parseSTL(state.stlBuffer);
-  const geo = buildThreeGeo(parsed.verts, parsed.faces, [], true);
-  showModelInPreview(geo, null);
-}
-
-function buildThreeGeo(verts, faces, uvs, sphereUV) {
-  const posArr = new Float32Array(faces.length * 9);
-  const uvArr  = new Float32Array(faces.length * 6);
-  faces.forEach((tri, fi) => {
-    for (let j = 0; j < 3; j++) {
-      const v = verts[tri[j].vi];
-      posArr[fi*9+j*3]   = v[0];
-      posArr[fi*9+j*3+1] = v[1];
-      posArr[fi*9+j*3+2] = v[2];
-      if (!sphereUV && uvs.length && tri[j].ti >= 0) {
-        uvArr[fi*6+j*2]   = uvs[tri[j].ti][0];
-        uvArr[fi*6+j*2+1] = uvs[tri[j].ti][1];
-      }
-    }
-  });
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
-  if (uvs.length || sphereUV) geo.setAttribute('uv', new THREE.BufferAttribute(uvArr, 2));
-  geo.computeVertexNormals();
-  return geo;
-}
-
-// ─── COLOR QUANTIZATION ─────────────────────────────────────────────────────
-function sampleTextureColors(n) {
-  const ctx = state.textureCanvas.getContext('2d');
-  const w = state.textureCanvas.width, h = state.textureCanvas.height;
-  const samples = parseInt(document.getElementById('sample-size').value);
-  const pixels = [];
-  for (let i = 0; i < samples; i++) {
-    const x = Math.floor(Math.random() * w);
-    const y = Math.floor(Math.random() * h);
-    const d = ctx.getImageData(x, y, 1, 1).data;
-    if (d[3] > 10) pixels.push([d[0], d[1], d[2]]);
-  }
-  return pixels;
-}
-
-function kMeans(pixels, k, iters = 20) {
-  // Init centroids from random pixels
-  let centroids = [];
-  const step = Math.floor(pixels.length / k);
-  for (let i = 0; i < k; i++) centroids.push([...pixels[i * step]]);
-
-  for (let iter = 0; iter < iters; iter++) {
-    const clusters = Array.from({length: k}, () => []);
-    for (const p of pixels) {
-      let best = 0, bestD = Infinity;
-      for (let ci = 0; ci < k; ci++) {
-        const d = colorDist(p, centroids[ci]);
-        if (d < bestD) { bestD = d; best = ci; }
-      }
-      clusters[best].push(p);
-    }
-    const newC = clusters.map((cl, i) => {
-      if (!cl.length) return centroids[i];
-      return [
-        cl.reduce((s,p) => s+p[0], 0) / cl.length,
-        cl.reduce((s,p) => s+p[1], 0) / cl.length,
-        cl.reduce((s,p) => s+p[2], 0) / cl.length,
-      ];
-    });
-    centroids = newC;
-  }
-  return centroids.map(c => [Math.round(c[0]), Math.round(c[1]), Math.round(c[2])]);
-}
-
-function medianCut(pixels, k) {
-  function cut(bucket, depth) {
-    if (depth === 0 || bucket.length === 0) {
-      const avg = [0,0,0];
-      bucket.forEach(p => { avg[0]+=p[0]; avg[1]+=p[1]; avg[2]+=p[2]; });
-      const n = bucket.length || 1;
-      return [[Math.round(avg[0]/n), Math.round(avg[1]/n), Math.round(avg[2]/n)]];
-    }
-    // Find widest channel
-    let ranges = [0,1,2].map(ch => {
-      const vals = bucket.map(p => p[ch]);
-      return Math.max(...vals) - Math.min(...vals);
-    });
-    const ch = ranges.indexOf(Math.max(...ranges));
-    bucket.sort((a,b) => a[ch]-b[ch]);
-    const mid = Math.floor(bucket.length/2);
-    return [...cut(bucket.slice(0,mid), depth-1), ...cut(bucket.slice(mid), depth-1)];
-  }
-  const depth = Math.ceil(Math.log2(k));
-  return cut(pixels, depth).slice(0, k);
-}
-
-function colorDist(a, b) {
-  return (a[0]-b[0])**2 + (a[1]-b[1])**2 + (a[2]-b[2])**2;
-}
-
-function nearestCentroid(color, centroids) {
-  let best = 0, bestD = Infinity;
-  centroids.forEach((c, i) => {
-    const d = colorDist(color, c);
-    if (d < bestD) { bestD = d; best = i; }
-  });
-  return best;
-}
-
-// ─── UV SAMPLING ──────────────────────────────────────────────────────────
-function sampleUVColor(u, v) {
-  const ctx = state.textureCanvas.getContext('2d');
-  const w = state.textureCanvas.width, h = state.textureCanvas.height;
-  const px = Math.floor(((u % 1 + 1) % 1) * w);
-  const py = Math.floor((1 - ((v % 1 + 1) % 1)) * h);
-  const d = ctx.getImageData(Math.min(px, w-1), Math.min(py, h-1), 1, 1).data;
-  return [d[0], d[1], d[2]];
-}
-
-function sphericalUV(vx, vy, vz) {
-  const len = Math.sqrt(vx*vx + vy*vy + vz*vz) || 1;
-  const nx = vx/len, ny = vy/len, nz = vz/len;
-  const u = 0.5 + Math.atan2(nz, nx) / (2 * Math.PI);
-  const v = 0.5 - Math.asin(Math.max(-1,Math.min(1,ny))) / Math.PI;
-  return [u, v];
-}
-
-// ─── MAIN PROCESS ──────────────────────────────────────────────────────────
-async function processModel() {
-  if (!state.ready) return;
-  document.getElementById('btn-process').disabled = true;
-  document.getElementById('btn-export').disabled = true;
-  document.getElementById('progress-bar-wrap').style.display = 'block';
-
-  const k = parseInt(document.getElementById('fil-count').value);
-  const algo = document.getElementById('quant-algo').value;
-
-  setProgress(5, 'Parseando modelo...');
-  await tick();
-
-  let parsed;
-  if (state.mode === 'obj') {
-    parsed = parseOBJ(state.objText);
-    log(`OBJ: ${parsed.verts.length} verts, ${parsed.faces.length} tris`);
-  } else {
-    parsed = parseSTL(state.stlBuffer);
-  }
-
-  setProgress(20, 'Muestreando textura...');
-  await tick();
-
-  const pixels = sampleTextureColors(k);
-  log(`${pixels.length} píxeles muestreados`);
-
-  setProgress(35, `Cuantizando a ${k} colores (${algo})...`);
-  await tick();
-
-  let centroids;
-  if (algo === 'kmeans') {
-    centroids = kMeans(pixels, k);
-  } else {
-    centroids = medianCut(pixels, k);
-  }
-  log(`Paleta detectada: ${centroids.length} colores`, 'ok');
-  showPalette(centroids, parsed.faces.length);
-
-  setProgress(50, 'Asignando triángulos por color...');
-  await tick();
-
-  // Assign each triangle to nearest centroid
-  const groups = Array.from({length: k}, () => []);
-  const {verts, uvs, faces} = parsed;
-  const hasSphereUV = parsed.hasSphereUV;
-
-  const colorsPerVertex = new Array(faces.length * 3);
-  let processed = 0;
-
-  for (let fi = 0; fi < faces.length; fi++) {
-    const tri = faces[fi];
-    let color;
-
-    if (!hasSphereUV && uvs.length > 0 && tri[0].ti >= 0) {
-      // Average UV of triangle centroid
-      let cu = 0, cv = 0;
-      for (let j = 0; j < 3; j++) {
-        const uv = uvs[tri[j].ti];
-        cu += uv[0]; cv += uv[1];
-      }
-      color = sampleUVColor(cu/3, cv/3);
-    } else {
-      // Spherical UV from centroid position
-      let cx = 0, cy = 0, cz = 0;
-      for (let j = 0; j < 3; j++) {
-        const v = verts[tri[j].vi];
-        cx += v[0]; cy += v[1]; cz += v[2];
-      }
-      const [su, sv] = sphericalUV(cx/3, cy/3, cz/3);
-      color = sampleUVColor(su, sv);
-    }
-
-    const ci = nearestCentroid(color, centroids);
-    groups[ci].push(fi);
-
-    // For preview coloring
-    const c = centroids[ci];
-    for (let j = 0; j < 3; j++) colorsPerVertex[fi*3+j] = c;
-
-    processed++;
-    if (fi % 5000 === 0) {
-      setProgress(50 + (fi/faces.length)*30, `Asignando... ${fi}/${faces.length} tris`);
-      await tick();
-    }
-  }
-
-  log(`Grupos: ${groups.map((g,i) => `G${i+1}:${g.length}`).join(', ')}`, 'ok');
-
-  // Update preview with colors
-  const geo = buildThreeGeo(verts, faces, uvs, hasSphereUV);
-  showModelInPreview(geo, colorsPerVertex);
-
-  setProgress(85, 'Preparando exportación...');
-  await tick();
-
-  state.parsedMesh = parsed;
-  state.colorGroups = groups.map((triIdxs, i) => ({
-    color: centroids[i],
-    filamentIdx: i,
-    triangles: triIdxs,
-  }));
-
-  setProgress(100, '¡Listo para exportar!');
-  document.getElementById('btn-export').disabled = false;
-  document.getElementById('btn-process').disabled = false;
-  log('Procesamiento completo ✓', 'ok');
-}
-
-// ─── SHOW PALETTE ──────────────────────────────────────────────────────────
-function showPalette(centroids, totalFaces) {
-  document.getElementById('palette-wrap').style.display = 'block';
-  const sw = document.getElementById('palette-swatches');
-  sw.innerHTML = '';
-  centroids.forEach((c, i) => {
-    const hex = rgbToHex(c[0], c[1], c[2]);
-    sw.innerHTML += `<div class="swatch" style="background:${hex}" title="Filamento ${i+1}: ${hex}">
-      <span>${hex}</span>
-    </div>`;
-  });
-}
-
-function rgbToHex(r,g,b) {
-  return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
-}
-
-// ─── EXPORT 3MF ────────────────────────────────────────────────────────────
-async function exportMF() {
-  if (!state.colorGroups) return;
-  document.getElementById('btn-export').disabled = true;
-  setProgress(0, 'Generando 3MF...');
-  await tick();
-
-  const {verts, faces} = state.parsedMesh;
-  const groups = state.colorGroups;
-
-  // Build 3MF XML
-  const filColors = [];
-  for (let i = 0; i < groups.length; i++) {
-    const inp = document.getElementById(`fc-${i}`);
-    if (inp) filColors.push(inp.value);
-    else filColors.push(rgbToHex(...groups[i].color));
-  }
-
-  setProgress(20, 'Construyendo objetos...');
-  await tick();
-
-  let objectsXML = '';
-  let buildXML = '';
-  let objectId = 1;
-
-  for (let gi = 0; gi < groups.length; gi++) {
-    const grp = groups[gi];
-    if (!grp.triangles.length) continue;
-
-    // Collect unique vertices for this group
-    const usedVerts = new Map();
-    const localVerts = [];
-    const localTris = [];
-
-    for (const fi of grp.triangles) {
-      const tri = faces[fi];
-      const localIdx = [];
-      for (let j = 0; j < 3; j++) {
-        const vi = tri[j].vi;
-        if (!usedVerts.has(vi)) {
-          usedVerts.set(vi, localVerts.length);
-          localVerts.push(verts[vi]);
-        }
-        localIdx.push(usedVerts.get(vi));
-      }
-      localTris.push(localIdx);
-    }
-
-    const vertsXML = localVerts.map(v =>
-      `<vertex x="${v[0].toFixed(6)}" y="${v[1].toFixed(6)}" z="${v[2].toFixed(6)}"/>`
-    ).join('\n          ');
-
-    const trisXML = localTris.map(t =>
-      `<triangle v1="${t[0]}" v2="${t[1]}" v3="${t[2]}"/>`
-    ).join('\n          ');
-
-    const color = filColors[gi] || '#888888';
-
-    objectsXML += `
-  <object id="${objectId}" type="model" name="Filamento_${gi+1}_${color}">
-    <mesh>
-      <vertices>
-          ${vertsXML}
-      </vertices>
-      <triangles>
-          ${trisXML}
-      </triangles>
-    </mesh>
-  </object>`;
-
-    buildXML += `\n  <item objectid="${objectId}"/>`;
-    objectId++;
-
-    setProgress(20 + (gi / groups.length) * 60, `Objeto ${gi+1}/${groups.length}...`);
-    await tick();
-  }
-
-  setProgress(85, 'Empacando ZIP...');
-  await tick();
-
-  const modelXML = `<?xml version="1.0" encoding="UTF-8"?>
-<model unit="millimeter" xml:lang="en-US"
-  xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02"
-  xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06">
-  <metadata name="Application">Printaplab3D Texture-to-3MF</metadata>
-  <metadata name="CreationDate">${new Date().toISOString()}</metadata>
-  <resources>${objectsXML}
-  </resources>
-  <build>${buildXML}
-  </build>
-</model>`;
-
-  const contentTypes = `<?xml version="1.0" encoding="UTF-8"?>
-<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
-  <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
-  <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>
-</Types>`;
-
-  const rels = `<?xml version="1.0" encoding="UTF-8"?>
-<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
-  <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>
-</Relationships>`;
-
-  const zip = new JSZip();
-  zip.file('[Content_Types].xml', contentTypes);
-  zip.folder('_rels').file('.rels', rels);
-  zip.folder('3D').file('3dmodel.model', modelXML);
-
-  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-
-  setProgress(100, 'Descargando...');
-  await tick();
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `printaplab3d_multicolor_${groups.length}filamentos.3mf`;
+/* ══════════════════════════════════════════
+   EXPORT / SHARE / COPY
+══════════════════════════════════════════ */
+function exportTxt(){
+  if(!lastCalc){ toast('⚠ Calculá primero'); return; }
+  const {sym,name}=CUR[lastCalc.cur];
+  const f=n=>`${sym}${n.toFixed(2)} ${lastCalc.cur}`;
+  const txt=`PRINTAPLAB 3D STORE — Cotización FDM\n${'═'.repeat(42)}\nFecha: ${new Date(lastCalc.ts).toLocaleString()}\nMoneda: ${lastCalc.cur} — ${name}\n\n  Material:          ${f(lastCalc.matCost)}\n  Energía:           ${f(lastCalc.eneCost)}\n  Mano de obra:      ${f(lastCalc.labCost)}\n  Mat. extra:        ${f(lastCalc.extraMat)}\n  Amortización:      ${f(lastCalc.amoCost)}\n  ─────────────────────────────────────\n  Subtotal:          ${f(lastCalc.sub)}\n  Error/falla (${lastCalc.failRate}%): ${f(lastCalc.failCost)}\n  Ganancia (${lastCalc.markup}%):    ${f(lastCalc.profit)}\n${'═'.repeat(42)}\n  TOTAL FINAL:       ${f(lastCalc.total)}\n\n─── printaplab3dstore.github.io ───`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([txt],{type:'text/plain'}));
+  a.download=`cotizacion_${new Date().toISOString().split('T')[0]}.txt`;
   a.click();
-  URL.revokeObjectURL(url);
-
-  document.getElementById('btn-export').disabled = false;
-  log(`3MF exportado: ${groups.length} objetos, ${(blob.size/1024).toFixed(1)} KB`, 'ok');
+  toast('✓ Archivo descargado');
 }
 
-// ─── UTILS ─────────────────────────────────────────────────────────────────
-function setProgress(pct, label) {
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('prog-label').textContent = label;
+function shareResult(){
+  if(!lastCalc){ toast('⚠ Calculá primero'); return; }
+  const {sym}=CUR[lastCalc.cur];
+  const text=`🎯 Cotización PRINTAPLAB 3D\n💰 Total: ${sym}${lastCalc.total.toFixed(2)} ${lastCalc.cur}\n🖨️ printaplab3dstore.github.io`;
+  if(navigator.share) navigator.share({title:'Cotización FDM',text});
+  else navigator.clipboard.writeText(text).then(()=>toast('✓ Copiado'));
 }
 
-function log(msg, type = '') {
-  const now = new Date();
-  const ts = `${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}:${now.getSeconds().toString().padStart(2,'0')}`;
-  const div = document.createElement('div');
-  div.className = `log-line ${type}`;
-  div.innerHTML = `<span class="ts">[${ts}]</span><span class="msg">${msg}</span>`;
-  const container = document.getElementById('log-lines');
-  container.appendChild(div);
-  container.scrollTop = container.scrollHeight;
+function copyResult(){
+  if(!lastCalc){ toast('⚠ Calculá primero'); return; }
+  const {sym}=CUR[lastCalc.cur];
+  navigator.clipboard.writeText(`Cotización PRINTAPLAB 3D — Total: ${sym}${lastCalc.total.toFixed(2)} ${lastCalc.cur}`)
+    .then(()=>toast('✓ Copiado al portapapeles'));
 }
 
-function tick() { return new Promise(r => setTimeout(r, 0)); }
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
+function toast(msg,dur=2500){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('on');
+  setTimeout(()=>el.classList.remove('on'), dur);
+}
 
-// ─── INIT ──────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  initThree();
-  log('Herramienta lista. Carga un modelo para comenzar.');
+/* ══════════════════════════════════════════
+   KEYBOARD
+══════════════════════════════════════════ */
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.tagName==='INPUT') triggerCalc();
 });
 </script>
 </body>
