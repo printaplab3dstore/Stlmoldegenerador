@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    .slide {
+      width: 1080px;
+      height: 1080px;
+      background: #0D0D0D;
+      font-family: 'Lato', Arial, sans-serif;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px;
+      text-align: center;
+    }
+    .tag {
+      font-size: 14px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .bar {
+      width: 56px;
+      height: 4px;
+      border-radius: 2px;
+      margin: 0 auto 32px;
+    }
+    .blue { color: #1E90FF; }
+    .yellow { color: #FFD700; }
+    /* SLIDE 1 */
+    .s1-h1 { font-size: 64px; font-weight: 900; line-height: 1.15; margin-bottom: 20px; }
+    .s1-sub { font-size: 22px; color: #aaa; max-width: 700px; line-height: 1.6; }
+    /* SLIDE 2 */
+    .s2-h2 { font-size: 52px; font-weight: 900; margin-bottom: 36px; line-height: 1.2; }
+    .pain-list { list-style: none; text-align: left; max-width: 780px; display: flex; flex-direction: column; gap: 20px; }
+    .pain-list li { font-size: 26px; padding-left: 28px; position: relative; color: #ddd; line-height: 1.5; }
+    .pain-list li::before { content: '—'; position: absolute; left: 0; color: #1E90FF; font-weight: 700; }
+    /* SLIDE 3 */
+    .s3-h2 { font-size: 52px; font-weight: 900; margin-bottom: 36px; line-height: 1.2; }
+    .steps { list-style: none; text-align: left; max-width: 780px; display: flex; flex-direction: column; gap: 22px; }
+    .steps li { font-size: 26px; color: #ddd; display: flex; gap: 20px; align-items: flex-start; line-height: 1.5; }
+    .step-num { min-width: 36px; height: 36px; background: #FFD700; color: #0D0D0D; font-weight: 900; font-size: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: 2px; }
+    /* SLIDE 4 */
+    .s4-h2 { font-size: 56px; font-weight: 900; line-height: 1.15; margin-bottom: 20px; }
+    .cta-text { font-size: 24px; color: #ccc; margin-bottom: 36px; max-width: 700px; line-height: 1.6; }
+    .cta-box { background: #1a1a1a; border: 2px solid #1E90FF44; border-radius: 16px; padding: 20px 36px; font-size: 24px; color: #fff; margin-bottom: 32px; max-width: 700px; }
+    .handle { font-size: 22px; font-weight: 700; color: #FFD700; letter-spacing: 2px; }
+  </style>
+</head>
+<body>
+
+<!-- SLIDE 1 -->
+<div class="slide" data-document-role="page" data-label="Slide 1 - Hook">
+  <div class="tag blue">Reflexión</div>
+  <div class="bar" style="background:#1E90FF"></div>
+  <h1 class="s1-h1">¿Perdiste tu <span class="blue">identidad boricua</span> al cruzar el charco?</h1>
+  <p class="s1-sub">O quizás nunca te dejaste perder… aunque nadie a tu alrededor lo entienda.</p>
+</div>
+
+<!-- SLIDE 2 -->
+<div class="slide" data-document-role="page" data-label="Slide 2 - Problema">
+  <div class="tag blue">El problema</div>
+  <div class="bar" style="background:#1E90FF"></div>
+  <h2 class="s2-h2">Vivir afuera tiene un <span class="blue">costo invisible</span></h2>
+  <ul class="pain-list">
+    <li>Tus hijos crecen sin escuchar el coquí ni probar un pilón de verdad</li>
+    <li>Las tradiciones se van diluyendo generación tras generación</li>
+    <li>La distancia hace que la isla se sienta más lejana cada año</li>
+  </ul>
+</div>
+
+<!-- SLIDE 3 -->
+<div class="slide" data-document-role="page" data-label="Slide 3 - Resolución">
+  <div class="tag yellow">La respuesta</div>
+  <div class="bar" style="background:#FFD700"></div>
+  <h2 class="s3-h2">Las raíces no se dejan — <span class="yellow">se llevan</span></h2>
+  <ul class="steps">
+    <li><span class="step-num">1</span><span>Rodéate de objetos que cuenten tu historia — no solo la recuerdes</span></li>
+    <li><span class="step-num">2</span><span>Comparte la cultura con quien tenés al lado, sin pedir permiso</span></li>
+    <li><span class="step-num">3</span><span>Hacé de tu hogar un pedacito de Puerto Rico, donde sea que estés</span></li>
+  </ul>
+</div>
+
+<!-- SLIDE 4 -->
+<div class="slide" data-document-role="page" data-label="Slide 4 - CTA">
+  <div class="tag yellow">Tu turno</div>
+  <div class="bar" style="background:#FFD700"></div>
+  <h2 class="s4-h2">¿Qué llevas de PR que <span class="yellow">nunca vas a soltar?</span></h2>
+  <p class="cta-text">Comentá abajo 👇 Queremos saber qué objeto, sonido o sabor te conecta con la isla aunque estés a miles de millas.</p>
+  <div class="cta-box">💬 "Para mí es el coquí. ¿Y para ti?"</div>
+  <span class="handle">@printaplab3dstore</span>
+</div>
+
+</body>
+</html>
