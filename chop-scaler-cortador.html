@@ -48,6 +48,11 @@
   #dropHint .small{font-size:13px;color:var(--text-muted);max-width:320px;}
   #dropHint.hidden{display:none;}
 
+  #errorBanner{position:absolute;top:14px;left:50%;transform:translateX(-50%);
+    max-width:min(560px, 90%);background:#3a1414;border:1px solid var(--danger);color:#ffb3b3;
+    padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.5;display:none;z-index:5;}
+  #errorBanner.show{display:block;}
+
   #viewportBar{position:absolute;bottom:14px;left:14px;display:flex;gap:8px;}
   #viewportBar button{background:var(--bg-panel);border:1px solid var(--line);color:var(--text);
     padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
@@ -110,6 +115,7 @@
       <div class="big">Soltá un archivo .stl o .3mf acá</div>
       <div class="small">o usá el botón "Cargar modelo" del panel derecho</div>
     </div>
+    <div id="errorBanner"></div>
     <div id="viewportBar">
       <button id="btnFrame">Encuadrar</button>
       <button id="btnExplode">Separar vista</button>
@@ -388,6 +394,13 @@ function setStatus(msg, type) {
   const el = document.getElementById('status');
   el.textContent = msg;
   el.className = type || '';
+  const banner = document.getElementById('errorBanner');
+  if (type === 'error') {
+    banner.textContent = msg;
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
 }
 
 function markStep(n) {
@@ -406,16 +419,24 @@ async function loadFile(file) {
       geometry = new STLLoader().parse(buffer);
     } else if (ext === '3mf') {
       const group = new ThreeMFLoader().parse(buffer);
+      group.updateMatrixWorld(true); // clave: sin esto las transformaciones del 3MF no se aplican
       const geoms = [];
       group.traverse((c) => {
-        if (c.isMesh && c.geometry) {
-          const g = c.geometry.clone();
+        if (c.isMesh && c.geometry && c.geometry.attributes && c.geometry.attributes.position) {
+          // nos quedamos solo con "position" para que todas las mallas sean compatibles al fusionar
+          // (evita que difieran en color/uv y rompan la fusión); los normales se recalculan después
+          const g = new THREE.BufferGeometry();
+          g.setAttribute('position', c.geometry.attributes.position.clone());
+          if (c.geometry.index) g.setIndex(c.geometry.index.clone());
           g.applyMatrix4(c.matrixWorld);
           geoms.push(g);
         }
       });
-      if (!geoms.length) throw new Error('No se encontraron mallas dentro del 3MF.');
+      if (!geoms.length) throw new Error('No se encontraron mallas dentro del 3MF (¿el archivo tiene geometría 3D válida?).');
       geometry = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
+      if (!geometry || !geometry.attributes.position || geometry.attributes.position.count === 0) {
+        throw new Error('El 3MF se leyó pero no contiene vértices utilizables.');
+      }
     } else {
       throw new Error('Formato no soportado. Usá .stl o .3mf');
     }
