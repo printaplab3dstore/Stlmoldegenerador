@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cortador STL/3MF — Printaplab3D Tools</title>
+<style>
+  :root{
+    --bg-deep:#14181c;
+    --bg-panel:#1b2027;
+    --bg-panel-2:#20262e;
+    --line:#2b323b;
+    --text:#e8ecef;
+    --text-muted:#8a94a0;
+    --accent:#ff7a29;
+    --accent-dim:#a8551f;
+    --accent2:#29c7ff;
+    --accent2-dim:#1c7fa3;
+    --danger:#ff5a5a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg-deep);color:var(--text);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;}
+  @font-face{ }
+  #app{display:grid;grid-template-columns:1fr 340px;grid-template-rows:56px 1fr;height:100vh;}
+
+  header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 18px;
+    background:var(--bg-panel);border-bottom:1px solid var(--line);}
+  header .logo{font-family:'Space Grotesk','Inter',sans-serif;font-weight:700;font-size:15px;
+    letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+  header .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 8px var(--accent);}
+  header .steps{display:flex;gap:0;margin-left:8px;font-size:12px;color:var(--text-muted);}
+  header .step{padding:6px 12px;border-right:1px solid var(--line);display:flex;gap:6px;align-items:center;}
+  header .step:last-child{border-right:none;}
+  header .step .n{font-family:'JetBrains Mono',monospace;color:var(--accent2);}
+  header .step.done .n{color:var(--accent);}
+  header .filename{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;
+    color:var(--text-muted);}
+
+  #viewport{position:relative;background:
+    radial-gradient(ellipse at 50% 30%, #1c222a 0%, var(--bg-deep) 70%);}
+  #viewport canvas{display:block;}
+  #dropHint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:10px;pointer-events:none;text-align:center;}
+  #dropHint .big{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text);}
+  #dropHint .small{font-size:13px;color:var(--text-muted);max-width:320px;}
+  #dropHint.hidden{display:none;}
+
+  #viewportBar{position:absolute;bottom:14px;left:14px;display:flex;gap:8px;}
+  #viewportBar button{background:var(--bg-panel);border:1px solid var(--line);color:var(--text);
+    padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+  #viewportBar button.active{border-color:var(--accent2);color:var(--accent2);}
+  #viewportBar button:hover{border-color:var(--text-muted);}
+
+  aside{background:var(--bg-panel);border-left:1px solid var(--line);overflow-y:auto;
+    display:flex;flex-direction:column;}
+  .panelSection{padding:16px 18px;border-bottom:1px solid var(--line);}
+  .panelSection h3{margin:0 0 12px;font-family:'Space Grotesk',sans-serif;font-size:12px;
+    letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+  .field{margin-bottom:12px;}
+  .field label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);
+    margin-bottom:5px;}
+  .field label .val{font-family:'JetBrains Mono',monospace;color:var(--text);}
+  input[type=range]{width:100%;accent-color:var(--accent);}
+  input[type=file]{display:none;}
+  .fileBtn,.actionBtn{display:block;width:100%;padding:11px;border-radius:var(--radius);
+    border:1px solid var(--line);background:var(--bg-panel-2);color:var(--text);
+    font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;}
+  .fileBtn:hover,.actionBtn:hover:not(:disabled){border-color:var(--accent);}
+  .actionBtn.primary{background:var(--accent);border-color:var(--accent);color:#1a1002;}
+  .actionBtn.primary:hover:not(:disabled){background:#ff8c47;}
+  .actionBtn:disabled{opacity:.35;cursor:not-allowed;}
+  .btnRow{display:flex;gap:8px;}
+  .btnRow button{flex:1;}
+  .modeToggle{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
+  .modeToggle button{flex:1;padding:8px;background:var(--bg-panel-2);border:none;color:var(--text-muted);
+    font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+  .modeToggle button.active{background:var(--accent2-dim);color:#fff;}
+  .exportRow{display:flex;gap:8px;margin-top:8px;}
+  .exportRow button{flex:1;font-size:12px;padding:9px;}
+  .partA{border-left:3px solid var(--accent);}
+  .partB{border-left:3px solid var(--accent2);}
+  .legend{display:flex;gap:14px;font-size:11px;color:var(--text-muted);margin-top:8px;}
+  .legend span{display:flex;align-items:center;gap:5px;}
+  .swatch{width:9px;height:9px;border-radius:2px;}
+  .hint{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px;}
+  #status{padding:10px 18px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--line);
+    min-height:16px;}
+  #status.error{color:var(--danger);}
+  #status.ok{color:var(--accent2);}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="logo"><span class="dot"></span>CORTADOR STL/3MF</div>
+    <div class="steps">
+      <div class="step" id="step1"><span class="n">01</span> Cargar</div>
+      <div class="step" id="step2"><span class="n">02</span> Ajustar plano</div>
+      <div class="step" id="step3"><span class="n">03</span> Cortar</div>
+      <div class="step" id="step4"><span class="n">04</span> Exportar</div>
+    </div>
+    <div class="filename" id="filenameLabel"></div>
+  </header>
+
+  <div id="viewport">
+    <div id="dropHint">
+      <div class="big">Soltá un archivo .stl o .3mf acá</div>
+      <div class="small">o usá el botón "Cargar modelo" del panel derecho</div>
+    </div>
+    <div id="viewportBar">
+      <button id="btnFrame">Encuadrar</button>
+      <button id="btnExplode">Separar vista</button>
+      <button id="btnWire">Wireframe</button>
+    </div>
+  </div>
+
+  <aside>
+    <div class="panelSection">
+      <h3>Modelo</h3>
+      <button class="fileBtn" id="fileBtnLabel">Cargar modelo (.stl / .3mf)</button>
+      <input type="file" id="fileInput" accept=".stl,.3mf">
+      <div class="hint">El modelo se centra automáticamente al cargar.</div>
+    </div>
+
+    <div class="panelSection">
+      <h3>Plano de corte</h3>
+      <div class="modeToggle">
+        <button id="modeMove" class="active">Mover</button>
+        <button id="modeRotate">Rotar</button>
+      </div>
+      <div class="hint">Arrastrá el gizmo naranja sobre el modelo para ubicar el corte. "Mover" desliza el plano, "Rotar" cambia su ángulo.</div>
+      <div class="btnRow" style="margin-top:10px;">
+        <button class="actionBtn" id="btnResetPlane">Centrar plano</button>
+      </div>
+
+      <div class="hint" style="margin-top:14px;">Control numérico (útil en celular, donde arrastrar el gizmo con el dedo es impreciso):</div>
+      <div class="field" style="margin-top:10px;">
+        <label>Posición X <span class="val" id="posXVal">0.0</span></label>
+        <input type="range" id="posX" min="-100" max="100" step="0.5" value="0">
+      </div>
+      <div class="field">
+        <label>Posición Y <span class="val" id="posYVal">0.0</span></label>
+        <input type="range" id="posY" min="-100" max="100" step="0.5" value="0">
+      </div>
+      <div class="field">
+        <label>Posición Z <span class="val" id="posZVal">0.0</span></label>
+        <input type="range" id="posZ" min="-100" max="100" step="0.5" value="0">
+      </div>
+      <div class="field">
+        <label>Rotación X <span class="val" id="rotXVal">0°</span></label>
+        <input type="range" id="rotX" min="-180" max="180" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Rotación Y <span class="val" id="rotYVal">0°</span></label>
+        <input type="range" id="rotY" min="-180" max="180" step="1" value="0">
+      </div>
+      <div class="field">
+        <label>Rotación Z <span class="val" id="rotZVal">0°</span></label>
+        <input type="range" id="rotZ" min="-180" max="180" step="1" value="0">
+      </div>
+    </div>
+
+    <div class="panelSection">
+      <h3>Pines de encastre</h3>
+      <div class="field">
+        <label>Diámetro del pin <span class="val" id="pinDiamVal">4.0 mm</span></label>
+        <input type="range" id="pinDiam" min="2" max="12" step="0.5" value="4">
+      </div>
+      <div class="field">
+        <label>Profundidad de encastre <span class="val" id="pinDepthVal">3.0 mm</span></label>
+        <input type="range" id="pinDepth" min="1" max="10" step="0.5" value="3">
+      </div>
+      <div class="field">
+        <label>Tolerancia (holgura socket) <span class="val" id="pinTolVal">0.15 mm</span></label>
+        <input type="range" id="pinTol" min="0" max="0.6" step="0.05" value="0.15">
+      </div>
+      <div class="field">
+        <label>Separación entre pines <span class="val" id="pinSpacingVal">18 mm</span></label>
+        <input type="range" id="pinSpacing" min="8" max="40" step="1" value="18">
+      </div>
+      <div class="hint">Se generan automáticamente en grilla sobre el área de corte. Los pines quedan en la pieza A (naranja) y los sockets en la pieza B (celeste).</div>
+    </div>
+
+    <div class="panelSection">
+      <button class="actionBtn primary" id="btnCut" disabled>Cortar modelo</button>
+      <div class="legend">
+        <span><span class="swatch" style="background:var(--accent)"></span>Pieza A (pines)</span>
+        <span><span class="swatch" style="background:var(--accent2)"></span>Pieza B (sockets)</span>
+      </div>
+    </div>
+
+    <div class="panelSection" id="exportSection" style="display:none;">
+      <h3>Exportar</h3>
+      <button class="actionBtn partA" id="expA">Descargar pieza A (.stl)</button>
+      <div style="height:8px;"></div>
+      <button class="actionBtn partB" id="expB">Descargar pieza B (.stl)</button>
+    </div>
+
+    <div style="flex:1;"></div>
+    <div id="status"></div>
+  </aside>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://esm.sh/three@0.161.0",
+    "three/addons/": "https://esm.sh/three@0.161.0/examples/jsm/",
+    "three-bvh-csg": "https://esm.sh/three-bvh-csg@0.0.16?deps=three@0.161.0"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { STLExporter } from 'three/addons/exporters/STLExporter.js';
+import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { Brush, Evaluator, ADDITION, SUBTRACTION, INTERSECTION } from 'three-bvh-csg';
+
+// ---------- estado ----------
+const state = {
+  geometry: null,
+  modelSize: 100,
+  cutDone: false,
+  exploded: false,
+  wireframe: false,
+  partAGeom: null,
+  partBGeom: null,
+  baseName: 'modelo',
+};
+
+// ---------- escena ----------
+const viewportEl = document.getElementById('viewport');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 5000);
+camera.position.set(120, 100, 160);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+viewportEl.appendChild(renderer.domElement);
+
+const orbit = new OrbitControls(camera, renderer.domElement);
+orbit.enableDamping = true;
+orbit.dampingFactor = 0.08;
+
+const hemi = new THREE.HemisphereLight(0x8fa3b8, 0x14181c, 1.1);
+scene.add(hemi);
+const dir1 = new THREE.DirectionalLight(0xffffff, 1.4);
+dir1.position.set(80, 120, 60);
+scene.add(dir1);
+const dir2 = new THREE.DirectionalLight(0x4499ff, 0.4);
+dir2.position.set(-100, -40, -80);
+scene.add(dir2);
+
+const grid = new THREE.GridHelper(400, 40, 0x2b323b, 0x21262d);
+grid.position.y = -0.01;
+scene.add(grid);
+
+function resize() {
+  const w = viewportEl.clientWidth, h = viewportEl.clientHeight;
+  camera.aspect = w / h;
+  camera.updateProjectionMatrix();
+  renderer.setSize(w, h);
+}
+window.addEventListener('resize', resize);
+
+function animate() {
+  requestAnimationFrame(animate);
+  orbit.update();
+  syncSlidersFromPlane();
+  renderer.render(scene, camera);
+}
+
+// ---------- materiales ----------
+const matModel = new THREE.MeshStandardMaterial({ color: 0x9aa4ad, roughness: 0.55, metalness: 0.08 });
+const matA = new THREE.MeshStandardMaterial({ color: 0xff7a29, roughness: 0.45, metalness: 0.08 });
+const matB = new THREE.MeshStandardMaterial({ color: 0x29c7ff, roughness: 0.45, metalness: 0.08 });
+
+let modelMesh = null;
+let modelGroup = new THREE.Group();
+scene.add(modelGroup);
+
+let partAMesh = null, partBMesh = null;
+const resultGroup = new THREE.Group();
+scene.add(resultGroup);
+
+// ---------- plano de corte (gizmo) ----------
+const planeAnchor = new THREE.Object3D();
+scene.add(planeAnchor);
+
+const planeVisual = new THREE.Mesh(
+  new THREE.CircleGeometry(1, 48),
+  new THREE.MeshBasicMaterial({ color: 0xff7a29, transparent: true, opacity: 0.18, side: THREE.DoubleSide, depthWrite: false })
+);
+planeAnchor.add(planeVisual);
+
+const planeEdge = new THREE.Mesh(
+  new THREE.RingGeometry(0.98, 1, 64),
+  new THREE.MeshBasicMaterial({ color: 0xff7a29, transparent: true, opacity: 0.9, side: THREE.DoubleSide, depthWrite: false })
+);
+planeAnchor.add(planeEdge);
+
+const normalArrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 1, 0xff7a29, 0.25, 0.15);
+planeAnchor.add(normalArrow);
+
+const transform = new TransformControls(camera, renderer.domElement);
+transform.setMode('translate');
+transform.attach(planeAnchor);
+transform.addEventListener('dragging-changed', (e) => { orbit.enabled = !e.value; });
+scene.add(transform);
+
+function scalePlaneVisual() {
+  const s = state.modelSize * 0.75;
+  planeVisual.scale.setScalar(s);
+  planeEdge.scale.setScalar(s);
+  normalArrow.setLength(s * 0.5, s * 0.08, s * 0.05);
+  transform.setSize(Math.max(0.6, Math.min(1.6, state.modelSize / 90)));
+
+  const posRange = state.modelSize * 0.75;
+  ['posX', 'posY', 'posZ'].forEach((id) => {
+    const el = document.getElementById(id);
+    el.min = -posRange; el.max = posRange;
+    el.step = Math.max(0.1, posRange / 200);
+  });
+}
+
+// sliders -> plano (posición/rotación manual, ideal para celular)
+function bindPlaneSlider(id, valId, axis, kind) {
+  const el = document.getElementById(id);
+  const valEl = document.getElementById(valId);
+  el.addEventListener('input', () => {
+    const v = parseFloat(el.value);
+    if (kind === 'pos') {
+      planeAnchor.position[axis] = v;
+      valEl.textContent = v.toFixed(1);
+    } else {
+      const euler = new THREE.Euler().setFromQuaternion(planeAnchor.quaternion, 'XYZ');
+      euler[axis] = THREE.MathUtils.degToRad(v);
+      planeAnchor.quaternion.setFromEuler(euler);
+      valEl.textContent = Math.round(v) + '°';
+    }
+  });
+}
+bindPlaneSlider('posX', 'posXVal', 'x', 'pos');
+bindPlaneSlider('posY', 'posYVal', 'y', 'pos');
+bindPlaneSlider('posZ', 'posZVal', 'z', 'pos');
+bindPlaneSlider('rotX', 'rotXVal', 'x', 'rot');
+bindPlaneSlider('rotY', 'rotYVal', 'y', 'rot');
+bindPlaneSlider('rotZ', 'rotZVal', 'z', 'rot');
+
+// plano (gizmo con mouse) -> sliders, para que queden sincronizados en ambos sentidos
+function syncSlidersFromPlane() {
+  const p = planeAnchor.position;
+  const euler = new THREE.Euler().setFromQuaternion(planeAnchor.quaternion, 'XYZ');
+  const setSlider = (id, valId, v, isAngle) => {
+    const el = document.getElementById(id);
+    const valEl = document.getElementById(valId);
+    if (document.activeElement === el) return; // no pisar mientras el usuario lo está arrastrando
+    el.value = v;
+    valEl.textContent = isAngle ? Math.round(v) + '°' : v.toFixed(1);
+  };
+  setSlider('posX', 'posXVal', p.x, false);
+  setSlider('posY', 'posYVal', p.y, false);
+  setSlider('posZ', 'posZVal', p.z, false);
+  setSlider('rotX', 'rotXVal', THREE.MathUtils.radToDeg(euler.x), true);
+  setSlider('rotY', 'rotYVal', THREE.MathUtils.radToDeg(euler.y), true);
+  setSlider('rotZ', 'rotZVal', THREE.MathUtils.radToDeg(euler.z), true);
+}
+
+// ---------- carga de archivos ----------
+const fileInput = document.getElementById('fileInput');
+document.getElementById('fileBtnLabel').addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); });
+
+viewportEl.addEventListener('dragover', (e) => { e.preventDefault(); });
+viewportEl.addEventListener('drop', (e) => {
+  e.preventDefault();
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+
+function setStatus(msg, type) {
+  const el = document.getElementById('status');
+  el.textContent = msg;
+  el.className = type || '';
+}
+
+function markStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById('step' + i).classList.toggle('done', i <= n);
+  }
+}
+
+async function loadFile(file) {
+  setStatus('Cargando ' + file.name + '…');
+  const ext = file.name.split('.').pop().toLowerCase();
+  const buffer = await file.arrayBuffer();
+  try {
+    let geometry;
+    if (ext === 'stl') {
+      geometry = new STLLoader().parse(buffer);
+    } else if (ext === '3mf') {
+      const group = new ThreeMFLoader().parse(buffer);
+      const geoms = [];
+      group.traverse((c) => {
+        if (c.isMesh && c.geometry) {
+          const g = c.geometry.clone();
+          g.applyMatrix4(c.matrixWorld);
+          geoms.push(g);
+        }
+      });
+      if (!geoms.length) throw new Error('No se encontraron mallas dentro del 3MF.');
+      geometry = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
+    } else {
+      throw new Error('Formato no soportado. Usá .stl o .3mf');
+    }
+    setupModel(geometry, file.name);
+  } catch (err) {
+    console.error(err);
+    setStatus('Error al leer el archivo: ' + err.message, 'error');
+  }
+}
+
+function setupModel(geometry, filename) {
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  const bbox = geometry.boundingBox;
+  const center = new THREE.Vector3();
+  bbox.getCenter(center);
+  geometry.translate(-center.x, -center.y, -center.z);
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+
+  const size = new THREE.Vector3();
+  geometry.boundingBox.getSize(size);
+  state.modelSize = Math.max(size.x, size.y, size.z);
+  state.geometry = geometry;
+  state.baseName = filename.replace(/\.(stl|3mf)$/i, '');
+
+  modelGroup.clear();
+  resultGroup.clear();
+  partAMesh = null; partBMesh = null;
+  state.cutDone = false;
+  document.getElementById('exportSection').style.display = 'none';
+
+  modelMesh = new THREE.Mesh(geometry, matModel);
+  modelGroup.add(modelMesh);
+
+  planeAnchor.position.set(0, 0, 0);
+  planeAnchor.quaternion.identity();
+  scalePlaneVisual();
+
+  document.getElementById('filenameLabel').textContent = filename;
+  document.getElementById('dropHint').classList.add('hidden');
+  document.getElementById('btnCut').disabled = false;
+  markStep(2);
+  setStatus('Modelo cargado. Ajustá el plano de corte y presioná "Cortar modelo".', 'ok');
+
+  frameCamera();
+}
+
+function frameCamera() {
+  const dist = state.modelSize * 2.2;
+  camera.position.set(dist * 0.65, dist * 0.55, dist * 0.85);
+  orbit.target.set(0, 0, 0);
+  camera.near = state.modelSize / 100;
+  camera.far = state.modelSize * 50;
+  camera.updateProjectionMatrix();
+}
+document.getElementById('btnFrame').addEventListener('click', frameCamera);
+
+// ---------- toggles de vista ----------
+document.getElementById('btnWire').addEventListener('click', (e) => {
+  state.wireframe = !state.wireframe;
+  e.target.classList.toggle('active', state.wireframe);
+  [matModel, matA, matB].forEach((m) => (m.wireframe = state.wireframe));
+});
+
+document.getElementById('btnExplode').addEventListener('click', (e) => {
+  if (!state.cutDone) return;
+  state.exploded = !state.exploded;
+  e.target.classList.toggle('active', state.exploded);
+  updateExplode();
+});
+
+function updateExplode() {
+  if (!partAMesh || !partBMesh) return;
+  const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(planeAnchor.quaternion);
+  const offset = state.exploded ? state.modelSize * 0.35 : 0;
+  partAMesh.position.copy(normal).multiplyScalar(offset);
+  partBMesh.position.copy(normal).multiplyScalar(-offset);
+}
+
+// ---------- modo del gizmo ----------
+const modeMoveBtn = document.getElementById('modeMove');
+const modeRotateBtn = document.getElementById('modeRotate');
+modeMoveBtn.addEventListener('click', () => {
+  transform.setMode('translate');
+  modeMoveBtn.classList.add('active');
+  modeRotateBtn.classList.remove('active');
+});
+modeRotateBtn.addEventListener('click', () => {
+  transform.setMode('rotate');
+  modeRotateBtn.classList.add('active');
+  modeMoveBtn.classList.remove('active');
+});
+document.getElementById('btnResetPlane').addEventListener('click', () => {
+  planeAnchor.position.set(0, 0, 0);
+  planeAnchor.quaternion.identity();
+});
+
+// ---------- parámetros de pines ----------
+const params = { diam: 4, depth: 3, tol: 0.15, spacing: 18 };
+function bindRange(id, valId, key, fmt) {
+  const el = document.getElementById(id);
+  const valEl = document.getElementById(valId);
+  el.addEventListener('input', () => {
+    params[key] = parseFloat(el.value);
+    valEl.textContent = fmt(params[key]);
+  });
+}
+bindRange('pinDiam', 'pinDiamVal', 'diam', (v) => v.toFixed(1) + ' mm');
+bindRange('pinDepth', 'pinDepthVal', 'depth', (v) => v.toFixed(1) + ' mm');
+bindRange('pinTol', 'pinTolVal', 'tol', (v) => v.toFixed(2) + ' mm');
+bindRange('pinSpacing', 'pinSpacingVal', 'spacing', (v) => Math.round(v) + ' mm');
+
+// ---------- corte + pines (CSG real con three-bvh-csg) ----------
+const evaluator = new Evaluator();
+evaluator.attributes = ['position', 'normal'];
+
+document.getElementById('btnCut').addEventListener('click', () => {
+  if (!state.geometry) return;
+  setStatus('Cortando… (puede tardar unos segundos)');
+  document.getElementById('btnCut').disabled = true;
+  // dejamos que el navegador pinte el mensaje antes del trabajo pesado
+  setTimeout(runCut, 30);
+});
+
+function runCut() {
+  try {
+    const normal = new THREE.Vector3(0, 0, 1).applyQuaternion(planeAnchor.quaternion).normalize();
+    const planePoint = planeAnchor.position.clone();
+
+    const boxSize = state.modelSize * 4;
+    const modelBrush = new Brush(state.geometry, matA);
+    modelBrush.updateMatrixWorld(true);
+
+    function makeHalfBoxBrush(sign) {
+      const box = new Brush(new THREE.BoxGeometry(boxSize, boxSize, boxSize));
+      box.position.copy(planePoint).addScaledVector(normal, sign * boxSize / 2);
+      box.quaternion.copy(planeAnchor.quaternion);
+      box.updateMatrixWorld(true);
+      return box;
+    }
+
+    const boxPos = makeHalfBoxBrush(1);
+    const boxNeg = makeHalfBoxBrush(-1);
+
+    let brushA = evaluator.evaluate(modelBrush, boxPos, INTERSECTION);
+    let brushB = evaluator.evaluate(modelBrush, boxNeg, INTERSECTION);
+
+    // --- grilla de pines sobre el área de corte, en el plano local (u,v) ---
+    const u = new THREE.Vector3(1, 0, 0).applyQuaternion(planeAnchor.quaternion);
+    const v = new THREE.Vector3(0, 1, 0).applyQuaternion(planeAnchor.quaternion);
+    const radius = state.modelSize * 0.55;
+    const spacing = params.spacing;
+    const pinR = params.diam / 2;
+    const pinH = params.depth;
+    const tol = params.tol;
+
+    const pinPositions = [];
+    for (let x = -radius; x <= radius; x += spacing) {
+      for (let y = -radius; y <= radius; y += spacing) {
+        if (Math.sqrt(x * x + y * y) <= radius) pinPositions.push([x, y]);
+      }
+    }
+
+    if (pinPositions.length > 0 && pinPositions.length < 400) {
+      const pinGeoms = [];
+      const socketGeoms = [];
+      pinPositions.forEach(([px, py]) => {
+        const center = planePoint.clone().addScaledVector(u, px).addScaledVector(v, py);
+
+        const pinCyl = new THREE.CylinderGeometry(pinR, pinR, pinH * 2, 20);
+        pinCyl.rotateX(Math.PI / 2); // eje Y del cilindro -> eje Z local
+        pinGeoms.push({ geo: pinCyl, center, });
+
+        const sockCyl = new THREE.CylinderGeometry(pinR + tol, pinR + tol, pinH * 2 + 1, 20);
+        sockCyl.rotateX(Math.PI / 2);
+        socketGeoms.push({ geo: sockCyl, center });
+      });
+
+      // pin: cilindro centrado en el plano pero desplazado la mitad hacia el lado A,
+      // para que sobresalga pinH desde la superficie de corte.
+      const pinMeshes = pinGeoms.map(({ geo, center }) => {
+        const g = geo.clone();
+        const m = new THREE.Matrix4().compose(
+          center.clone().addScaledVector(normal, pinH / 2),
+          planeAnchor.quaternion,
+          new THREE.Vector3(1, 1, 1)
+        );
+        g.applyMatrix4(m);
+        return g;
+      });
+      const socketMeshes = socketGeoms.map(({ geo, center }) => {
+        const g = geo.clone();
+        const m = new THREE.Matrix4().compose(
+          center.clone().addScaledVector(normal, -pinH / 2 + 0.5),
+          planeAnchor.quaternion,
+          new THREE.Vector3(1, 1, 1)
+        );
+        g.applyMatrix4(m);
+        return g;
+      });
+
+      const pinsUnionGeo = mergeGeometries(pinMeshes, false);
+      const socketsUnionGeo = mergeGeometries(socketMeshes, false);
+
+      const pinsBrush = new Brush(pinsUnionGeo);
+      pinsBrush.updateMatrixWorld(true);
+      const socketsBrush = new Brush(socketsUnionGeo);
+      socketsBrush.updateMatrixWorld(true);
+
+      brushA = evaluator.evaluate(brushA, pinsBrush, ADDITION);
+      brushB = evaluator.evaluate(brushB, socketsBrush, SUBTRACTION);
+    }
+
+    // ---- resultado a escena ----
+    resultGroup.clear();
+    modelGroup.visible = false;
+
+    brushA.material = matA;
+    brushB.material = matB;
+    brushA.geometry.computeVertexNormals();
+    brushB.geometry.computeVertexNormals();
+
+    partAMesh = new THREE.Mesh(brushA.geometry, matA);
+    partBMesh = new THREE.Mesh(brushB.geometry, matB);
+    resultGroup.add(partAMesh, partBMesh);
+
+    state.partAGeom = brushA.geometry;
+    state.partBGeom = brushB.geometry;
+    state.cutDone = true;
+
+    document.getElementById('exportSection').style.display = 'block';
+    document.getElementById('btnCut').disabled = false;
+    markStep(4);
+    setStatus('Corte listo: pieza A (' + pinPositions.length + ' pines) y pieza B (sockets). Ya podés exportar.', 'ok');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('btnCut').disabled = false;
+    setStatus('Error al cortar: ' + err.message + '. Probá mover el plano para que cruce el sólido por completo.', 'error');
+  }
+}
+
+// ---------- exportar ----------
+const exporter = new STLExporter();
+function downloadSTL(geometry, suffix) {
+  const mesh = new THREE.Mesh(geometry);
+  const result = exporter.parse(mesh, { binary: true });
+  const blob = new Blob([result], { type: 'application/octet-stream' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = state.baseName + '_' + suffix + '.stl';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+document.getElementById('expA').addEventListener('click', () => state.partAGeom && downloadSTL(state.partAGeom, 'parte-A'));
+document.getElementById('expB').addEventListener('click', () => state.partBGeom && downloadSTL(state.partBGeom, 'parte-B'));
+
+// ---------- arranque ----------
+resize();
+markStep(1);
+animate();
+</script>
+</body>
+</html>
