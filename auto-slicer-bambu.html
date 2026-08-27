@@ -103,7 +103,7 @@
 
   <div id="viewport">
     <div id="dropHint">
-      <div class="big">Soltá un archivo .stl acá</div>
+      <div class="big">Soltá un archivo .stl o .3mf acá</div>
       <div class="small">o usá el botón "Cargar modelo" del panel derecho</div>
     </div>
     <div id="errorBanner"></div>
@@ -117,8 +117,8 @@
   <aside>
     <div class="panelSection">
       <h3>Modelo</h3>
-      <button class="fileBtn" id="fileBtnLabel">Cargar modelo (.stl)</button>
-      <input type="file" id="fileInput" accept=".stl">
+      <button class="fileBtn" id="fileBtnLabel">Cargar modelo (.stl / .3mf)</button>
+      <input type="file" id="fileInput" accept=".stl,.3mf">
       <div class="hint">Se asume que el modelo ya está orientado con el eje Z hacia arriba (tal como se ve al cargarlo).</div>
       <div id="modelSizeInfo"></div>
     </div>
@@ -189,6 +189,8 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 import JSZip from 'jszip';
@@ -266,11 +268,38 @@ function markStep(n) { for (let i = 1; i <= 4; i++) document.getElementById('ste
 
 async function loadFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
-  if (ext !== 'stl') { setStatus('Este formato ya no está soportado — usá un archivo .stl.', 'error'); return; }
+  if (ext !== 'stl' && ext !== '3mf') {
+    setStatus('Formato no soportado — usá un archivo .stl o .3mf.', 'error');
+    return;
+  }
   setStatus('Cargando ' + file.name + '…');
   try {
     const buffer = await file.arrayBuffer();
-    const geometry = new STLLoader().parse(buffer);
+    let geometry;
+
+    if (ext === 'stl') {
+      geometry = new STLLoader().parse(buffer);
+    } else {
+      const group = new ThreeMFLoader().parse(buffer);
+      group.updateMatrixWorld(true); // clave: aplica las transformaciones de cada componente/objeto antes de leer las mallas
+      const geoms = [];
+      group.traverse((c) => {
+        if (c.isMesh && c.geometry && c.geometry.attributes && c.geometry.attributes.position) {
+          // solo "position" para que todas las mallas sean compatibles al fusionar (algunas pueden traer color/uv distintos)
+          const g = new THREE.BufferGeometry();
+          g.setAttribute('position', c.geometry.attributes.position.clone());
+          if (c.geometry.index) g.setIndex(c.geometry.index.clone());
+          g.applyMatrix4(c.matrixWorld);
+          geoms.push(g);
+        }
+      });
+      if (!geoms.length) throw new Error('No se encontraron mallas dentro del 3MF.');
+      geometry = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
+      if (!geometry || !geometry.attributes.position || geometry.attributes.position.count === 0) {
+        throw new Error('El 3MF se leyó pero no contiene vértices utilizables.');
+      }
+    }
+
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();
     const bb0 = geometry.boundingBox;
@@ -280,7 +309,7 @@ async function loadFile(file) {
     geometry.computeBoundingSphere();
 
     state.originalGeometry = geometry;
-    state.baseName = file.name.replace(/\.stl$/i, '');
+    state.baseName = file.name.replace(/\.(stl|3mf)$/i, '');
     const size = new THREE.Vector3(); geometry.boundingBox.getSize(size);
     state.modelSize = Math.max(size.x, size.y, size.z);
 
@@ -302,7 +331,7 @@ async function loadFile(file) {
     setStatus('Modelo cargado. Definí la altura final y presioná "Escalar y dividir".', 'ok');
   } catch (err) {
     console.error(err);
-    setStatus('Error al leer el STL: ' + err.message, 'error');
+    setStatus('Error al leer el archivo: ' + err.message, 'error');
   }
 }
 
