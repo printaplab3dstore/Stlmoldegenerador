@@ -128,8 +128,8 @@
       <div class="row2">
         <input type="number" id="targetHeight" placeholder="ej: 100" min="1" step="1">
         <select id="heightUnit">
-          <option value="mm">mm</option>
-          <option value="cm" selected>cm</option>
+          <option value="mm" selected>mm</option>
+          <option value="cm">cm</option>
           <option value="m">m</option>
         </select>
       </div>
@@ -152,28 +152,8 @@
     </div>
 
     <div class="panelSection">
-      <h3>Pines de encastre</h3>
-      <div class="field">
-        <label>Diámetro del pin <span class="val" id="pinDiamVal">4.0 mm</span></label>
-        <input type="range" id="pinDiam" min="2" max="12" step="0.5" value="4">
-      </div>
-      <div class="field">
-        <label>Profundidad de encastre <span class="val" id="pinDepthVal">3.0 mm</span></label>
-        <input type="range" id="pinDepth" min="1" max="10" step="0.5" value="3">
-      </div>
-      <div class="field">
-        <label>Tolerancia (holgura socket) <span class="val" id="pinTolVal">0.15 mm</span></label>
-        <input type="range" id="pinTol" min="0" max="0.6" step="0.05" value="0.15">
-      </div>
-      <div class="field">
-        <label>Separación entre pines <span class="val" id="pinSpacingVal">18 mm</span></label>
-        <input type="range" id="pinSpacing" min="8" max="40" step="1" value="18">
-      </div>
-    </div>
-
-    <div class="panelSection">
       <button class="actionBtn primary" id="btnAutoSlice" disabled>Escalar y dividir</button>
-      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba, agregando pines/sockets en cada corte.</div>
+      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples, sin pines ni encastres — pensado para pegar las piezas después.</div>
     </div>
 
     <div class="panelSection" id="piecesSection" style="display:none;">
@@ -210,8 +190,7 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { Brush, Evaluator, ADDITION, SUBTRACTION, INTERSECTION } from 'three-bvh-csg';
+import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 import JSZip from 'jszip';
 
 // ---------- estado ----------
@@ -232,6 +211,7 @@ function nextColor() { const c = PALETTE[paletteIdx % PALETTE.length]; paletteId
 const viewportEl = document.getElementById('viewport');
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 5000);
+camera.up.set(0, 0, 1); // el modelo usa Z como "arriba" (altura), no Y — hay que avisarle a la cámara antes de crear los controles
 camera.position.set(120, 100, 160);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -250,8 +230,10 @@ const dir2 = new THREE.DirectionalLight(0x4499ff, 0.4);
 dir2.position.set(-100, -40, -80);
 scene.add(dir2);
 
+// grilla como piso real: acostada en el plano XY (Z=0), no en el plano por defecto de three.js (Y=0)
 const grid = new THREE.GridHelper(400, 40, 0x2b323b, 0x21262d);
-grid.position.y = -0.01;
+grid.rotation.x = Math.PI / 2;
+grid.position.z = -0.01;
 scene.add(grid);
 
 function resize() {
@@ -291,8 +273,9 @@ async function loadFile(file) {
     const geometry = new STLLoader().parse(buffer);
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();
-    const c = new THREE.Vector3(); geometry.boundingBox.getCenter(c);
-    geometry.translate(-c.x, -c.y, -c.z);
+    const bb0 = geometry.boundingBox;
+    const cx = (bb0.min.x + bb0.max.x) / 2, cy = (bb0.min.y + bb0.max.y) / 2, minZ = bb0.min.z;
+    geometry.translate(-cx, -cy, -minZ); // centrado en X/Y, apoyado sobre el piso (Z=0)
     geometry.computeBoundingBox();
     geometry.computeBoundingSphere();
 
@@ -385,17 +368,6 @@ function updatePiecesPanel() {
   document.getElementById('piecesSection').style.display = state.pieces.length ? 'block' : 'none';
 }
 
-// ---------- parámetros ----------
-const params = { diam: 4, depth: 3, tol: 0.15, spacing: 18 };
-function bindRange(id, valId, key, fmt) {
-  const el = document.getElementById(id), valEl = document.getElementById(valId);
-  el.addEventListener('input', () => { params[key] = parseFloat(el.value); valEl.textContent = fmt(params[key]); });
-}
-bindRange('pinDiam', 'pinDiamVal', 'diam', (v) => v.toFixed(1) + ' mm');
-bindRange('pinDepth', 'pinDepthVal', 'depth', (v) => v.toFixed(1) + ' mm');
-bindRange('pinTol', 'pinTolVal', 'tol', (v) => v.toFixed(2) + ' mm');
-bindRange('pinSpacing', 'pinSpacingVal', 'spacing', (v) => Math.round(v) + ' mm');
-
 const bedMarginEl = document.getElementById('bedMargin');
 bedMarginEl.addEventListener('input', () => {
   document.getElementById('bedMarginVal').textContent = Math.round(bedMarginEl.value) + ' mm';
@@ -442,51 +414,6 @@ function updateGridPreview() {
 const evaluator = new Evaluator();
 evaluator.attributes = ['position', 'normal'];
 
-function axisComponent(vec3, axisVec) { return axisVec.x ? vec3.x : (axisVec.y ? vec3.y : vec3.z); }
-
-function addPinsAndSockets(brushA, brushB, normal, planePoint, u, v, extentU, extentV) {
-  const spacing = params.spacing, pinR = params.diam / 2, pinH = params.depth, tol = params.tol;
-  const radius = 0.42 * Math.min(extentU, extentV);
-  if (!(radius > pinR * 1.6)) return { a: brushA, b: brushB };
-
-  const pinPositions = [];
-  for (let x = -radius; x <= radius; x += spacing) {
-    for (let y = -radius; y <= radius; y += spacing) {
-      if (Math.hypot(x, y) <= radius) pinPositions.push([x, y]);
-    }
-  }
-  if (!pinPositions.length || pinPositions.length > 300) return { a: brushA, b: brushB };
-
-  const quatN = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
-  const pinMeshes = [], socketMeshes = [];
-  pinPositions.forEach(([px, py]) => {
-    const center = planePoint.clone().addScaledVector(u, px).addScaledVector(v, py);
-
-    const pinCyl = new THREE.CylinderGeometry(pinR, pinR, pinH * 2, 16);
-    pinCyl.rotateX(Math.PI / 2);
-    pinCyl.applyMatrix4(new THREE.Matrix4().compose(center.clone().addScaledVector(normal, pinH / 2), quatN, new THREE.Vector3(1, 1, 1)));
-    pinMeshes.push(pinCyl);
-
-    const sockCyl = new THREE.CylinderGeometry(pinR + tol, pinR + tol, pinH * 2 + 1, 16);
-    sockCyl.rotateX(Math.PI / 2);
-    sockCyl.applyMatrix4(new THREE.Matrix4().compose(center.clone().addScaledVector(normal, -pinH / 2 + 0.5), quatN, new THREE.Vector3(1, 1, 1)));
-    socketMeshes.push(sockCyl);
-  });
-
-  try {
-    const pinsBrush = new Brush(mergeGeometries(pinMeshes, false)); pinsBrush.updateMatrixWorld(true);
-    const socketsBrush = new Brush(mergeGeometries(socketMeshes, false)); socketsBrush.updateMatrixWorld(true);
-    const newA = evaluator.evaluate(brushA, pinsBrush, ADDITION);
-    const newB = evaluator.evaluate(brushB, socketsBrush, SUBTRACTION);
-    newA.geometry.computeVertexNormals();
-    newB.geometry.computeVertexNormals();
-    return { a: newA, b: newB };
-  } catch (e) {
-    console.warn('No se pudieron generar pines en este corte, la pieza queda lisa.', e);
-    return { a: brushA, b: brushB };
-  }
-}
-
 function cutGeometryAtAxisPlane(geometry, axis, coord) {
   const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
   const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
@@ -511,17 +438,8 @@ function cutGeometryAtAxisPlane(geometry, axis, coord) {
   if (countA === 0) return { a: null, b: geometry };
   if (countB === 0) return { a: geometry, b: null };
 
-  let u, v;
-  if (axis === 'x') { u = new THREE.Vector3(0, 1, 0); v = new THREE.Vector3(0, 0, 1); }
-  else if (axis === 'y') { u = new THREE.Vector3(1, 0, 0); v = new THREE.Vector3(0, 0, 1); }
-  else { u = new THREE.Vector3(1, 0, 0); v = new THREE.Vector3(0, 1, 0); }
-
-  brushA.geometry.computeBoundingBox();
-  const sizeA = new THREE.Vector3(); brushA.geometry.boundingBox.getSize(sizeA);
-  const extentU = axisComponent(sizeA, u), extentV = axisComponent(sizeA, v);
-
-  const result = addPinsAndSockets(brushA, brushB, normal, planePoint, u, v, extentU, extentV);
-  return { a: result.a.geometry, b: result.b.geometry };
+  // corte plano simple, sin pines ni sockets — las piezas se pegan después
+  return { a: brushA.geometry, b: brushB.geometry };
 }
 
 function computeCutCoords(min, max, n) {
@@ -529,31 +447,74 @@ function computeCutCoords(min, max, n) {
   for (let i = 1; i < n; i++) coords.push(min + (max - min) * (i / n));
   return coords;
 }
-function applyAxisCuts(geoms, axis, coords) {
+async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress) {
   if (!coords.length) return geoms;
   let current = geoms;
-  coords.forEach((coord) => {
+  for (let ci = 0; ci < coords.length; ci++) {
+    const coord = coords[ci];
     const next = [];
-    current.forEach((g) => {
+    for (const g of current) {
+      g.computeBoundingBox();
+      const bb = g.boundingBox;
+      const spansCut = coord > bb.min[axis] + 1e-6 && coord < bb.max[axis] - 1e-6;
+      if (!spansCut) {
+        // el plano no atraviesa esta pieza puntual: se deja tal cual, sin gastar CSG
+        next.push(g);
+        continue;
+      }
       const { a, b } = cutGeometryAtAxisPlane(g, axis, coord);
       if (a) next.push(a);
       if (b) next.push(b);
-    });
+      if (reportProgress) reportProgress(axisLabel, ci + 1, coords.length, next.length);
+      // cede el control al navegador entre cada corte para que la pestaña no se congele
+      await new Promise((resolve) => setTimeout(resolve, 0));
+    }
     current = next;
-  });
+  }
   return current;
 }
 
-document.getElementById('btnAutoSlice').addEventListener('click', () => {
+const MAX_PIECES_WARN = 30; // a partir de acá se pide confirmación (puede tardar bastante)
+const MAX_PIECES_HARD = 200; // a partir de acá se rechaza directamente (impracticable en el navegador)
+
+document.getElementById('btnAutoSlice').addEventListener('click', async () => {
   if (!state.originalGeometry) return;
   const heightMM = getTargetHeightMM();
   if (!heightMM) { setStatus('Ingresá una altura final válida antes de dividir.', 'error'); return; }
-  setStatus('Escalando y dividiendo… puede tardar bastante según la cantidad de piezas.');
+
+  const est = estimateGrid(heightMM);
+  if (!est) { setStatus('No se pudo estimar la división — revisá los datos ingresados.', 'error'); return; }
+  const totalEst = est.nx * est.ny * est.nz;
+
+  if (totalEst > MAX_PIECES_HARD) {
+    setStatus('La grilla estimada (' + est.nx + '×' + est.ny + '×' + est.nz + ' ≈ hasta ' + totalEst + ' piezas, calculado sobre el bloque completo) es demasiado grande para procesar en el navegador. Aumentá el tamaño de cama, reducí el margen, o achicá un poco la altura.', 'error');
+    return;
+  }
+  if (totalEst > MAX_PIECES_WARN) {
+    const ok = window.confirm('Grilla estimada ' + est.nx + '×' + est.ny + '×' + est.nz + ' (hasta ' + totalEst + ' piezas — el número real suele ser menor, esto es un cálculo de peor caso sobre el bloque completo). Puede tardar bastante. ¿Continuar?');
+    if (!ok) { setStatus('Cancelado. Ajustá altura/cama/margen y volvé a intentar.', ''); return; }
+  }
+
   document.getElementById('btnAutoSlice').disabled = true;
-  setTimeout(() => runAutoSlice(heightMM), 30);
+  await runAutoSlice(heightMM);
 });
 
-function runAutoSlice(heightMM) {
+function estimateGrid(heightMM) {
+  if (!state.originalGeometry) return null;
+  const size0 = new THREE.Vector3(); state.originalGeometry.boundingBox.getSize(size0);
+  if (!(size0.z > 0)) return null;
+  const scale = heightMM / size0.z;
+  const sx = size0.x * scale, sy = size0.y * scale, sz = size0.z * scale;
+  const bed = readBedConfig();
+  const ux = Math.max(1, bed.x - bed.margin), uy = Math.max(1, bed.y - bed.margin), uz = Math.max(1, bed.z - bed.margin);
+  return {
+    nx: Math.max(1, Math.ceil(sx / ux - 1e-6)),
+    ny: Math.max(1, Math.ceil(sy / uy - 1e-6)),
+    nz: Math.max(1, Math.ceil(sz / uz - 1e-6)),
+  };
+}
+
+async function runAutoSlice(heightMM) {
   try {
     const geo = state.originalGeometry.clone();
     geo.computeBoundingBox();
@@ -562,8 +523,9 @@ function runAutoSlice(heightMM) {
     const scale = heightMM / size0.z;
     geo.scale(scale, scale, scale);
     geo.computeBoundingBox();
-    const center = new THREE.Vector3(); geo.boundingBox.getCenter(center);
-    geo.translate(-center.x, -center.y, -center.z);
+    const bb1 = geo.boundingBox;
+    const cx1 = (bb1.min.x + bb1.max.x) / 2, cy1 = (bb1.min.y + bb1.max.y) / 2, minZ1 = bb1.min.z;
+    geo.translate(-cx1, -cy1, -minZ1); // centrado en X/Y, apoyado sobre el piso (Z=0)
     geo.computeBoundingBox();
     const size = new THREE.Vector3(); geo.boundingBox.getSize(size);
 
@@ -580,11 +542,14 @@ function runAutoSlice(heightMM) {
     const cutsX = computeCutCoords(bb.min.x, bb.max.x, nx);
     const cutsY = computeCutCoords(bb.min.y, bb.max.y, ny);
     const cutsZ = computeCutCoords(bb.min.z, bb.max.z, nz);
+    const reportProgress = (axisLabel, ci, total, count) => {
+      setStatus('Cortando eje ' + axisLabel + ' (' + ci + '/' + total + ')… ' + count + ' piezas hasta ahora.');
+    };
 
     let geoms = [geo];
-    geoms = applyAxisCuts(geoms, 'x', cutsX);
-    geoms = applyAxisCuts(geoms, 'y', cutsY);
-    geoms = applyAxisCuts(geoms, 'z', cutsZ);
+    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress);
+    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress);
+    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress);
 
     const finalGeoms = geoms.filter((g) => g && g.attributes.position.count > 0);
     if (!finalGeoms.length) throw new Error('El resultado quedó vacío — revisá la altura ingresada.');
