@@ -165,10 +165,12 @@
       <h3>Exportar</h3>
       <div id="exportList"></div>
       <button class="bundleBtn" id="btnZipStl">Descargar todas en STL (.zip)</button>
-      <button class="bundleBtn" id="btnZip3mf" style="border-color:var(--accent2);">✓ Recomendado — un .3mf por placa (.zip)</button>
-      <div class="hint">Cada .3mf del zip es una placa completa: ya viene centrada en la cama y no se sale de los bordes. Abrís pieza 1 en Bambu Studio, imprimís/exportás, y pasás a la pieza 2 — así con todas.</div>
+      <button class="bundleBtn" id="btnAllInOne3mf" style="border-color:var(--accent2);">✓ Recomendado — todas las piezas en 1 archivo (.3mf)</button>
+      <div class="hint">Un solo .3mf con todas las piezas. Al abrirlo en Bambu Studio, presioná <b>"Organizar automático"</b> (ícono de la barra superior, o la tecla <b>A</b>): Bambu reparte las piezas en tantas placas como hagan falta, centradas y sin salirse — usa el algoritmo propio de Bambu Studio, no una imitación mía, así que es confiable.</div>
+      <button class="bundleBtn" id="btnZip3mf">Un .3mf por placa, ya centrado (.zip)</button>
+      <div class="hint">Alternativa sin depender de "Organizar": cada .3mf del zip es una placa completa lista, para abrir una por una.</div>
       <button class="bundleBtn" id="btnMultiPlate3mf" style="border-color:var(--danger); opacity:0.75;">⚠ Experimental — proyecto multi-placa en 1 archivo</button>
-      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero por ahora usá la opción de arriba.</div>
+      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero usá las opciones de arriba.</div>
     </div>
 
     <div style="flex:1;"></div>
@@ -190,7 +192,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
 import JSZip from 'jszip';
@@ -405,6 +407,11 @@ async function loadFile(file) {
       }
     }
 
+    // suelda vértices duplicados/sueltos (típico en STL, donde cada triángulo trae sus propios
+    // vértices aunque coincidan con los del vecino) — sin esto, los cortes booleanos posteriores
+    // pueden dejar la malla mal cerrada en las costuras
+    geometry = mergeVertices(geometry, 1e-5);
+
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();
     const bb0 = geometry.boundingBox;
@@ -551,7 +558,13 @@ evaluator.attributes = ['position', 'normal'];
 function cutGeometryAtAxisPlane(geometry, axis, coord) {
   const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
   const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
-  const boxSize = state.modelSize * 6;
+
+  // la caja de corte se dimensiona según el tamaño de ESTA pieza puntual (no el modelo
+  // original completo) — usar una caja gigante en piezas ya chicas, tras varios cortes,
+  // arrastra imprecisión numérica y puede dejar la malla mal cerrada en la costura
+  geometry.computeBoundingSphere();
+  const pieceRadius = geometry.boundingSphere ? geometry.boundingSphere.radius : state.modelSize;
+  const boxSize = Math.max(pieceRadius * 6, 1);
 
   const modelBrush = new Brush(geometry);
   modelBrush.updateMatrixWorld(true);
@@ -572,8 +585,12 @@ function cutGeometryAtAxisPlane(geometry, axis, coord) {
   if (countA === 0) return { a: null, b: geometry };
   if (countB === 0) return { a: geometry, b: null };
 
-  // corte plano simple, sin pines ni sockets — las piezas se pegan después
-  return { a: brushA.geometry, b: brushB.geometry };
+  // corte plano simple, sin pines ni sockets — las piezas se pegan después.
+  // Se sueldan los vértices del resultado: el CSG puede dejar vértices duplicados
+  // sin unir justo en la costura del corte, lo que deja la malla mal cerrada ahí.
+  const geoA = mergeVertices(brushA.geometry, 1e-5);
+  const geoB = mergeVertices(brushB.geometry, 1e-5);
+  return { a: geoA, b: geoB };
 }
 
 function computeCutCoords(min, max, n) {
@@ -808,6 +825,73 @@ function uuid4() {
     return v.toString(16);
   });
 }
+
+// Arma un único .3mf ESTÁNDAR (spec core de 3MF, sin nada propietario de Bambu)
+// con todas las piezas como objetos separados. No intenta asignar placas —
+// eso lo hace el "Organizar automático" nativo de Bambu Studio al abrir el
+// archivo, que sí sabe crear placas nuevas cuando hacen falta.
+function buildAllInOne3MF(pieces, bed) {
+  const gap = 20;
+  let objectsXml = '', buildItemsXml = '';
+
+  pieces.forEach((piece, i) => {
+    const objId = i + 1;
+    const g = piece.geometry.clone();
+    g.computeBoundingBox();
+    const bb = g.boundingBox;
+    const cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, minZ = bb.min.z;
+    g.translate(-cx, -cy, -minZ); // geometría centrada en su propio origen, apoyada en Z=0
+
+    const pos = g.attributes.position, idx = g.index;
+    const vParts = [];
+    for (let k = 0; k < pos.count; k++) vParts.push('<vertex x="' + pos.getX(k).toFixed(4) + '" y="' + pos.getY(k).toFixed(4) + '" z="' + pos.getZ(k).toFixed(4) + '"/>');
+    const tParts = [];
+    if (idx) { for (let k = 0; k < idx.count; k += 3) tParts.push('<triangle v1="' + idx.getX(k) + '" v2="' + idx.getX(k + 1) + '" v3="' + idx.getX(k + 2) + '"/>'); }
+    else { for (let k = 0; k < pos.count; k += 3) tParts.push('<triangle v1="' + k + '" v2="' + (k + 1) + '" v3="' + (k + 2) + '"/>'); }
+
+    objectsXml += '<object id="' + objId + '" type="model">\n<mesh>\n<vertices>' +
+      vParts.join('') + '</vertices>\n<triangles>' + tParts.join('') + '</triangles>\n</mesh>\n</object>\n';
+
+    // posición inicial aproximada en fila — no importa mucho, "Organizar automático" las reacomoda igual
+    const size = new THREE.Vector3(); bb.getSize(size);
+    const col = i % 6, row = Math.floor(i / 6);
+    const worldX = col * (Math.max(size.x, 40) + gap);
+    const worldY = row * (bed.y * 2); // filas bien separadas para que no se superpongan antes de organizar
+    buildItemsXml += '<item objectid="' + objId + '" transform="1 0 0 0 1 0 0 0 1 ' + worldX + ' ' + worldY + ' 0" printable="1"/>\n';
+  });
+
+  const modelXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n' +
+    '<metadata name="Application">Printaplab3D-CortadorSTL</metadata>\n' +
+    '<resources>\n' + objectsXml + '</resources>\n' +
+    '<build>\n' + buildItemsXml + '</build>\n' +
+    '</model>';
+
+  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n' +
+    '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>\n</Types>';
+
+  const relsXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n' +
+    '<Relationship Target="/3D/3dmodel.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>';
+
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', contentTypesXml);
+  zip.file('_rels/.rels', relsXml);
+  zip.file('3D/3dmodel.model', modelXml);
+  return zip;
+}
+
+document.getElementById('btnAllInOne3mf').addEventListener('click', async () => {
+  if (!state.pieces.length) return;
+  setStatus('Armando el archivo con todas las piezas…');
+  const bed = readBedConfig();
+  const zip = buildAllInOne3MF(state.pieces, bed);
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadBlob(blob, state.baseName + '_todas-las-piezas.3mf');
+  setStatus('Descargado. Abrilo en Bambu Studio y presioná "Organizar automático" (tecla A) para repartir las ' + state.pieces.length + ' piezas en placas.', 'ok');
+});
 
 // Arma un único .3mf con varias placas, siguiendo la estructura real de un
 // proyecto exportado desde Bambu Studio: cada pieza es un <object> propio,
