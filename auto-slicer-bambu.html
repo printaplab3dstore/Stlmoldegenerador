@@ -165,9 +165,10 @@
       <h3>Exportar</h3>
       <div id="exportList"></div>
       <button class="bundleBtn" id="btnZipStl">Descargar todas en STL (.zip)</button>
-      <button class="bundleBtn" id="btnZip3mf">Descargar listas para imprimir — un .3mf por placa (.zip)</button>
-      <button class="bundleBtn" id="btnMultiPlate3mf" style="border-color:var(--accent2);">Descargar proyecto multi-placa (.3mf) — 1 archivo, todas las placas</button>
-      <div class="hint">El botón multi-placa arma un solo .3mf con cada pieza ya asignada a su propia placa (basado en la estructura real de un proyecto exportado desde Bambu Studio). Es una implementación propia armada a partir de un archivo de muestra, así que probalo al abrirlo — si alguna placa no se separa bien, avisame y lo ajusto.</div>
+      <button class="bundleBtn" id="btnZip3mf" style="border-color:var(--accent2);">✓ Recomendado — un .3mf por placa (.zip)</button>
+      <div class="hint">Cada .3mf del zip es una placa completa: ya viene centrada en la cama y no se sale de los bordes. Abrís pieza 1 en Bambu Studio, imprimís/exportás, y pasás a la pieza 2 — así con todas.</div>
+      <button class="bundleBtn" id="btnMultiPlate3mf" style="border-color:var(--danger); opacity:0.75;">⚠ Experimental — proyecto multi-placa en 1 archivo</button>
+      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero por ahora usá la opción de arriba.</div>
     </div>
 
     <div style="flex:1;"></div>
@@ -189,7 +190,6 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
@@ -266,6 +266,120 @@ function setStatus(msg, type) {
 }
 function markStep(n) { for (let i = 1; i <= 4; i++) document.getElementById('step' + i).classList.toggle('done', i <= n); }
 
+// ---------- lector de 3MF propio ----------
+// Escrito a partir de la estructura real de archivos exportados por Bambu Studio
+// (no usa el 3MFLoader genérico de three.js, que falla con algunos 3MF reales).
+// Un 3MF es un .zip con 3D/3dmodel.model como raíz. Los objetos pueden tener
+// <mesh> directo o <components><component p:path="..." objectid=".." transform=".."/></components>
+// que apunta a OTRO objeto (en el mismo archivo o en /3D/Objects/objectN.model),
+// y hay que ir combinando las transformaciones a medida que se resuelve cada nivel.
+function parse3MFTransform(str) {
+  const t = str.trim().split(/\s+/).map(Number);
+  const m = new THREE.Matrix4();
+  m.set(
+    t[0], t[3], t[6], t[9],
+    t[1], t[4], t[7], t[10],
+    t[2], t[5], t[8], t[11],
+    0, 0, 0, 1
+  );
+  return m;
+}
+function parse3MFMeshGeometry(objectEl) {
+  const meshEl = objectEl.querySelector('mesh');
+  if (!meshEl) return null;
+  const vertexEls = meshEl.querySelectorAll('vertices > vertex');
+  const positions = new Float32Array(vertexEls.length * 3);
+  for (let i = 0; i < vertexEls.length; i++) {
+    positions[i * 3] = parseFloat(vertexEls[i].getAttribute('x'));
+    positions[i * 3 + 1] = parseFloat(vertexEls[i].getAttribute('y'));
+    positions[i * 3 + 2] = parseFloat(vertexEls[i].getAttribute('z'));
+  }
+  const triEls = meshEl.querySelectorAll('triangles > triangle');
+  const indices = new Uint32Array(triEls.length * 3);
+  for (let i = 0; i < triEls.length; i++) {
+    indices[i * 3] = parseInt(triEls[i].getAttribute('v1'), 10);
+    indices[i * 3 + 1] = parseInt(triEls[i].getAttribute('v2'), 10);
+    indices[i * 3 + 2] = parseInt(triEls[i].getAttribute('v3'), 10);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geo.setIndex(new THREE.BufferAttribute(indices, 1));
+  return geo;
+}
+async function parse3MF(arrayBuffer) {
+  const zip = await JSZip.loadAsync(arrayBuffer);
+  const domParser = new DOMParser();
+  const xmlCache = {};
+
+  async function getXmlDoc(path) {
+    const normalized = path.replace(/^\//, '');
+    if (xmlCache[normalized]) return xmlCache[normalized];
+    const zf = zip.file(normalized);
+    if (!zf) throw new Error('No se encontró "' + normalized + '" dentro del 3MF.');
+    const text = await zf.async('string');
+    const doc = domParser.parseFromString(text, 'application/xml');
+    xmlCache[normalized] = doc;
+    return doc;
+  }
+
+  // recorre un objeto (y sus <components> anidados) y junta todas las mallas resueltas con su matriz final
+  async function resolveObject(doc, objectId, parentMatrix, docPath, out, depth) {
+    if (depth > 12) throw new Error('Demasiados niveles de componentes anidados en el 3MF.');
+    const objectEl = doc.querySelector('resources > object[id="' + objectId + '"]');
+    if (!objectEl) throw new Error('No se encontró el objeto id="' + objectId + '" en ' + docPath);
+
+    const meshGeo = parse3MFMeshGeometry(objectEl);
+    if (meshGeo) out.push({ geometry: meshGeo, matrix: parentMatrix });
+
+    const componentsEl = objectEl.querySelector('components');
+    if (componentsEl) {
+      const compEls = Array.from(componentsEl.querySelectorAll('component'));
+      for (const compEl of compEls) {
+        const compObjectId = compEl.getAttribute('objectid');
+        const compPath = compEl.getAttribute('p:path') || compEl.getAttributeNS('http://schemas.microsoft.com/3dmanufacturing/production/2015/06', 'path');
+        const transformAttr = compEl.getAttribute('transform');
+        const localMatrix = transformAttr ? parse3MFTransform(transformAttr) : new THREE.Matrix4();
+        const combinedMatrix = parentMatrix.clone().multiply(localMatrix);
+        let targetDoc = doc, targetPath = docPath;
+        if (compPath) { targetPath = compPath; targetDoc = await getXmlDoc(targetPath); }
+        await resolveObject(targetDoc, compObjectId, combinedMatrix, targetPath, out, depth + 1);
+      }
+    }
+  }
+
+  const rootPath = '3D/3dmodel.model';
+  const rootDoc = await getXmlDoc(rootPath);
+  const buildItemEls = Array.from(rootDoc.querySelectorAll('build > item'));
+  if (!buildItemEls.length) throw new Error('El 3MF no tiene ningún objeto para imprimir (sección <build> vacía).');
+
+  // Un 3MF puede tener varios objetos de nivel superior (ej: varias "placas" de un proyecto
+  // de Bambu Studio, tileadas lejos unas de otras dentro del mismo archivo). Resolvemos cada
+  // build item por separado y nos quedamos solo con el de mayor tamaño real (el modelo
+  // principal), para no fusionar por accidente piezas de referencia/prueba de otra placa.
+  const groups = [];
+  for (const itemEl of buildItemEls) {
+    const objectId = itemEl.getAttribute('objectid');
+    const transformAttr = itemEl.getAttribute('transform');
+    const itemMatrix = transformAttr ? parse3MFTransform(transformAttr) : new THREE.Matrix4();
+    const resolved = [];
+    await resolveObject(rootDoc, objectId, itemMatrix, rootPath, resolved, 0);
+    if (!resolved.length) continue;
+
+    const geoms = resolved.map(({ geometry, matrix }) => { geometry.applyMatrix4(matrix); return geometry; });
+    const merged = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
+    merged.computeBoundingBox();
+    const size = new THREE.Vector3(); merged.boundingBox.getSize(size);
+    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z) });
+  }
+  if (!groups.length) throw new Error('No se encontraron mallas dentro del 3MF.');
+
+  groups.sort((a, b) => b.maxDim - a.maxDim);
+  if (groups.length > 1) {
+    console.warn('3MF con ' + groups.length + ' objetos de nivel superior — se cargó el más grande y se ignoraron ' + (groups.length - 1) + ' más chico(s).');
+  }
+  return { geometry: groups[0].geometry, discarded: groups.length - 1 };
+}
+
 async function loadFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
   if (ext !== 'stl' && ext !== '3mf') {
@@ -276,25 +390,16 @@ async function loadFile(file) {
   try {
     const buffer = await file.arrayBuffer();
     let geometry;
+    let discardedNote = '';
 
     if (ext === 'stl') {
       geometry = new STLLoader().parse(buffer);
     } else {
-      const group = new ThreeMFLoader().parse(buffer);
-      group.updateMatrixWorld(true); // clave: aplica las transformaciones de cada componente/objeto antes de leer las mallas
-      const geoms = [];
-      group.traverse((c) => {
-        if (c.isMesh && c.geometry && c.geometry.attributes && c.geometry.attributes.position) {
-          // solo "position" para que todas las mallas sean compatibles al fusionar (algunas pueden traer color/uv distintos)
-          const g = new THREE.BufferGeometry();
-          g.setAttribute('position', c.geometry.attributes.position.clone());
-          if (c.geometry.index) g.setIndex(c.geometry.index.clone());
-          g.applyMatrix4(c.matrixWorld);
-          geoms.push(g);
-        }
-      });
-      if (!geoms.length) throw new Error('No se encontraron mallas dentro del 3MF.');
-      geometry = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
+      const result = await parse3MF(buffer);
+      geometry = result.geometry;
+      if (result.discarded > 0) {
+        discardedNote = ' (el archivo tenía ' + (result.discarded + 1) + ' objetos — se cargó el más grande y se ignoraron ' + result.discarded + ' más chico(s), probablemente piezas de referencia de otra placa)';
+      }
       if (!geometry || !geometry.attributes.position || geometry.attributes.position.count === 0) {
         throw new Error('El 3MF se leyó pero no contiene vértices utilizables.');
       }
@@ -328,7 +433,7 @@ async function loadFile(file) {
     markStep(2);
     updateGridPreview();
     frameCamera();
-    setStatus('Modelo cargado. Definí la altura final y presioná "Escalar y dividir".', 'ok');
+    setStatus('Modelo cargado' + discardedNote + '. Definí la altura final y presioná "Escalar y dividir".', 'ok');
   } catch (err) {
     console.error(err);
     setStatus('Error al leer el archivo: ' + err.message, 'error');
