@@ -203,6 +203,466 @@
     font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.02em;
     transition:border-color .15s ease, color .15s ease, transform .15s ease;}
   .bundleBtn:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-1px);}
+
+/* ============================================================
+   PRINTAPLAB 3D — NEO HUD VISUAL UPGRADE
+   Solo capa visual: no modifica la lógica ni el flujo del slicer.
+   Diseñado para mantener la interfaz ligera y fluida.
+   ============================================================ */
+
+:root{
+  --bg-void:#05070d;
+  --bg-panel:#080d16;
+  --bg-panel-2:#0c131e;
+  --line:#172433;
+  --line-bright:#29415a;
+  --text:#e9f4ff;
+  --text-dim:#71869b;
+  --accent:#ff9f43;
+  --accent-dim:#713f18;
+  --accent-glow:rgba(255,159,67,.34);
+  --accent2:#19d9ff;
+  --accent2-dim:#0b5869;
+  --accent2-glow:rgba(25,217,255,.28);
+  --accent3:#7b61ff;
+  --accent3-glow:rgba(123,97,255,.25);
+  --danger:#ff4665;
+  --radius:6px;
+  --notch:8px;
+}
+
+/* Fondo tecnológico, pero muy barato de renderizar */
+html,body{
+  background:
+    radial-gradient(circle at 72% 18%, rgba(25,217,255,.055), transparent 28%),
+    radial-gradient(circle at 22% 78%, rgba(123,97,255,.045), transparent 30%),
+    var(--bg-void);
+}
+
+#app{
+  grid-template-columns:minmax(0,1fr) 372px;
+  grid-template-rows:64px 1fr;
+  background:
+    linear-gradient(rgba(31,56,77,.20) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(31,56,77,.20) 1px,transparent 1px),
+    radial-gradient(circle at 50% 35%, rgba(17,38,53,.20), transparent 52%),
+    var(--bg-void);
+  background-size:32px 32px,32px 32px,100% 100%,auto;
+}
+
+#app::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  background:linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(25,217,255,.018) 48%,
+    transparent 52%,
+    transparent 100%
+  );
+}
+
+/* HEADER */
+header{
+  padding:0 20px;
+  gap:18px;
+  background:
+    linear-gradient(90deg,rgba(9,16,26,.98),rgba(7,13,21,.94));
+  border-bottom:1px solid #20364b;
+  box-shadow:0 8px 30px rgba(0,0,0,.28);
+}
+
+header::after{
+  height:1px;
+  bottom:-1px;
+  opacity:1;
+  background:
+    linear-gradient(90deg,
+      transparent 0%,
+      var(--accent2) 15%,
+      var(--accent3) 50%,
+      var(--accent) 85%,
+      transparent 100%);
+}
+
+header .logo{
+  font-size:16px;
+  letter-spacing:.08em;
+  text-shadow:0 0 18px rgba(25,217,255,.18);
+}
+
+header .logo .dot{
+  width:7px;
+  height:7px;
+  border-radius:50%;
+  box-shadow:0 0 7px 2px var(--accent2-glow);
+  background:var(--accent2);
+}
+
+header .steps{
+  margin-left:4px;
+  color:#62788d;
+}
+
+header .step{
+  padding:7px 13px;
+  border-right:1px solid rgba(41,65,90,.65);
+  letter-spacing:.02em;
+}
+
+header .step .n{color:#3d8ea2;}
+header .step.done .n{color:var(--accent2);}
+header .step.done{color:#b8cad8;}
+
+header .filename{
+  border:1px solid #20364b;
+  background:#050a11;
+  color:#7890a4;
+  border-radius:3px;
+  max-width:270px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* VIEWPORT */
+#viewport{
+  margin:12px 0 12px 12px;
+  border:1px solid #29445d;
+  background:
+    radial-gradient(ellipse at 50% 38%, #111c26 0%, #071018 52%, #04070b 100%);
+  box-shadow:
+    inset 0 0 70px rgba(0,0,0,.34),
+    0 10px 35px rgba(0,0,0,.22);
+  overflow:hidden;
+}
+
+#viewport::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:2;
+  background:
+    linear-gradient(90deg,transparent 49.8%,rgba(25,217,255,.055) 50%,transparent 50.2%),
+    linear-gradient(0deg,transparent 49.8%,rgba(25,217,255,.035) 50%,transparent 50.2%);
+  opacity:.55;
+}
+
+#viewportFrame i{
+  width:30px;
+  height:30px;
+  border-color:var(--accent2);
+  opacity:.7;
+}
+
+#viewportTag{
+  top:16px;
+  left:48px;
+  padding:5px 9px;
+  border-left:2px solid var(--accent2);
+  background:rgba(4,10,16,.65);
+  color:#5fdcf3;
+  letter-spacing:.12em;
+}
+
+#dropHint{
+  z-index:4;
+}
+
+#dropHint .big{
+  font-family:var(--font-hero);
+  font-size:20px;
+  letter-spacing:.08em;
+  text-shadow:0 0 24px rgba(25,217,255,.18);
+}
+
+#dropHint .small{
+  color:#60788c;
+}
+
+/* BARRA DE VISOR */
+#viewportBar{
+  bottom:16px;
+  left:16px;
+}
+
+#viewportBar button{
+  min-width:94px;
+  padding:8px 12px;
+  background:rgba(7,13,21,.88);
+  border:1px solid #29415a;
+  border-radius:4px;
+  color:#9bb0c0;
+  box-shadow:0 4px 15px rgba(0,0,0,.22);
+}
+
+#viewportBar button:hover{
+  border-color:var(--accent2);
+  color:var(--accent2);
+  box-shadow:0 0 12px rgba(25,217,255,.10);
+}
+
+#viewportBar button.active{
+  border-color:var(--accent2);
+  color:#74e8fa;
+  background:rgba(10,65,78,.38);
+  box-shadow:inset 0 0 12px rgba(25,217,255,.08),0 0 10px rgba(25,217,255,.08);
+}
+
+/* SIDEBAR */
+aside{
+  background:
+    linear-gradient(180deg,rgba(9,15,24,.98),rgba(5,10,16,.99));
+  border-left:1px solid #29415a;
+  box-shadow:-14px 0 35px rgba(0,0,0,.18);
+  scrollbar-width:thin;
+  scrollbar-color:#29415a transparent;
+}
+
+.panelSection{
+  padding:17px 19px;
+  border-bottom:1px solid rgba(41,65,90,.58);
+  background:linear-gradient(180deg,rgba(14,23,34,.20),transparent);
+}
+
+.panelSection:hover{
+  background:linear-gradient(180deg,rgba(18,34,48,.28),transparent);
+}
+
+.panelSection h3{
+  margin-bottom:13px;
+  color:#62dff5;
+  font-size:13px;
+  letter-spacing:.16em;
+}
+
+.panelSection h3::before{
+  width:3px;
+  background:linear-gradient(var(--accent2),var(--accent3));
+  box-shadow:0 0 8px rgba(25,217,255,.25);
+}
+
+/* CAMPOS */
+input[type=number],select{
+  background:#050a11;
+  border:1px solid #29415a;
+  border-radius:4px;
+  color:#e5f2fc;
+  box-shadow:inset 0 0 12px rgba(0,0,0,.20);
+}
+
+input[type=number]:hover,select:hover{
+  border-color:#3b5c77;
+}
+
+input[type=number]:focus,select:focus{
+  border-color:var(--accent2);
+  box-shadow:0 0 0 2px rgba(25,217,255,.07), inset 0 0 12px rgba(0,0,0,.25);
+}
+
+input[type=range]{
+  height:3px;
+  border-radius:3px;
+  background-color:#203447;
+}
+
+input[type=range]::-webkit-slider-thumb{
+  width:15px;
+  height:15px;
+  background:#071018;
+  border:2px solid var(--accent);
+  box-shadow:0 0 10px var(--accent-glow);
+}
+
+.field label{
+  color:#6e879b;
+}
+
+.field label .val{
+  color:#63def4;
+}
+
+/* BOTONES */
+.fileBtn,.actionBtn{
+  border-radius:5px;
+  border:1px solid #31506a;
+  background:
+    linear-gradient(180deg,rgba(20,34,48,.95),rgba(9,17,26,.95));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    0 5px 16px rgba(0,0,0,.20);
+}
+
+.fileBtn:hover,.actionBtn:hover:not(:disabled){
+  border-color:var(--accent2);
+  color:var(--accent2);
+  box-shadow:0 0 16px rgba(25,217,255,.10);
+  transform:translateY(-1px);
+}
+
+.actionBtn.primary{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(110deg,#ffbd68,#ff9840 48%,#ff773f);
+  border-color:#ffb15c;
+  color:#160d04;
+  box-shadow:
+    0 0 0 1px rgba(255,165,61,.08),
+    0 7px 25px rgba(255,159,67,.17);
+}
+
+.actionBtn.primary::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:-35%;
+  width:25%;
+  transform:skewX(-18deg);
+  background:rgba(255,255,255,.22);
+  animation:buttonSweep 4.5s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes buttonSweep{
+  0%,58%{left:-35%}
+  75%,100%{left:125%}
+}
+
+.modeToggle{
+  border-color:#29415a;
+  border-radius:4px;
+}
+
+.modeToggle button{
+  background:#081019;
+  color:#6d8497;
+}
+
+.modeToggle button.active{
+  background:linear-gradient(180deg,#0b6173,#0b3c4a);
+  color:#e7fbff;
+  box-shadow:inset 0 0 15px rgba(25,217,255,.10);
+}
+
+/* DATOS */
+#modelSizeInfo,#gridPreview{
+  border-left-color:#2d516b;
+  background:rgba(8,18,27,.35);
+  padding:8px 9px;
+  border-radius:0 3px 3px 0;
+}
+
+.hint{
+  color:#637b8e;
+}
+
+.pieceRow{
+  border-color:#29415a;
+  border-radius:4px;
+  background:linear-gradient(90deg,rgba(15,27,39,.85),rgba(9,16,24,.85));
+}
+
+.pieceRow:hover{
+  border-color:var(--accent2);
+  box-shadow:0 0 12px rgba(25,217,255,.07);
+}
+
+.exportRow2{
+  border-bottom-color:rgba(41,65,90,.5);
+}
+
+.miniBtn,.bundleBtn{
+  border-color:#29415a;
+  border-radius:4px;
+  background:#09121b;
+}
+
+.miniBtn:hover,.bundleBtn:hover{
+  border-color:var(--accent2);
+  color:var(--accent2);
+  box-shadow:0 0 12px rgba(25,217,255,.07);
+}
+
+#status{
+  background:#040910;
+  border-top:1px solid #29415a;
+  color:#668094;
+  min-height:38px;
+  display:flex;
+  align-items:center;
+  line-height:1.4;
+}
+
+#status.ok{
+  color:#55dff5;
+  text-shadow:0 0 10px rgba(25,217,255,.16);
+}
+
+#status.error{
+  color:#ff7188;
+}
+
+/* ERROR */
+#errorBanner{
+  background:rgba(48,10,19,.94);
+  border-color:var(--danger);
+  box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 18px rgba(255,70,101,.08);
+  border-radius:4px;
+}
+
+/* SCROLLBAR */
+aside::-webkit-scrollbar{width:7px}
+aside::-webkit-scrollbar-track{background:#050a10}
+aside::-webkit-scrollbar-thumb{
+  background:#263f55;
+  border-radius:8px;
+}
+aside::-webkit-scrollbar-thumb:hover{background:#37607c}
+
+/* REDUCIR MOVIMIENTO SI EL USUARIO LO PIDE */
+@media (prefers-reduced-motion:reduce){
+  .actionBtn.primary::after{animation:none}
+}
+
+/* RESPONSIVE: en pantallas angostas conserva la herramienta usable */
+@media (max-width:900px){
+  html,body{overflow:auto}
+  #app{
+    height:auto;
+    min-height:100vh;
+    grid-template-columns:1fr;
+    grid-template-rows:64px 58vh auto;
+  }
+  header{grid-column:1;padding:0 14px;overflow:hidden}
+  header .steps{display:none}
+  header .filename{max-width:42vw}
+  #viewport{
+    grid-column:1;
+    margin:10px;
+    min-height:58vh;
+  }
+  aside{
+    grid-column:1;
+    border-left:none;
+    border-top:1px solid #29415a;
+    max-height:none;
+    overflow:visible;
+  }
+}
+
+@media (max-width:560px){
+  header .logo{font-size:13px}
+  #viewport{min-height:52vh}
+  #viewportBar{left:10px;bottom:10px;gap:5px}
+  #viewportBar button{min-width:auto;padding:7px 9px;font-size:10px}
+}
+
 </style>
 </head>
 <body>
@@ -240,17 +700,6 @@
       <input type="file" id="fileInput" accept=".stl,.3mf">
       <div class="hint">Se asume que el modelo ya está orientado con el eje Z hacia arriba (tal como se ve al cargarlo).</div>
       <div id="modelSizeInfo"></div>
-    </div>
-
-    <div class="panelSection" id="colorSection" style="display:none;">
-      <h3>Separar por color</h3>
-      <div id="colorInfo" class="hint"></div>
-      <div class="field" style="margin-top:10px;">
-        <label>Profundidad de pared interior <span class="val" id="wallDepthVal">2.5 mm</span></label>
-        <input type="range" id="wallDepth" min="0.6" max="8" step="0.1" value="2.5">
-      </div>
-      <button class="actionBtn primary" id="btnColorSeparate">Separar por color</button>
-      <div class="hint">Cada pieza queda cerrada de verdad: en el borde con el color vecino, se mete una pared hacia adentro (la profundidad de arriba) y se tapa, así queda un cascarón sólido e imprimible, no una cáscara abierta. Los triángulos con un solo color se separan exactos; los que caen justo en el borde entre dos colores (una minoría) usan una aproximación.</div>
     </div>
 
     <div class="panelSection">
@@ -428,17 +877,15 @@ function parse3MFMeshGeometry(objectEl) {
   }
   const triEls = meshEl.querySelectorAll('triangles > triangle');
   const indices = new Uint32Array(triEls.length * 3);
-  const paintCodes = new Array(triEls.length);
   for (let i = 0; i < triEls.length; i++) {
     indices[i * 3] = parseInt(triEls[i].getAttribute('v1'), 10);
     indices[i * 3 + 1] = parseInt(triEls[i].getAttribute('v2'), 10);
     indices[i * 3 + 2] = parseInt(triEls[i].getAttribute('v3'), 10);
-    paintCodes[i] = triEls[i].getAttribute('paint_color') || '';
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geo.setIndex(new THREE.BufferAttribute(indices, 1));
-  return { geometry: geo, paintCodes };
+  return geo;
 }
 async function parse3MF(arrayBuffer) {
   const zip = await JSZip.loadAsync(arrayBuffer);
@@ -462,8 +909,8 @@ async function parse3MF(arrayBuffer) {
     const objectEl = doc.querySelector('resources > object[id="' + objectId + '"]');
     if (!objectEl) throw new Error('No se encontró el objeto id="' + objectId + '" en ' + docPath);
 
-    const meshResult = parse3MFMeshGeometry(objectEl);
-    if (meshResult) out.push({ geometry: meshResult.geometry, matrix: parentMatrix, paintCodes: meshResult.paintCodes });
+    const meshGeo = parse3MFMeshGeometry(objectEl);
+    if (meshGeo) out.push({ geometry: meshGeo, matrix: parentMatrix });
 
     const componentsEl = objectEl.querySelector('components');
     if (componentsEl) {
@@ -503,8 +950,7 @@ async function parse3MF(arrayBuffer) {
     const merged = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
     merged.computeBoundingBox();
     const size = new THREE.Vector3(); merged.boundingBox.getSize(size);
-    const paintCodes = resolved.length === 1 ? resolved[0].paintCodes : resolved.flatMap((r) => r.paintCodes);
-    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z), paintCodes });
+    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z) });
   }
   if (!groups.length) throw new Error('No se encontraron mallas dentro del 3MF.');
 
@@ -512,7 +958,7 @@ async function parse3MF(arrayBuffer) {
   if (groups.length > 1) {
     console.warn('3MF con ' + groups.length + ' objetos de nivel superior — se cargó el más grande y se ignoraron ' + (groups.length - 1) + ' más chico(s).');
   }
-  return { geometry: groups[0].geometry, discarded: groups.length - 1, paintCodes: groups[0].paintCodes };
+  return { geometry: groups[0].geometry, discarded: groups.length - 1 };
 }
 
 async function loadFile(file) {
@@ -526,14 +972,12 @@ async function loadFile(file) {
     const buffer = await file.arrayBuffer();
     let geometry;
     let discardedNote = '';
-    let paintCodes = null;
 
     if (ext === 'stl') {
       geometry = new STLLoader().parse(buffer);
     } else {
       const result = await parse3MF(buffer);
       geometry = result.geometry;
-      paintCodes = result.paintCodes || null;
       if (result.discarded > 0) {
         discardedNote = ' (el archivo tenía ' + (result.discarded + 1) + ' objetos — se cargó el más grande y se ignoraron ' + result.discarded + ' más chico(s), probablemente piezas de referencia de otra placa)';
       }
@@ -544,8 +988,7 @@ async function loadFile(file) {
 
     // suelda vértices duplicados/sueltos (típico en STL, donde cada triángulo trae sus propios
     // vértices aunque coincidan con los del vecino) — sin esto, los cortes booleanos posteriores
-    // pueden dejar la malla mal cerrada en las costuras. No reordena triángulos, así que
-    // paintCodes (uno por triángulo, en el mismo orden) sigue siendo válido después de esto.
+    // pueden dejar la malla mal cerrada en las costuras
     geometry = mergeVertices(geometry, 1e-5);
 
     geometry.computeVertexNormals();
@@ -557,7 +1000,6 @@ async function loadFile(file) {
     geometry.computeBoundingSphere();
 
     state.originalGeometry = geometry;
-    state.paintCodes = paintCodes;
     state.baseName = file.name.replace(/\.(stl|3mf)$/i, '');
     const size = new THREE.Vector3(); geometry.boundingBox.getSize(size);
     state.modelSize = Math.max(size.x, size.y, size.z);
@@ -576,7 +1018,6 @@ async function loadFile(file) {
       'Tamaño original: ' + size.x.toFixed(1) + ' × ' + size.y.toFixed(1) + ' × ' + size.z.toFixed(1) + ' mm (alto = eje Z)';
     markStep(2);
     updateGridPreview();
-    updateColorSectionInfo();
     frameCamera();
     setStatus('Modelo cargado' + discardedNote + '. Definí la altura final y presioná "Escalar y dividir".', 'ok');
   } catch (err) {
@@ -594,241 +1035,6 @@ function frameCamera() {
   camera.updateProjectionMatrix();
 }
 document.getElementById('btnFrame').addEventListener('click', frameCamera);
-
-// ---------- separar por color (pintado multicolor de Bambu/PrusaSlicer) ----------
-// Cada triángulo puede traer un atributo paint_color en el 3MF. Si es un solo carácter
-// hex, todo el triángulo tiene ese color/extruder — eso se decodifica exacto. Si es un
-// código más largo (el pincel dividió el triángulo en el borde entre dos colores), no
-// tenemos el algoritmo exacto de PrusaSlicer para esos casos — se aproxima usando el
-// último carácter del código como el color "dominante" de ese triángulo.
-function decodePaintColor(code) {
-  if (!code) return 0; // sin atributo = color base (sin pintar)
-  const c = code[code.length - 1];
-  const v = parseInt(c, 16);
-  return Number.isNaN(v) ? 0 : v;
-}
-
-function updateColorSectionInfo() {
-  const section = document.getElementById('colorSection');
-  const codes = state.paintCodes;
-  if (!codes || !codes.length) { section.style.display = 'none'; return; }
-
-  const colorSet = new Set();
-  let paintedCount = 0, exactCount = 0, approxCount = 0;
-  codes.forEach((c) => {
-    if (c) {
-      paintedCount++;
-      if (c.length > 1) approxCount++; else exactCount++;
-    }
-    colorSet.add(decodePaintColor(c));
-  });
-  if (colorSet.size <= 1) { section.style.display = 'none'; return; }
-
-  section.style.display = 'block';
-  document.getElementById('colorInfo').textContent =
-    colorSet.size + ' colores detectados (incluyendo el base sin pintar). ' +
-    paintedCount.toLocaleString('es') + ' de ' + codes.length.toLocaleString('es') + ' triángulos están pintados: ' +
-    exactCount.toLocaleString('es') + ' exactos, ' + approxCount.toLocaleString('es') + ' aproximados en bordes.';
-}
-
-// arma una malla independiente (vértices propios, no compartidos) a partir de una lista
-// de índices de triángulo del geometry original — necesario para que cada pieza tenga su
-// propio bounding box correcto, no el del modelo completo
-function buildCompactGeometryFromTriangles(sourceGeometry, triangleIndices) {
-  const srcPos = sourceGeometry.attributes.position;
-  const srcIdx = sourceGeometry.index;
-  const vertexMap = new Map();
-  const newPositions = [];
-  const newIndices = new Uint32Array(triangleIndices.length * 3);
-  let cursor = 0;
-  for (let k = 0; k < triangleIndices.length; k++) {
-    const t = triangleIndices[k];
-    for (let c = 0; c < 3; c++) {
-      const oldIdx = srcIdx.getX(t * 3 + c);
-      let newIdx = vertexMap.get(oldIdx);
-      if (newIdx === undefined) {
-        newIdx = newPositions.length / 3;
-        newPositions.push(srcPos.getX(oldIdx), srcPos.getY(oldIdx), srcPos.getZ(oldIdx));
-        vertexMap.set(oldIdx, newIdx);
-      }
-      newIndices[cursor++] = newIdx;
-    }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newPositions), 3));
-  g.setIndex(new THREE.BufferAttribute(newIndices, 1));
-  g.computeVertexNormals();
-  return g;
-}
-
-// Un "parche" de color extraído del modelo original es solo un pedazo de cáscara, sin
-// espesor propio: donde se cortó del color vecino queda un borde abierto. Esta función
-// encuentra esos bordes, y para cada uno mete una pared hacia adentro (siguiendo la normal
-// local de cada vértice) hasta "profundidad" mm, y tapa el extremo con una superficie
-// triangulada — así la pieza queda como un cascarón sólido y cerrado, imprimible.
-function closeOpenBoundaries(geometry, depth) {
-  geometry.computeVertexNormals();
-  const pos = geometry.attributes.position;
-  const norm = geometry.attributes.normal;
-  const idx = geometry.index;
-  const triCount = idx.count / 3;
-
-  const directedEdges = new Set();
-  for (let t = 0; t < triCount; t++) {
-    const a = idx.getX(t * 3), b = idx.getX(t * 3 + 1), c = idx.getX(t * 3 + 2);
-    directedEdges.add(a + '_' + b);
-    directedEdges.add(b + '_' + c);
-    directedEdges.add(c + '_' + a);
-  }
-  const boundaryEdges = [];
-  directedEdges.forEach((key) => {
-    const parts = key.split('_');
-    const a = parseInt(parts[0], 10), b = parseInt(parts[1], 10);
-    if (!directedEdges.has(b + '_' + a)) boundaryEdges.push([a, b]);
-  });
-  if (!boundaryEdges.length) return geometry; // ya estaba cerrada, no hace falta nada
-
-  const nextMap = new Map();
-  boundaryEdges.forEach(([a, b]) => nextMap.set(a, b));
-  const visited = new Set();
-  const loops = [];
-  boundaryEdges.forEach(([a]) => {
-    if (visited.has(a)) return;
-    const loop = [];
-    let cur = a, guard = 0;
-    while (cur !== undefined && !visited.has(cur) && guard < boundaryEdges.length + 5) {
-      visited.add(cur);
-      loop.push(cur);
-      cur = nextMap.get(cur);
-      guard++;
-    }
-    if (loop.length >= 3) loops.push(loop);
-  });
-
-  const positions = Array.from(pos.array);
-  const indices = Array.from(idx.array);
-  let vertCount = pos.count;
-
-  loops.forEach((loop) => {
-    const n = loop.length;
-    const innerStart = vertCount;
-    for (let i = 0; i < n; i++) {
-      const vi = loop[i];
-      const nx = norm.getX(vi), ny = norm.getY(vi), nz = norm.getZ(vi);
-      positions.push(pos.getX(vi) - nx * depth, pos.getY(vi) - ny * depth, pos.getZ(vi) - nz * depth);
-    }
-    for (let i = 0; i < n; i++) {
-      const a = loop[i], b = loop[(i + 1) % n];
-      const ai = innerStart + i, bi = innerStart + ((i + 1) % n);
-      indices.push(a, b, bi);
-      indices.push(a, bi, ai);
-    }
-    // tapa del extremo interior: proyecta a un plano local y triangula
-    const innerIdx = Array.from({ length: n }, (_, i) => innerStart + i);
-    const pts3d = innerIdx.map((vi) => new THREE.Vector3(positions[vi * 3], positions[vi * 3 + 1], positions[vi * 3 + 2]));
-    const nrm = new THREE.Vector3();
-    for (let i = 0; i < n; i++) {
-      const p1 = pts3d[i], p2 = pts3d[(i + 1) % n];
-      nrm.x += (p1.y - p2.y) * (p1.z + p2.z);
-      nrm.y += (p1.z - p2.z) * (p1.x + p2.x);
-      nrm.z += (p1.x - p2.x) * (p1.y + p2.y);
-    }
-    if (nrm.lengthSq() < 1e-12) { vertCount += n; return; }
-    nrm.normalize();
-    const helper = Math.abs(nrm.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
-    const u = new THREE.Vector3().crossVectors(helper, nrm).normalize();
-    const v = new THREE.Vector3().crossVectors(nrm, u).normalize();
-    const pts2d = pts3d.map((p) => new THREE.Vector2(p.dot(u), p.dot(v)));
-    const capTris = THREE.ShapeUtils.triangulateShape(pts2d, []);
-    capTris.forEach(([ia, ib, ic]) => { indices.push(innerIdx[ia], innerIdx[ic], innerIdx[ib]); });
-    vertCount += n;
-  });
-
-  const g2 = new THREE.BufferGeometry();
-  g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
-  g2.setIndex(indices);
-  return g2;
-}
-
-// suma con la fórmula del divergente: si da negativo, toda la malla quedó "al revés"
-// (normales para adentro) y hay que invertir el orden de cada triángulo
-function fixOutwardWinding(geometry) {
-  const pos = geometry.attributes.position;
-  const idx = geometry.index;
-  let vol = 0;
-  for (let t = 0; t < idx.count / 3; t++) {
-    const ia = idx.getX(t * 3), ib = idx.getX(t * 3 + 1), ic = idx.getX(t * 3 + 2);
-    const ax = pos.getX(ia), ay = pos.getY(ia), az = pos.getZ(ia);
-    const bx = pos.getX(ib), by = pos.getY(ib), bz = pos.getZ(ib);
-    const cx = pos.getX(ic), cy = pos.getY(ic), cz = pos.getZ(ic);
-    vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
-  }
-  if (vol < 0) {
-    const arr = idx.array;
-    for (let t = 0; t < arr.length; t += 3) { const tmp = arr[t + 1]; arr[t + 1] = arr[t + 2]; arr[t + 2] = tmp; }
-    idx.needsUpdate = true;
-  }
-  geometry.computeVertexNormals();
-}
-
-document.getElementById('wallDepth').addEventListener('input', (e) => {
-  document.getElementById('wallDepthVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
-});
-
-document.getElementById('btnColorSeparate').addEventListener('click', () => {
-  if (!state.originalGeometry || !state.paintCodes) return;
-  setStatus('Separando por color…');
-  document.getElementById('btnColorSeparate').disabled = true;
-  setTimeout(runColorSeparate, 30);
-});
-
-function runColorSeparate() {
-  try {
-    const geo = state.originalGeometry;
-    const codes = state.paintCodes;
-    const triCount = geo.index.count / 3;
-    if (codes.length !== triCount) {
-      throw new Error('La cantidad de triángulos no coincide con los datos de color leídos — probá recargar el archivo.');
-    }
-    const wallDepth = parseFloat(document.getElementById('wallDepth').value) || 2.5;
-
-    const groupsByColor = new Map();
-    for (let t = 0; t < triCount; t++) {
-      const colorIdx = decodePaintColor(codes[t]);
-      if (!groupsByColor.has(colorIdx)) groupsByColor.set(colorIdx, []);
-      groupsByColor.get(colorIdx).push(t);
-    }
-
-    const sortedColors = Array.from(groupsByColor.keys()).sort((a, b) => a - b);
-    paletteIdx = 0;
-    const newPieces = sortedColors.map((colorIdx, i) => {
-      const triList = groupsByColor.get(colorIdx);
-      let g = buildCompactGeometryFromTriangles(geo, triList);
-      g = closeOpenBoundaries(g, wallDepth);
-      fixOutwardWinding(g);
-      const label = colorIdx === 0 ? 'sin-pintar' : 'color-' + colorIdx.toString(16).toUpperCase();
-      return {
-        id: i + 1, name: label, geometry: g,
-        material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08 }),
-      };
-    });
-
-    state.pieces = newPieces;
-    state.modelSize = Math.max(state.modelSize, 1);
-    rebuildPiecesScene();
-    updatePiecesPanel();
-    updateExportList();
-    document.getElementById('exportSection').style.display = 'block';
-    document.getElementById('btnColorSeparate').disabled = false;
-    markStep(4);
-    frameCamera();
-    setStatus('Separado en ' + newPieces.length + ' piezas por color, cada una cerrada con pared de ' + wallDepth.toFixed(1) + ' mm. Los bordes entre colores son una aproximación — revisalas antes de imprimir.', 'ok');
-  } catch (err) {
-    console.error(err);
-    document.getElementById('btnColorSeparate').disabled = false;
-    setStatus('Error al separar por color: ' + err.message, 'error');
-  }
-}
 
 // ---------- render de piezas ----------
 function rebuildPiecesScene() {
