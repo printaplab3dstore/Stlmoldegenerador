@@ -245,8 +245,12 @@
     <div class="panelSection" id="colorSection" style="display:none;">
       <h3>Separar por color</h3>
       <div id="colorInfo" class="hint"></div>
-      <button class="actionBtn primary" id="btnColorSeparate" style="margin-top:10px;">Separar por color</button>
-      <div class="hint">Reemplaza las piezas actuales por una pieza nueva por cada color pintado en el 3MF. Los triángulos con un solo color se separan exactos; los que caen justo en el borde entre dos colores (una minoría) usan una aproximación — quedan del lado del último color detectado ahí. Si alguna pieza de color no entra en tu cama, exportala y volvé a cargarla sola para dividirla con "Escalar y dividir".</div>
+      <div class="field" style="margin-top:10px;">
+        <label>Profundidad de pared interior <span class="val" id="wallDepthVal">2.5 mm</span></label>
+        <input type="range" id="wallDepth" min="0.6" max="8" step="0.1" value="2.5">
+      </div>
+      <button class="actionBtn primary" id="btnColorSeparate">Separar por color</button>
+      <div class="hint">Cada pieza queda cerrada de verdad: en el borde con el color vecino, se mete una pared hacia adentro (la profundidad de arriba) y se tapa, así queda un cascarón sólido e imprimible, no una cáscara abierta. Los triángulos con un solo color se separan exactos; los que caen justo en el borde entre dos colores (una minoría) usan una aproximación.</div>
     </div>
 
     <div class="panelSection">
@@ -657,6 +661,120 @@ function buildCompactGeometryFromTriangles(sourceGeometry, triangleIndices) {
   return g;
 }
 
+// Un "parche" de color extraído del modelo original es solo un pedazo de cáscara, sin
+// espesor propio: donde se cortó del color vecino queda un borde abierto. Esta función
+// encuentra esos bordes, y para cada uno mete una pared hacia adentro (siguiendo la normal
+// local de cada vértice) hasta "profundidad" mm, y tapa el extremo con una superficie
+// triangulada — así la pieza queda como un cascarón sólido y cerrado, imprimible.
+function closeOpenBoundaries(geometry, depth) {
+  geometry.computeVertexNormals();
+  const pos = geometry.attributes.position;
+  const norm = geometry.attributes.normal;
+  const idx = geometry.index;
+  const triCount = idx.count / 3;
+
+  const directedEdges = new Set();
+  for (let t = 0; t < triCount; t++) {
+    const a = idx.getX(t * 3), b = idx.getX(t * 3 + 1), c = idx.getX(t * 3 + 2);
+    directedEdges.add(a + '_' + b);
+    directedEdges.add(b + '_' + c);
+    directedEdges.add(c + '_' + a);
+  }
+  const boundaryEdges = [];
+  directedEdges.forEach((key) => {
+    const parts = key.split('_');
+    const a = parseInt(parts[0], 10), b = parseInt(parts[1], 10);
+    if (!directedEdges.has(b + '_' + a)) boundaryEdges.push([a, b]);
+  });
+  if (!boundaryEdges.length) return geometry; // ya estaba cerrada, no hace falta nada
+
+  const nextMap = new Map();
+  boundaryEdges.forEach(([a, b]) => nextMap.set(a, b));
+  const visited = new Set();
+  const loops = [];
+  boundaryEdges.forEach(([a]) => {
+    if (visited.has(a)) return;
+    const loop = [];
+    let cur = a, guard = 0;
+    while (cur !== undefined && !visited.has(cur) && guard < boundaryEdges.length + 5) {
+      visited.add(cur);
+      loop.push(cur);
+      cur = nextMap.get(cur);
+      guard++;
+    }
+    if (loop.length >= 3) loops.push(loop);
+  });
+
+  const positions = Array.from(pos.array);
+  const indices = Array.from(idx.array);
+  let vertCount = pos.count;
+
+  loops.forEach((loop) => {
+    const n = loop.length;
+    const innerStart = vertCount;
+    for (let i = 0; i < n; i++) {
+      const vi = loop[i];
+      const nx = norm.getX(vi), ny = norm.getY(vi), nz = norm.getZ(vi);
+      positions.push(pos.getX(vi) - nx * depth, pos.getY(vi) - ny * depth, pos.getZ(vi) - nz * depth);
+    }
+    for (let i = 0; i < n; i++) {
+      const a = loop[i], b = loop[(i + 1) % n];
+      const ai = innerStart + i, bi = innerStart + ((i + 1) % n);
+      indices.push(a, b, bi);
+      indices.push(a, bi, ai);
+    }
+    // tapa del extremo interior: proyecta a un plano local y triangula
+    const innerIdx = Array.from({ length: n }, (_, i) => innerStart + i);
+    const pts3d = innerIdx.map((vi) => new THREE.Vector3(positions[vi * 3], positions[vi * 3 + 1], positions[vi * 3 + 2]));
+    const nrm = new THREE.Vector3();
+    for (let i = 0; i < n; i++) {
+      const p1 = pts3d[i], p2 = pts3d[(i + 1) % n];
+      nrm.x += (p1.y - p2.y) * (p1.z + p2.z);
+      nrm.y += (p1.z - p2.z) * (p1.x + p2.x);
+      nrm.z += (p1.x - p2.x) * (p1.y + p2.y);
+    }
+    if (nrm.lengthSq() < 1e-12) { vertCount += n; return; }
+    nrm.normalize();
+    const helper = Math.abs(nrm.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+    const u = new THREE.Vector3().crossVectors(helper, nrm).normalize();
+    const v = new THREE.Vector3().crossVectors(nrm, u).normalize();
+    const pts2d = pts3d.map((p) => new THREE.Vector2(p.dot(u), p.dot(v)));
+    const capTris = THREE.ShapeUtils.triangulateShape(pts2d, []);
+    capTris.forEach(([ia, ib, ic]) => { indices.push(innerIdx[ia], innerIdx[ic], innerIdx[ib]); });
+    vertCount += n;
+  });
+
+  const g2 = new THREE.BufferGeometry();
+  g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  g2.setIndex(indices);
+  return g2;
+}
+
+// suma con la fórmula del divergente: si da negativo, toda la malla quedó "al revés"
+// (normales para adentro) y hay que invertir el orden de cada triángulo
+function fixOutwardWinding(geometry) {
+  const pos = geometry.attributes.position;
+  const idx = geometry.index;
+  let vol = 0;
+  for (let t = 0; t < idx.count / 3; t++) {
+    const ia = idx.getX(t * 3), ib = idx.getX(t * 3 + 1), ic = idx.getX(t * 3 + 2);
+    const ax = pos.getX(ia), ay = pos.getY(ia), az = pos.getZ(ia);
+    const bx = pos.getX(ib), by = pos.getY(ib), bz = pos.getZ(ib);
+    const cx = pos.getX(ic), cy = pos.getY(ic), cz = pos.getZ(ic);
+    vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
+  }
+  if (vol < 0) {
+    const arr = idx.array;
+    for (let t = 0; t < arr.length; t += 3) { const tmp = arr[t + 1]; arr[t + 1] = arr[t + 2]; arr[t + 2] = tmp; }
+    idx.needsUpdate = true;
+  }
+  geometry.computeVertexNormals();
+}
+
+document.getElementById('wallDepth').addEventListener('input', (e) => {
+  document.getElementById('wallDepthVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
+});
+
 document.getElementById('btnColorSeparate').addEventListener('click', () => {
   if (!state.originalGeometry || !state.paintCodes) return;
   setStatus('Separando por color…');
@@ -672,6 +790,7 @@ function runColorSeparate() {
     if (codes.length !== triCount) {
       throw new Error('La cantidad de triángulos no coincide con los datos de color leídos — probá recargar el archivo.');
     }
+    const wallDepth = parseFloat(document.getElementById('wallDepth').value) || 2.5;
 
     const groupsByColor = new Map();
     for (let t = 0; t < triCount; t++) {
@@ -684,7 +803,9 @@ function runColorSeparate() {
     paletteIdx = 0;
     const newPieces = sortedColors.map((colorIdx, i) => {
       const triList = groupsByColor.get(colorIdx);
-      const g = buildCompactGeometryFromTriangles(geo, triList);
+      let g = buildCompactGeometryFromTriangles(geo, triList);
+      g = closeOpenBoundaries(g, wallDepth);
+      fixOutwardWinding(g);
       const label = colorIdx === 0 ? 'sin-pintar' : 'color-' + colorIdx.toString(16).toUpperCase();
       return {
         id: i + 1, name: label, geometry: g,
@@ -701,7 +822,7 @@ function runColorSeparate() {
     document.getElementById('btnColorSeparate').disabled = false;
     markStep(4);
     frameCamera();
-    setStatus('Separado en ' + newPieces.length + ' piezas por color. Recordá: los bordes entre colores son una aproximación.', 'ok');
+    setStatus('Separado en ' + newPieces.length + ' piezas por color, cada una cerrada con pared de ' + wallDepth.toFixed(1) + ' mm. Los bordes entre colores son una aproximación — revisalas antes de imprimir.', 'ok');
   } catch (err) {
     console.error(err);
     document.getElementById('btnColorSeparate').disabled = false;
