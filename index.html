@@ -281,12 +281,8 @@
       <div id="gridPreview"></div>
     </div>
 
-    <div class="panelSection" id="connectorsSection">
-      <h3>Conectores en los cortes</h3>
-      <div class="field" style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-        <input type="checkbox" id="connEnabled" style="width:16px;height:16px;accent-color:var(--accent);">
-        <label style="margin:0;font-family:var(--font-mono);font-size:11.5px;color:var(--text);text-transform:none;letter-spacing:normal;">Agregar clavijas y encastres automáticos</label>
-      </div>
+    <div class="panelSection">
+      <h3>Ajustes de conector</h3>
       <div class="field">
         <label>Forma</label>
         <select id="connShape">
@@ -300,27 +296,31 @@
         <div class="field"><label>Profundidad <span class="val" id="connDepthVal">3 mm</span></label>
           <input type="range" id="connDepth" min="1" max="8" step="0.5" value="3"></div>
       </div>
-      <div class="row2">
-        <div class="field"><label>Holgura <span class="val" id="connClearanceVal">0.15 mm</span></label>
-          <input type="range" id="connClearance" min="0" max="0.5" step="0.05" value="0.15"></div>
-        <div class="field"><label>Margen borde <span class="val" id="connMarginVal">8 mm</span></label>
-          <input type="range" id="connMargin" min="2" max="25" step="1" value="8"></div>
-      </div>
       <div class="field">
-        <label>Espaciado entre conectores <span class="val" id="connSpacingVal">35 mm</span></label>
-        <input type="range" id="connSpacing" min="15" max="80" step="5" value="35">
+        <label>Holgura <span class="val" id="connClearanceVal">0.15 mm</span></label>
+        <input type="range" id="connClearance" min="0" max="0.5" step="0.05" value="0.15">
       </div>
-      <div class="hint">Reparte automáticamente clavijas (en una mitad de cada corte) y sus encastres (en la otra) sobre el área sólida de esa cara, como el conector de Bambu Studio. Es una ubicación automática aproximada: revisá el resultado en el visor antes de imprimir, sobre todo en piezas con formas muy irregulares o paredes finas. Con muchos cortes, activar esto hace el proceso más lento.</div>
+      <div class="hint">Esta forma y tamaño se usan cuando coloques conectores a mano después de dividir (paso más abajo, "Conectores"). Podés cambiarlos entre un conector y otro.</div>
     </div>
 
     <div class="panelSection">
       <button class="actionBtn primary" id="btnAutoSlice" disabled>Escalar y dividir</button>
-      <div class="hint" id="sliceHint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples, sin pines ni encastres — pensado para pegar las piezas después.</div>
+      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples — los conectores se agregan después, a mano, sobre las piezas ya cortadas.</div>
     </div>
 
     <div class="panelSection" id="piecesSection" style="display:none;">
       <h3>Piezas resultantes</h3>
       <div id="piecesList"></div>
+    </div>
+
+    <div class="panelSection" id="connectorsSection" style="display:none;">
+      <h3>Conectores</h3>
+      <button class="actionBtn" id="btnPlaceConn">Colocar conector</button>
+      <div class="hint">Con el modo activo, pasá el mouse sobre una costura entre dos piezas: se ve en vivo dónde quedaría (verde = entra bien, rojo = no entra ahí). Hacé clic para confirmarlo. Podés seguir rotando la vista con clic y arrastre normalmente; solo un clic corto sobre una costura coloca un conector.</div>
+      <div id="connectorsList" style="margin-top:10px;"></div>
+      <div class="hint" id="connCountLabel">Todavía no marcaste ningún conector.</div>
+      <button class="bundleBtn" id="btnApplyConnectors" disabled style="margin-top:8px;">Aplicar conectores a las piezas</button>
+      <div class="hint">Recién al aplicar se cortan de verdad las clavijas y encastres en las piezas (antes solo son marcas de vista previa).</div>
     </div>
 
     <div class="panelSection" id="exportSection" style="display:none;">
@@ -367,6 +367,9 @@ const state = {
   wireframe: false,
   baseName: 'modelo',
   pieces: [], // { id, name, geometry, material, mesh }
+  pendingConnectors: [], // { id, marker, axis, coord, u, v, pieceBId, pieceAId, shape, size, depth, clearance }
+  nextConnectorId: 1,
+  placementMode: false,
 };
 
 const PALETTE = [0xff7a29, 0x29c7ff, 0x8a4fff, 0x4fd17a, 0xffd24f, 0xff4f88, 0x4fc3ff, 0xd6ff4f];
@@ -595,11 +598,13 @@ async function loadFile(file) {
     state.modelSize = Math.max(size.x, size.y, size.z);
 
     paletteIdx = 0;
+    resetConnectors();
     state.pieces = [{ id: 1, name: '1', geometry, material: new THREE.MeshStandardMaterial({ color: 0x9aa4ad, roughness: 0.55, metalness: 0.08 }) }];
     rebuildPiecesScene();
     updatePiecesPanel();
     document.getElementById('exportSection').style.display = 'none';
     document.getElementById('piecesSection').style.display = 'none';
+    document.getElementById('connectorsSection').style.display = 'none';
 
     document.getElementById('filenameLabel').textContent = file.name;
     document.getElementById('dropHint').classList.add('hidden');
@@ -896,6 +901,239 @@ document.getElementById('btnExplode').addEventListener('click', (e) => {
   updateExplode();
 });
 
+// ---------- conectores: colocación manual con vista previa en vivo ----------
+// Un conector vive en una costura plana entre dos piezas ya cortadas (siempre
+// perpendicular a x, y o z, porque así corta esta herramienta). Al pasar el mouse
+// sobre una costura se tira un rayo de cámara contra las piezas, se detecta en qué
+// eje está esa cara y se busca la pieza vecina que la comparte; si el conector
+// entra con margen en las dos piezas, el punto es válido y se muestra en verde.
+const connectorsGroup = new THREE.Group();
+scene.add(connectorsGroup);
+
+let ghostMesh = null;
+function ensureGhostMesh() {
+  if (ghostMesh) return ghostMesh;
+  ghostMesh = new THREE.Mesh(
+    new THREE.SphereGeometry(1, 12, 8),
+    new THREE.MeshBasicMaterial({ color: 0x2ee6a8, transparent: true, opacity: 0.6, depthTest: false })
+  );
+  ghostMesh.visible = false;
+  ghostMesh.renderOrder = 999;
+  scene.add(ghostMesh);
+  return ghostMesh;
+}
+
+function computeSiteFromEvent(evt) {
+  if (!state.placementMode || state.pieces.length < 2) return null;
+  const meshes = state.pieces.map((p) => p.mesh).filter(Boolean);
+  if (!meshes.length) return null;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const ndc = new THREE.Vector2(
+    ((evt.clientX - rect.left) / rect.width) * 2 - 1,
+    -((evt.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  const rc = new THREE.Raycaster();
+  rc.setFromCamera(ndc, camera);
+  const hits = rc.intersectObjects(meshes, false);
+  if (!hits.length) return null;
+  const hit = hits[0];
+  const clickedPiece = state.pieces.find((p) => p.mesh === hit.object);
+  if (!clickedPiece || !hit.face) return null;
+
+  const point = hit.point.clone().sub(hit.object.position); // vuelve a coords "reales" de la geometría (por si está en vista separada)
+  const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
+  const axisNames = ['x', 'y', 'z'];
+  let axis = null, best = 0.9;
+  for (const a of axisNames) { const d = Math.abs(normal[a]); if (d > best) { best = d; axis = a; } }
+  if (!axis) return { valid: false, point };
+
+  const cfg = readConnectorPlacementConfig();
+  const radius = cfg.size / 2;
+  const sign = normal[axis] > 0 ? 1 : -1;
+  clickedPiece.geometry.computeBoundingBox();
+  const bb = clickedPiece.geometry.boundingBox;
+  const coord = sign > 0 ? bb.max[axis] : bb.min[axis];
+  const others = axisNames.filter((a) => a !== axis);
+  const u = point[others[0]], v = point[others[1]];
+
+  const ownOk = u > bb.min[others[0]] + radius && u < bb.max[others[0]] - radius &&
+                v > bb.min[others[1]] + radius && v < bb.max[others[1]] - radius;
+  if (!ownOk) return { valid: false, point };
+
+  const TOL = 0.05;
+  const neighbor = state.pieces.find((p) => {
+    if (p === clickedPiece) return false;
+    p.geometry.computeBoundingBox();
+    const nb = p.geometry.boundingBox;
+    const touches = sign > 0 ? Math.abs(nb.min[axis] - coord) < TOL : Math.abs(nb.max[axis] - coord) < TOL;
+    if (!touches) return false;
+    return u > nb.min[others[0]] + radius && u < nb.max[others[0]] - radius &&
+           v > nb.min[others[1]] + radius && v < nb.max[others[1]] - radius;
+  });
+  if (!neighbor) return { valid: false, point };
+
+  const pieceB = sign > 0 ? clickedPiece : neighbor; // lado negativo del eje: lleva la clavija
+  const pieceA = sign > 0 ? neighbor : clickedPiece; // lado positivo del eje: lleva el encastre
+  return {
+    valid: true, point, axis, coord, u, v,
+    pieceBId: pieceB.id, pieceAId: pieceA.id,
+    shape: cfg.shape, size: cfg.size, depth: cfg.depth, clearance: cfg.clearance,
+  };
+}
+
+function updateGhostPreview(site) {
+  const mesh = ensureGhostMesh();
+  if (!site) { mesh.visible = false; return; }
+  mesh.geometry.dispose();
+  if (site.valid) {
+    mesh.geometry = connectorProfileGeometry(site.shape, site.size / 2, site.depth * 2);
+    const others = ['x', 'y', 'z'].filter((a) => a !== site.axis);
+    mesh.position.set(0, 0, 0);
+    mesh.position[others[0]] = site.u; mesh.position[others[1]] = site.v; mesh.position[site.axis] = site.coord;
+    const normal = new THREE.Vector3(); normal[site.axis] = 1;
+    mesh.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal));
+    mesh.material.color.set(0x2ee6a8);
+  } else {
+    mesh.geometry = new THREE.SphereGeometry(1.4, 12, 8);
+    mesh.position.copy(site.point);
+    mesh.quaternion.identity();
+    mesh.material.color.set(0xff3b5c);
+  }
+  mesh.visible = true;
+}
+
+function commitConnector(site) {
+  const marker = new THREE.Mesh(
+    connectorProfileGeometry(site.shape, site.size / 2, site.depth * 2),
+    new THREE.MeshStandardMaterial({ color: 0x2ee6a8, roughness: 0.35, metalness: 0.15, transparent: true, opacity: 0.85 })
+  );
+  const others = ['x', 'y', 'z'].filter((a) => a !== site.axis);
+  marker.position[others[0]] = site.u; marker.position[others[1]] = site.v; marker.position[site.axis] = site.coord;
+  const normal = new THREE.Vector3(); normal[site.axis] = 1;
+  marker.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal));
+  connectorsGroup.add(marker);
+
+  state.pendingConnectors.push({
+    id: state.nextConnectorId++, marker,
+    axis: site.axis, coord: site.coord, u: site.u, v: site.v,
+    pieceBId: site.pieceBId, pieceAId: site.pieceAId,
+    shape: site.shape, size: site.size, depth: site.depth, clearance: site.clearance,
+  });
+  updateConnectorsList();
+}
+
+function removeConnector(id) {
+  const idx = state.pendingConnectors.findIndex((c) => c.id === id);
+  if (idx === -1) return;
+  connectorsGroup.remove(state.pendingConnectors[idx].marker);
+  state.pendingConnectors.splice(idx, 1);
+  updateConnectorsList();
+}
+
+function resetConnectors() {
+  state.pendingConnectors.forEach((c) => connectorsGroup.remove(c.marker));
+  state.pendingConnectors = [];
+  state.placementMode = false;
+  const btn = document.getElementById('btnPlaceConn');
+  if (btn) { btn.classList.remove('active'); btn.textContent = 'Colocar conector'; }
+  if (ghostMesh) ghostMesh.visible = false;
+  updateConnectorsList();
+}
+
+function updateConnectorsList() {
+  const list = document.getElementById('connectorsList');
+  const applyBtn = document.getElementById('btnApplyConnectors');
+  const countLabel = document.getElementById('connCountLabel');
+  if (!list) return;
+  list.innerHTML = '';
+  state.pendingConnectors.forEach((c) => {
+    const pB = state.pieces.find((p) => p.id === c.pieceBId);
+    const pA = state.pieces.find((p) => p.id === c.pieceAId);
+    const row = document.createElement('div');
+    row.className = 'exportRow2';
+    const lbl = document.createElement('span'); lbl.className = 'lbl';
+    lbl.textContent = 'Pieza ' + (pB ? pB.name : '?') + ' ↔ Pieza ' + (pA ? pA.name : '?') + ' (eje ' + c.axis.toUpperCase() + ')';
+    const btn = document.createElement('button'); btn.className = 'miniBtn'; btn.textContent = '✕';
+    btn.addEventListener('click', () => removeConnector(c.id));
+    row.appendChild(lbl); row.appendChild(btn);
+    list.appendChild(row);
+  });
+  applyBtn.disabled = state.pendingConnectors.length === 0;
+  countLabel.textContent = state.pendingConnectors.length
+    ? state.pendingConnectors.length + ' conector(es) marcado(s), todavía sin aplicar.'
+    : 'Todavía no marcaste ningún conector.';
+}
+
+function applyPendingConnectors() {
+  if (!state.pendingConnectors.length) return;
+  document.getElementById('btnApplyConnectors').disabled = true;
+  setStatus('Aplicando ' + state.pendingConnectors.length + ' conector(es)…');
+  const brushMap = {}; // pieceId -> Brush con el estado más actualizado
+  function currentBrush(piece) {
+    if (!brushMap[piece.id]) {
+      const b = new Brush(piece.geometry);
+      b.updateMatrixWorld(true);
+      brushMap[piece.id] = b;
+    }
+    return brushMap[piece.id];
+  }
+  for (const c of state.pendingConnectors) {
+    const pieceB = state.pieces.find((p) => p.id === c.pieceBId);
+    const pieceA = state.pieces.find((p) => p.id === c.pieceAId);
+    if (!pieceB || !pieceA) continue;
+    const pegRadius = c.size / 2;
+    const holeRadius = pegRadius + c.clearance;
+    const pegLen = c.depth * 2; // centrado en el plano: mitad clavada en B, mitad asomando hacia A
+    const holeLen = c.depth + c.clearance + 0.6;
+    const holeCenterOffset = (c.depth + c.clearance) / 2;
+    const pegBrush = makeConnectorBrush(c.axis, c.coord, c.u, c.v, c.shape, pegRadius, pegLen, 0);
+    brushMap[pieceB.id] = evaluator.evaluate(currentBrush(pieceB), pegBrush, ADDITION);
+    const holeBrush = makeConnectorBrush(c.axis, c.coord, c.u, c.v, c.shape, holeRadius, holeLen, holeCenterOffset);
+    brushMap[pieceA.id] = evaluator.evaluate(currentBrush(pieceA), holeBrush, SUBTRACTION);
+  }
+  for (const idStr in brushMap) {
+    const piece = state.pieces.find((p) => p.id === Number(idStr));
+    if (!piece) continue;
+    piece.geometry = mergeVertices(brushMap[idStr].geometry, 1e-5);
+    piece.geometry.computeVertexNormals();
+  }
+  resetConnectors();
+  rebuildPiecesScene();
+  updatePiecesPanel();
+  updateExportList();
+  setStatus('Conectores aplicados. Ya quedaron cortados en las piezas — podés seguir agregando más o exportar.', 'ok');
+}
+
+document.getElementById('btnPlaceConn').addEventListener('click', (e) => {
+  if (!state.pieces.length) return;
+  state.placementMode = !state.placementMode;
+  e.target.classList.toggle('active', state.placementMode);
+  e.target.textContent = state.placementMode ? 'Colocando… (clic de nuevo para salir)' : 'Colocar conector';
+  if (!state.placementMode && ghostMesh) ghostMesh.visible = false;
+  if (state.placementMode && state.exploded) {
+    state.exploded = false;
+    document.getElementById('btnExplode').classList.remove('active');
+    updateExplode();
+  }
+});
+document.getElementById('btnApplyConnectors').addEventListener('click', applyPendingConnectors);
+
+let connPointerDown = null;
+renderer.domElement.addEventListener('pointerdown', (e) => { connPointerDown = { x: e.clientX, y: e.clientY }; });
+renderer.domElement.addEventListener('pointermove', (e) => {
+  if (!state.placementMode) return;
+  updateGhostPreview(computeSiteFromEvent(e));
+});
+renderer.domElement.addEventListener('pointerleave', () => { if (ghostMesh) ghostMesh.visible = false; });
+renderer.domElement.addEventListener('pointerup', (e) => {
+  if (!state.placementMode) { connPointerDown = null; return; }
+  const moved = connPointerDown && (Math.abs(e.clientX - connPointerDown.x) > 4 || Math.abs(e.clientY - connPointerDown.y) > 4);
+  connPointerDown = null;
+  if (moved) return; // fue un arrastre para rotar la cámara, no un clic de colocación
+  const site = computeSiteFromEvent(e);
+  if (site && site.valid) commitConnector(site);
+});
+
 function updatePiecesPanel() {
   const list = document.getElementById('piecesList');
   list.innerHTML = '';
@@ -912,6 +1150,7 @@ function updatePiecesPanel() {
     list.appendChild(row);
   });
   document.getElementById('piecesSection').style.display = state.pieces.length ? 'block' : 'none';
+  document.getElementById('connectorsSection').style.display = state.pieces.length >= 2 ? 'block' : 'none';
 }
 
 const bedMarginEl = document.getElementById('bedMargin');
@@ -935,27 +1174,13 @@ function bindRangeLabel(id, labelId, suffix) {
 bindRangeLabel('connSize', 'connSizeVal', ' mm');
 bindRangeLabel('connDepth', 'connDepthVal', ' mm');
 bindRangeLabel('connClearance', 'connClearanceVal', ' mm');
-bindRangeLabel('connMargin', 'connMarginVal', ' mm');
-bindRangeLabel('connSpacing', 'connSpacingVal', ' mm');
 
-function updateSliceHint() {
-  const on = document.getElementById('connEnabled').checked;
-  document.getElementById('sliceHint').textContent = on
-    ? 'Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cada corte lleva clavijas y encastres automáticos (ver sección "Conectores" arriba) para alinear y pegar las piezas después.'
-    : 'Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples, sin pines ni encastres — pensado para pegar las piezas después.';
-}
-document.getElementById('connEnabled').addEventListener('change', updateSliceHint);
-updateSliceHint();
-
-function readConnectorConfig() {
+function readConnectorPlacementConfig() {
   return {
-    enabled: document.getElementById('connEnabled').checked,
     shape: document.getElementById('connShape').value,
     size: parseFloat(document.getElementById('connSize').value) || 6,
     depth: parseFloat(document.getElementById('connDepth').value) || 3,
     clearance: parseFloat(document.getElementById('connClearance').value) || 0.15,
-    spacing: parseFloat(document.getElementById('connSpacing').value) || 35,
-    margin: parseFloat(document.getElementById('connMargin').value) || 8,
   };
 }
 
@@ -996,69 +1221,7 @@ function updateGridPreview() {
 const evaluator = new Evaluator();
 evaluator.attributes = ['position', 'normal'];
 
-// ---------- conectores automáticos (clavija + encastre en cada corte) ----------
-// Reparte puntos en grilla sobre la cara de corte y, para cada uno, tira un rayo
-// a lo largo del eje contra la pieza ORIGINAL (antes de este corte puntual) para
-// medir cuánto material sólido hay a cada lado del plano. Si alcanza para el
-// largo pedido de clavija/encastre, ese punto es un sitio válido. Es una
-// aproximación por muestreo (no conoce la forma exacta de la sección), por eso
-// el margen de borde y el mensaje de "revisá antes de imprimir" en el panel.
-const MAX_CONNECTORS_PER_CUT = 24;
-
-function evenPoints(min, max, spacing) {
-  if (!(max > min)) return [(min + max) / 2];
-  const span = max - min;
-  const n = Math.max(1, Math.round(span / spacing));
-  const pts = [];
-  for (let i = 0; i <= n; i++) pts.push(min + (span * i) / n);
-  return pts;
-}
-
-function findConnectorSites(geometry, axis, coord, opts) {
-  geometry.computeBoundingBox();
-  const bb = geometry.boundingBox;
-  const others = ['x', 'y', 'z'].filter((a) => a !== axis);
-  const [u0, v0] = others;
-  const uMin = bb.min[u0] + opts.margin, uMax = bb.max[u0] - opts.margin;
-  const vMin = bb.min[v0] + opts.margin, vMax = bb.max[v0] - opts.margin;
-  if (uMax <= uMin || vMax <= vMin) return [];
-
-  const mesh = new THREE.Mesh(geometry);
-  const raycaster = new THREE.Raycaster();
-  const dir = new THREE.Vector3(); dir[axis] = 1;
-  const needAbove = opts.depth + opts.clearance + 0.3; // lo que necesita el encastre del lado positivo
-  const startOffset = Math.max(bb.max[axis] - bb.min[axis], 10) + 5;
-  raycaster.far = (bb.max[axis] - bb.min[axis]) + startOffset * 2;
-
-  const sites = [];
-  const us = evenPoints(uMin, uMax, opts.spacing);
-  const vs = evenPoints(vMin, vMax, opts.spacing);
-  outer:
-  for (const u of us) {
-    for (const v of vs) {
-      const origin = new THREE.Vector3();
-      origin[axis] = bb.min[axis] - startOffset;
-      origin[u0] = u; origin[v0] = v;
-      raycaster.set(origin, dir);
-      const hits = raycaster.intersectObject(mesh, false);
-      if (!hits.length) continue;
-      let inside = false, intervalStart = 0;
-      for (const h of hits) {
-        const axisCoord = origin[axis] + h.distance;
-        if (!inside) { inside = true; intervalStart = axisCoord; continue; }
-        inside = false;
-        if (coord >= intervalStart - 1e-6 && coord <= axisCoord + 1e-6) {
-          const belowAvail = coord - intervalStart, aboveAvail = axisCoord - coord;
-          if (belowAvail >= opts.depth - 1e-6 && aboveAvail >= needAbove - 1e-6) sites.push({ u, v });
-          break;
-        }
-      }
-      if (sites.length >= MAX_CONNECTORS_PER_CUT) break outer;
-    }
-  }
-  return sites;
-}
-
+// ---------- conectores: geometría de la clavija/encastre ----------
 function connectorProfileGeometry(shape, radius, length) {
   if (shape === 'square') return new THREE.BoxGeometry(radius * 2, radius * 2, length);
   const g = new THREE.CylinderGeometry(radius, radius, length, 24);
@@ -1078,7 +1241,7 @@ function makeConnectorBrush(axis, coord, u, v, shape, radius, length, centerOffs
   return brush;
 }
 
-function cutGeometryAtAxisPlane(geometry, axis, coord, connOpts) {
+function cutGeometryAtAxisPlane(geometry, axis, coord) {
   const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
   const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
 
@@ -1108,28 +1271,12 @@ function cutGeometryAtAxisPlane(geometry, axis, coord, connOpts) {
   if (countA === 0) return { a: null, b: geometry };
   if (countB === 0) return { a: geometry, b: null };
 
-  // corte plano, opcionalmente con clavijas (unidas al lado B) y sus encastres
-  // (restados del lado A) en los puntos que devuelve findConnectorSites.
-  let finalBrushA = brushA, finalBrushB = brushB;
-  if (connOpts && connOpts.enabled) {
-    const sites = findConnectorSites(geometry, axis, coord, connOpts);
-    const pegRadius = connOpts.size / 2;
-    const holeRadius = pegRadius + connOpts.clearance;
-    const pegLen = connOpts.depth * 2; // centrado en el plano: mitad clavada en B, mitad asomando hacia A
-    const holeLen = connOpts.depth + connOpts.clearance + 0.6;
-    const holeCenterOffset = (connOpts.depth + connOpts.clearance) / 2;
-    for (const s of sites) {
-      const pegBrush = makeConnectorBrush(axis, coord, s.u, s.v, connOpts.shape, pegRadius, pegLen, 0);
-      finalBrushB = evaluator.evaluate(finalBrushB, pegBrush, ADDITION);
-      const holeBrush = makeConnectorBrush(axis, coord, s.u, s.v, connOpts.shape, holeRadius, holeLen, holeCenterOffset);
-      finalBrushA = evaluator.evaluate(finalBrushA, holeBrush, SUBTRACTION);
-    }
-  }
-
+  // corte plano simple, sin pines ni sockets acá — los conectores se colocan
+  // después, a mano, sobre las piezas ya cortadas (ver sección "Conectores").
   // Se sueldan los vértices del resultado: el CSG puede dejar vértices duplicados
   // sin unir justo en la costura del corte, lo que deja la malla mal cerrada ahí.
-  const geoA = mergeVertices(finalBrushA.geometry, 1e-5);
-  const geoB = mergeVertices(finalBrushB.geometry, 1e-5);
+  const geoA = mergeVertices(brushA.geometry, 1e-5);
+  const geoB = mergeVertices(brushB.geometry, 1e-5);
   return { a: geoA, b: geoB };
 }
 
@@ -1138,7 +1285,7 @@ function computeCutCoords(min, max, n) {
   for (let i = 1; i < n; i++) coords.push(min + (max - min) * (i / n));
   return coords;
 }
-async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress, connOpts) {
+async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress) {
   if (!coords.length) return geoms;
   let current = geoms;
   for (let ci = 0; ci < coords.length; ci++) {
@@ -1153,7 +1300,7 @@ async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress
         next.push(g);
         continue;
       }
-      const { a, b } = cutGeometryAtAxisPlane(g, axis, coord, connOpts);
+      const { a, b } = cutGeometryAtAxisPlane(g, axis, coord);
       if (a) next.push(a);
       if (b) next.push(b);
       if (reportProgress) reportProgress(axisLabel, ci + 1, coords.length, next.length);
@@ -1237,14 +1384,15 @@ async function runAutoSlice(heightMM) {
       setStatus('Cortando eje ' + axisLabel + ' (' + ci + '/' + total + ')… ' + count + ' piezas hasta ahora.');
     };
 
-    const connOpts = readConnectorConfig();
     let geoms = [geo];
-    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress, connOpts);
-    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress, connOpts);
-    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress, connOpts);
+    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress);
+    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress);
+    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress);
 
     const finalGeoms = geoms.filter((g) => g && g.attributes.position.count > 0);
     if (!finalGeoms.length) throw new Error('El resultado quedó vacío — revisá la altura ingresada.');
+
+    resetConnectors(); // una nueva división invalida cualquier conector marcado sobre las piezas anteriores
 
     paletteIdx = 0;
     state.pieces = finalGeoms.map((g, i) => {
@@ -1260,8 +1408,7 @@ async function runAutoSlice(heightMM) {
     document.getElementById('btnAutoSlice').disabled = false;
     markStep(4);
     frameCamera();
-    const connMsg = connOpts.enabled ? ' Con clavijas/encastres automáticos en los cortes.' : '';
-    setStatus('Listo: ' + state.pieces.length + ' pieza(s) (grilla ' + nx + '×' + ny + '×' + nz + ') para ' + heightMM.toFixed(0) + ' mm de alto.' + connMsg + ' Ya podés exportar.', 'ok');
+    setStatus('Listo: ' + state.pieces.length + ' pieza(s) (grilla ' + nx + '×' + ny + '×' + nz + ') para ' + heightMM.toFixed(0) + ' mm de alto. Ya podés exportar, o bajar a "Conectores" para colocar clavijas y encastres en las costuras.', 'ok');
   } catch (err) {
     console.error(err);
     document.getElementById('btnAutoSlice').disabled = false;
