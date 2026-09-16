@@ -4,88 +4,206 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Auto-divisor STL para impresión — Printaplab3D Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* ============================================================
+     SISTEMA DE DISEÑO — "instrumento de precisión"
+     Paleta: casi-negro azulado + ámbar (acción/calor de boquilla)
+     + cian (medición/datos), como el HUD de un slicer o una
+     mesa de CNC. Tipografía: Rajdhani (técnica, angular) para
+     títulos, IBM Plex Sans para cuerpo, IBM Plex Mono para todo
+     dato numérico. Firma visual: esquinas cortadas (clip-path) en
+     paneles/botones y marcos tipo visor en las esquinas del
+     viewport 3D, como una cámara de medición.
+     ============================================================ */
   :root{
-    --bg-deep:#14181c; --bg-panel:#1b2027; --bg-panel-2:#20262e; --line:#2b323b;
-    --text:#e8ecef; --text-muted:#8a94a0; --accent:#ff7a29; --accent2:#29c7ff;
-    --accent2-dim:#1c7fa3; --danger:#ff5a5a; --radius:10px;
+    --bg-void:#080b18; --bg-panel:#0c1024; --bg-panel-2:#11162c;
+    --line:#1e2547; --line-bright:#323d75;
+    --text:#dde3f5; --text-dim:#6a72a3;
+    --accent:#ffa53d; --accent-dim:#8a5c1f; --accent-glow:rgba(255,165,61,.4);
+    --accent2:#22d3fa; --accent2-dim:#0f6e80; --accent2-glow:rgba(34,211,250,.32);
+    --accent3:#8b6ff5; --accent3-glow:rgba(139,111,245,.35);
+    --danger:#ff3b5c; --radius:3px;
+    --notch:10px;
+    --font-display:'Rajdhani',sans-serif;
+    --font-hero:'Orbitron',sans-serif;
+    --font-body:'IBM Plex Sans',system-ui,sans-serif;
+    --font-mono:'IBM Plex Mono','JetBrains Mono',monospace;
   }
   *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;background:var(--bg-deep);color:var(--text);
-    font-family:'Inter',system-ui,-apple-system,sans-serif;overflow:hidden;}
-  #app{display:grid;grid-template-columns:1fr 350px;grid-template-rows:56px 1fr;height:100vh;}
+  html,body{margin:0;height:100%;background:var(--bg-void);color:var(--text);
+    font-family:var(--font-body);overflow:hidden;}
+  #app{display:grid;grid-template-columns:1fr 350px;grid-template-rows:56px 1fr;height:100vh;
+    position:relative;
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--line) 1px, transparent 1px);
+    background-size:28px 28px; background-position:-1px -1px; background-color:var(--bg-void);}
+  #app::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
+    background-image:
+      radial-gradient(1.5px 1.5px at 15% 22%, var(--accent2-glow) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 68% 65%, var(--accent3-glow) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 40% 85%, var(--accent2-glow) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 85% 30%, var(--accent3-glow) 0%, transparent 60%),
+      radial-gradient(1.5px 1.5px at 25% 60%, var(--accent2-glow) 0%, transparent 60%);
+    animation:twinkle 5s ease-in-out infinite;}
+  @keyframes twinkle{0%,100%{opacity:.5;}50%{opacity:1;}}
+  @media (prefers-reduced-motion:reduce){ #app::before{animation:none;opacity:.75;} }
 
   header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 18px;
-    background:var(--bg-panel);border-bottom:1px solid var(--line);}
-  header .logo{font-family:'Space Grotesk','Inter',sans-serif;font-weight:700;font-size:15px;
-    letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
-  header .logo .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);
-    box-shadow:0 0 8px var(--accent);}
-  header .steps{display:flex;gap:0;margin-left:8px;font-size:12px;color:var(--text-muted);}
-  header .step{padding:6px 12px;border-right:1px solid var(--line);display:flex;gap:6px;align-items:center;}
+    background:var(--bg-panel);border-bottom:1px solid var(--line-bright);position:relative;z-index:1;
+    animation:slideDown .5s ease-out both;}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+  header::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;
+    background:linear-gradient(90deg, var(--accent) 0%, transparent 18%, transparent 82%, var(--accent2) 100%);opacity:.7;}
+  header .logo{font-family:var(--font-hero);font-weight:700;font-size:17px;letter-spacing:.03em;
+    display:flex;align-items:center;gap:9px;text-transform:uppercase;
+    background:linear-gradient(90deg, var(--accent2) 0%, var(--accent3) 50%, var(--accent2) 100%);
+    background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+    animation:shimmer 6s linear infinite;}
+  @keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
+  header .logo .dot{width:9px;height:9px;background:var(--accent);
+    box-shadow:0 0 10px 2px var(--accent-glow);animation:blink 2.4s ease-in-out infinite;-webkit-text-fill-color:var(--accent);}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @media (prefers-reduced-motion:reduce){
+    header .logo .dot{animation:none;}
+    header .logo{animation:none;}
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+  }
+  header .steps{display:flex;gap:0;margin-left:8px;font-size:12px;color:var(--text-dim);
+    font-family:var(--font-mono);}
+  header .step{padding:6px 12px;border-right:1px solid var(--line);display:flex;gap:7px;align-items:center;}
   header .step:last-child{border-right:none;}
-  header .step .n{font-family:'JetBrains Mono',monospace;color:var(--accent2);}
+  header .step .n{color:var(--accent2);}
   header .step.done .n{color:var(--accent);}
-  header .filename{margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--text-muted);}
+  header .filename{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);
+    padding:4px 10px;border:1px solid var(--line);background:var(--bg-void);}
 
-  #viewport{position:relative;background:radial-gradient(ellipse at 50% 30%, #1c222a 0%, var(--bg-deep) 70%);}
+  #viewport{position:relative;z-index:1;background:
+    radial-gradient(ellipse at 50% 30%, #10161c 0%, var(--bg-void) 72%);
+    margin:10px 0 10px 10px;border:1px solid var(--line-bright);}
   #viewport canvas{display:block;}
+  /* marcos tipo visor de cámara en las cuatro esquinas del viewport */
+  #viewport::before, #viewport::after,
+  #viewportFrame span:nth-child(1), #viewportFrame span:nth-child(2){content:'';}
+  #viewportFrame{position:absolute;inset:0;pointer-events:none;z-index:3;}
+  #viewportFrame i{position:absolute;width:22px;height:22px;border-color:var(--accent2);opacity:.85;
+    animation:hudPulse 3.2s ease-in-out infinite;}
+  #viewportFrame i.tr{animation-delay:.4s;} #viewportFrame i.bl{animation-delay:.8s;} #viewportFrame i.br{animation-delay:1.2s;}
+  @keyframes hudPulse{0%,100%{opacity:.55;filter:drop-shadow(0 0 0 transparent);}50%{opacity:1;filter:drop-shadow(0 0 4px var(--accent2-glow));}}
+  #viewportFrame i.tl{top:10px;left:10px;border-top:2px solid;border-left:2px solid;}
+  #viewportFrame i.tr{top:10px;right:10px;border-top:2px solid;border-right:2px solid;}
+  #viewportFrame i.bl{bottom:10px;left:10px;border-bottom:2px solid;border-left:2px solid;}
+  #viewportFrame i.br{bottom:10px;right:10px;border-bottom:2px solid;border-right:2px solid;}
+  #viewportTag{position:absolute;top:14px;left:44px;font-family:var(--font-mono);font-size:10.5px;
+    letter-spacing:.08em;color:var(--accent2);opacity:.8;text-transform:uppercase;z-index:3;pointer-events:none;}
+
   #dropHint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
     justify-content:center;gap:10px;pointer-events:none;text-align:center;}
-  #dropHint .big{font-family:'Space Grotesk',sans-serif;font-size:20px;color:var(--text);}
-  #dropHint .small{font-size:13px;color:var(--text-muted);max-width:320px;}
+  #dropHint .big{font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--text);
+    text-transform:uppercase;letter-spacing:.03em;}
+  #dropHint .small{font-size:13px;color:var(--text-dim);max-width:320px;font-family:var(--font-mono);}
   #dropHint.hidden{display:none;}
 
   #errorBanner{position:absolute;top:14px;left:50%;transform:translateX(-50%);
-    max-width:min(560px, 90%);background:#3a1414;border:1px solid var(--danger);color:#ffb3b3;
-    padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.5;display:none;z-index:5;}
+    max-width:min(560px, 90%);background:#2a0e14;border:1px solid var(--danger);color:#ffb3c0;
+    padding:12px 16px;font-size:13px;line-height:1.5;display:none;z-index:5;
+    clip-path:polygon(10px 0,100% 0,100% 100%,0 100%,0 10px);}
   #errorBanner.show{display:block;}
 
-  #viewportBar{position:absolute;bottom:14px;left:14px;display:flex;gap:8px;}
-  #viewportBar button{background:var(--bg-panel);border:1px solid var(--line);color:var(--text);
-    padding:7px 10px;border-radius:8px;font-size:12px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
-  #viewportBar button.active{border-color:var(--accent2);color:var(--accent2);}
-  #viewportBar button:hover{border-color:var(--text-muted);}
+  #viewportBar{position:absolute;bottom:14px;left:14px;display:flex;gap:8px;z-index:4;}
+  #viewportBar button{background:var(--bg-panel);border:1px solid var(--line-bright);color:var(--text);
+    padding:7px 11px;font-size:11.5px;cursor:pointer;font-family:var(--font-mono);
+    text-transform:uppercase;letter-spacing:.04em;}
+  #viewportBar button.active{border-color:var(--accent2);color:var(--accent2);box-shadow:0 0 8px var(--accent2-glow) inset;}
+  #viewportBar button:hover{border-color:var(--text-dim);}
 
-  aside{background:var(--bg-panel);border-left:1px solid var(--line);overflow-y:auto;display:flex;flex-direction:column;}
-  .panelSection{padding:16px 18px;border-bottom:1px solid var(--line);}
-  .panelSection h3{margin:0 0 12px;font-family:'Space Grotesk',sans-serif;font-size:12px;
-    letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:600;}
+  aside{background:var(--bg-panel);border-left:1px solid var(--line-bright);overflow-y:auto;
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;}
+  .panelSection{padding:16px 18px;border-bottom:1px solid var(--line);position:relative;
+    animation:fadeInUp .5s ease-out both;}
+  .panelSection:nth-of-type(1){animation-delay:.05s;}
+  .panelSection:nth-of-type(2){animation-delay:.1s;}
+  .panelSection:nth-of-type(3){animation-delay:.15s;}
+  .panelSection:nth-of-type(4){animation-delay:.2s;}
+  .panelSection:nth-of-type(5){animation-delay:.25s;}
+  .panelSection:nth-of-type(6){animation-delay:.3s;}
+  .panelSection:nth-of-type(7){animation-delay:.35s;}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  .panelSection::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;}
+  .panelSection h3{margin:0 0 12px;font-family:var(--font-display);font-size:13.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;
+    display:flex;align-items:center;gap:9px;}
+  .panelSection h3::before{content:'';width:3px;align-self:stretch;background:linear-gradient(var(--accent2), var(--accent3));flex-shrink:0;}
   .field{margin-bottom:12px;}
-  .field label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:5px;}
-  .field label .val{font-family:'JetBrains Mono',monospace;color:var(--text);}
+  .field label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-dim);
+    margin-bottom:6px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.03em;}
+  .field label .val{font-family:var(--font-mono);color:var(--accent2);}
   .row2{display:grid;grid-template-columns:1fr 90px;gap:8px;}
   .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
-  input[type=range]{width:100%;accent-color:var(--accent);}
-  input[type=number],select{width:100%;background:var(--bg-panel-2);border:1px solid var(--line);color:var(--text);
-    padding:9px 10px;border-radius:8px;font-size:13px;font-family:'JetBrains Mono',monospace;}
+
+  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;
+    background:linear-gradient(90deg, var(--accent) 0%, var(--line-bright) 0%);
+    background-color:var(--line-bright);outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
+    background:var(--bg-void);border:2px solid var(--accent);border-radius:50%;
+    box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--bg-void);
+    border:2px solid var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
+
+  input[type=number],select{width:100%;background:var(--bg-void);border:1px solid var(--line-bright);color:var(--text);
+    padding:9px 10px;font-size:13px;font-family:var(--font-mono);}
+  input[type=number]:focus,select:focus{outline:none;border-color:var(--accent2);}
   input[type=file]{display:none;}
-  .fileBtn,.actionBtn{display:block;width:100%;padding:11px;border-radius:var(--radius);
-    border:1px solid var(--line);background:var(--bg-panel-2);color:var(--text);
-    font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;}
-  .fileBtn:hover,.actionBtn:hover:not(:disabled){border-color:var(--accent);}
-  .actionBtn.primary{background:var(--accent);border-color:var(--accent);color:#1a1002;}
-  .actionBtn.primary:hover:not(:disabled){background:#ff8c47;}
-  .actionBtn:disabled{opacity:.35;cursor:not-allowed;}
-  .hint{font-size:11px;color:var(--text-muted);line-height:1.5;margin-top:6px;}
-  #status{padding:10px 18px;font-size:12px;color:var(--text-muted);border-top:1px solid var(--line);min-height:16px;}
+
+  .fileBtn,.actionBtn{display:block;width:100%;padding:12px;border:1px solid var(--line-bright);
+    background:var(--bg-panel-2);color:var(--text);font-family:var(--font-display);
+    font-size:14px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
+    cursor:pointer;text-align:center;transition:transform .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
+    clip-path:polygon(var(--notch) 0,100% 0,100% 100%,0 100%,0 var(--notch));}
+  .fileBtn:hover,.actionBtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+  .fileBtn:active,.actionBtn:active:not(:disabled){transform:translateY(0);}
+  .actionBtn.primary{background:linear-gradient(135deg, #ffd27a 0%, var(--accent) 55%, #ff8a3d 100%);
+    background-size:160% 160%;
+    border-color:var(--accent);color:#231000;animation:breatheGlow 3s ease-in-out infinite;}
+  .actionBtn.primary:hover:not(:disabled){background-position:70% 30%;color:#231000;transform:translateY(-1px);}
+  @keyframes breatheGlow{0%,100%{box-shadow:0 0 16px -4px var(--accent-glow);}50%{box-shadow:0 0 28px -2px var(--accent-glow);}}
+  .actionBtn:disabled{opacity:.32;cursor:not-allowed;box-shadow:none;animation:none;}
+  .btnRow{display:flex;gap:8px;}
+  .btnRow button{flex:1;}
+  .modeToggle{display:flex;border:1px solid var(--line-bright);overflow:hidden;}
+  .modeToggle button{flex:1;padding:8px;background:var(--bg-panel-2);border:none;color:var(--text-dim);
+    font-size:11.5px;cursor:pointer;font-family:var(--font-mono);text-transform:uppercase;}
+  .modeToggle button.active{background:var(--accent2-dim);color:#fff;}
+  .hint{font-size:11.5px;color:var(--text-dim);line-height:1.55;margin-top:7px;font-family:var(--font-body);}
+  #status{padding:10px 18px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--line-bright);
+    min-height:16px;font-family:var(--font-mono);background:var(--bg-void);}
   #status.error{color:var(--danger);}
   #status.ok{color:var(--accent2);}
-  #modelSizeInfo,#gridPreview{font-size:11px;color:var(--text-muted);margin-top:8px;line-height:1.5;
-    font-family:'JetBrains Mono',monospace;}
+  #modelSizeInfo,#gridPreview{font-size:11px;color:var(--text-dim);margin-top:8px;line-height:1.6;
+    font-family:var(--font-mono);border-left:2px solid var(--line-bright);padding-left:8px;}
 
-  .pieceRow{display:flex;align-items:center;gap:9px;padding:8px 10px;margin-bottom:6px;border-radius:8px;
-    border:1px solid var(--line);background:var(--bg-panel-2);font-size:12px;font-family:'JetBrains Mono',monospace;}
-  .chipDot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .pieceRow{display:flex;align-items:center;gap:9px;padding:8px 10px;margin-bottom:6px;
+    border:1px solid var(--line-bright);background:var(--bg-panel-2);font-size:12px;font-family:var(--font-mono);
+    animation:fadeInUp .3s ease-out both;transition:border-color .15s ease, transform .15s ease;}
+  .pieceRow:hover{border-color:var(--accent2);transform:translateX(2px);}
+  .chipDot{width:9px;height:9px;flex-shrink:0;box-shadow:0 0 6px currentColor;}
 
-  .exportRow2{display:flex;align-items:center;gap:8px;padding:7px 4px;margin-bottom:2px;}
-  .exportRow2 .lbl{margin-right:auto;font-size:12px;font-family:'JetBrains Mono',monospace;}
-  .miniBtn{padding:6px 12px;border-radius:6px;border:1px solid var(--line);background:var(--bg-panel-2);
-    color:var(--text);font-size:11px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
-  .miniBtn:hover{border-color:var(--accent);}
-  .bundleBtn{display:block;width:100%;padding:10px;margin-top:10px;border-radius:8px;border:1px solid var(--line);
-    background:var(--bg-panel-2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;}
-  .bundleBtn:hover{border-color:var(--accent2);}
+  .exportRow2{display:flex;align-items:center;gap:8px;padding:7px 4px;margin-bottom:2px;
+    border-bottom:1px dashed var(--line);animation:fadeInUp .3s ease-out both;}
+  .exportRow2 .lbl{margin-right:auto;font-size:12px;font-family:var(--font-mono);}
+  .miniBtn{padding:6px 12px;border:1px solid var(--line-bright);background:var(--bg-panel-2);
+    color:var(--text);font-size:10.5px;cursor:pointer;font-family:var(--font-mono);text-transform:uppercase;
+    transition:border-color .15s ease, color .15s ease, transform .15s ease;}
+  .miniBtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
+  .miniBtn.active{border-color:var(--accent2);color:var(--accent2);box-shadow:0 0 8px var(--accent2-glow) inset;}
+  .bundleBtn{display:block;width:100%;padding:10px;margin-top:10px;border:1px solid var(--line-bright);
+    background:var(--bg-panel-2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;
+    font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.02em;
+    transition:border-color .15s ease, color .15s ease, transform .15s ease;}
+  .bundleBtn:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-1px);}
 </style>
 </head>
 <body>
@@ -102,6 +220,8 @@
   </header>
 
   <div id="viewport">
+    <div id="viewportFrame"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
+    <div id="viewportTag" style="pointer-events:none;">VISOR // ESCALA 1:1</div>
     <div id="dropHint">
       <div class="big">Soltá un archivo .stl o .3mf acá</div>
       <div class="small">o usá el botón "Cargar modelo" del panel derecho</div>
@@ -121,6 +241,33 @@
       <input type="file" id="fileInput" accept=".stl,.3mf">
       <div class="hint">Se asume que el modelo ya está orientado con el eje Z hacia arriba (tal como se ve al cargarlo).</div>
       <div id="modelSizeInfo"></div>
+    </div>
+
+    <div class="panelSection" id="colorSection" style="display:none;">
+      <h3>Separar por color</h3>
+      <div id="colorInfo" class="hint"></div>
+      <div class="field" style="margin-top:10px;">
+        <label>Pincel de borde <span class="val" id="paintBrushRadiusVal">10 mm</span></label>
+        <input type="range" id="paintBrushRadius" min="2" max="40" step="1" value="10">
+      </div>
+      <div class="btnRow" style="margin-bottom:10px;">
+        <button class="miniBtn" id="btnPaintEdit" style="flex:1;padding:9px;">Ajustar borde (pincel)</button>
+        <button class="miniBtn" id="btnPaintReset" style="flex:1;padding:9px;">Reiniciar bordes</button>
+      </div>
+      <div class="hint" id="paintEditHint" style="display:none;">Modo pincel activo (la cámara no orbita mientras tanto): hacé click y arrastrá sobre el modelo — el color del triángulo donde arrancás el arrastre "invade" todo lo que quede dentro del radio del pincel. Desactivá el botón para volver a orbitar y ver la vista normal.</div>
+      <div class="field" style="margin-top:10px;">
+        <label>Profundidad de pared interior <span class="val" id="wallDepthVal">2.5 mm</span></label>
+        <input type="range" id="wallDepth" min="0.6" max="8" step="0.1" value="2.5">
+      </div>
+      <div class="field">
+        <label>Método de tapa</label>
+        <select id="capMethod">
+          <option value="flat" selected>Plana (rápida)</option>
+          <option value="smooth">Suavizada — film de jabón</option>
+        </select>
+      </div>
+      <button class="actionBtn primary" id="btnColorSeparate">Separar por color</button>
+      <div class="hint">Cada pieza queda cerrada de verdad: en el borde con el color vecino, se mete una pared hacia adentro (la profundidad de arriba) y se tapa, así queda un cascarón sólido e imprimible, no una cáscara abierta. La tapa "plana" es más rápida; la "suavizada" relaja la superficie contra el borde real (que casi nunca es plano) y da un resultado más orgánico en zonas curvas. Los triángulos con un solo color se separan exactos; los que caen justo en el borde entre dos colores (una minoría) usan una aproximación.</div>
     </div>
 
     <div class="panelSection">
@@ -151,9 +298,56 @@
       <div id="gridPreview"></div>
     </div>
 
+    <div class="panelSection" id="connectorSection">
+      <h3>Conectores (macho/hembra)</h3>
+      <div class="field" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+        <input type="checkbox" id="connectorsEnabled" style="width:16px;height:16px;">
+        <label style="margin:0;" for="connectorsEnabled">Agregar pines/sockets en cada corte</label>
+      </div>
+      <div class="field">
+        <label>Forma</label>
+        <select id="connectorShape">
+          <option value="cylinder" selected>Cilíndrica</option>
+          <option value="prism">Prisma cuadrado</option>
+        </select>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Diámetro <span class="val" id="connectorDiameterVal">4 mm</span></label>
+          <input type="range" id="connectorDiameter" min="2" max="10" step="0.5" value="4"></div>
+        <div class="field"><label>Profundidad <span class="val" id="connectorDepthVal">3 mm</span></label>
+          <input type="range" id="connectorDepth" min="1" max="8" step="0.5" value="3"></div>
+        <div class="field"><label>Espaciado <span class="val" id="connectorSpacingVal">15 mm</span></label>
+          <input type="range" id="connectorSpacing" min="8" max="40" step="1" value="15"></div>
+      </div>
+      <div class="hint">El macho queda en la pieza de un lado y el socket (con 0.15 mm de holgura por lado) tallado en la del otro, distribuidos en grilla sobre la cara de corte — solo donde hay material sólido de verdad (se descartan los que caerían al aire). Hasta 40 conectores por corte.</div>
+    </div>
+
     <div class="panelSection">
       <button class="actionBtn primary" id="btnAutoSlice" disabled>Escalar y dividir</button>
-      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples, sin pines ni encastres — pensado para pegar las piezas después.</div>
+      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba.</div>
+    </div>
+
+    <div class="panelSection" id="manualCutSection" style="display:none;">
+      <h3>Corte manual</h3>
+      <div class="field">
+        <label>Pieza a cortar</label>
+        <select id="manualCutTarget"></select>
+      </div>
+      <div class="modeToggle" id="manualCutAxisToggle">
+        <button data-axis="x" class="active">X</button>
+        <button data-axis="y">Y</button>
+        <button data-axis="z">Z</button>
+      </div>
+      <div class="field" style="margin-top:10px;">
+        <label>Posición <span class="val" id="manualCutPosVal">50 %</span></label>
+        <input type="range" id="manualCutPos" min="2" max="98" step="1" value="50">
+      </div>
+      <div class="field">
+        <label>Inclinación <span class="val" id="manualCutTiltVal">0°</span></label>
+        <input type="range" id="manualCutTilt" min="-60" max="60" step="1" value="0">
+      </div>
+      <button class="actionBtn primary" id="btnManualCut">Aplicar corte</button>
+      <div class="hint">El plano celeste semitransparente del visor muestra dónde va a caer el corte antes de aplicarlo. Usa la misma configuración de conectores de arriba.</div>
     </div>
 
     <div class="panelSection" id="piecesSection" style="display:none;">
@@ -165,10 +359,12 @@
       <h3>Exportar</h3>
       <div id="exportList"></div>
       <button class="bundleBtn" id="btnZipStl">Descargar todas en STL (.zip)</button>
-      <button class="bundleBtn" id="btnZip3mf" style="border-color:var(--accent2);">✓ Recomendado — un .3mf por placa (.zip)</button>
-      <div class="hint">Cada .3mf del zip es una placa completa: ya viene centrada en la cama y no se sale de los bordes. Abrís pieza 1 en Bambu Studio, imprimís/exportás, y pasás a la pieza 2 — así con todas.</div>
+      <button class="bundleBtn" id="btnAllInOne3mf" style="border-color:var(--accent2);">✓ Recomendado — todas las piezas en 1 archivo (.3mf)</button>
+      <div class="hint">Un solo .3mf con todas las piezas. Al abrirlo en Bambu Studio, presioná <b>"Organizar automático"</b> (ícono de la barra superior, o la tecla <b>A</b>): Bambu reparte las piezas en tantas placas como hagan falta, centradas y sin salirse — usa el algoritmo propio de Bambu Studio, no una imitación mía, así que es confiable.</div>
+      <button class="bundleBtn" id="btnZip3mf">Un .3mf por placa, ya centrado (.zip)</button>
+      <div class="hint">Alternativa sin depender de "Organizar": cada .3mf del zip es una placa completa lista, para abrir una por una.</div>
       <button class="bundleBtn" id="btnMultiPlate3mf" style="border-color:var(--danger); opacity:0.75;">⚠ Experimental — proyecto multi-placa en 1 archivo</button>
-      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero por ahora usá la opción de arriba.</div>
+      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero usá las opciones de arriba.</div>
     </div>
 
     <div style="flex:1;"></div>
@@ -190,9 +386,9 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { Brush, Evaluator, INTERSECTION } from 'three-bvh-csg';
+import { Brush, Evaluator, INTERSECTION, ADDITION, SUBTRACTION } from 'three-bvh-csg';
 import JSZip from 'jszip';
 
 // ---------- estado ----------
@@ -224,16 +420,16 @@ const orbit = new OrbitControls(camera, renderer.domElement);
 orbit.enableDamping = true;
 orbit.dampingFactor = 0.08;
 
-scene.add(new THREE.HemisphereLight(0x8fa3b8, 0x14181c, 1.1));
+scene.add(new THREE.HemisphereLight(0x8fa3b8, 0x070b0e, 1.1));
 const dir1 = new THREE.DirectionalLight(0xffffff, 1.4);
 dir1.position.set(80, 120, 60);
 scene.add(dir1);
-const dir2 = new THREE.DirectionalLight(0x4499ff, 0.4);
+const dir2 = new THREE.DirectionalLight(0x00c8e0, 0.45);
 dir2.position.set(-100, -40, -80);
 scene.add(dir2);
 
 // grilla como piso real: acostada en el plano XY (Z=0), no en el plano por defecto de three.js (Y=0)
-const grid = new THREE.GridHelper(400, 40, 0x2b323b, 0x21262d);
+const grid = new THREE.GridHelper(400, 40, 0x1c3540, 0x141d24);
 grid.rotation.x = Math.PI / 2;
 grid.position.z = -0.01;
 scene.add(grid);
@@ -296,15 +492,17 @@ function parse3MFMeshGeometry(objectEl) {
   }
   const triEls = meshEl.querySelectorAll('triangles > triangle');
   const indices = new Uint32Array(triEls.length * 3);
+  const paintCodes = new Array(triEls.length);
   for (let i = 0; i < triEls.length; i++) {
     indices[i * 3] = parseInt(triEls[i].getAttribute('v1'), 10);
     indices[i * 3 + 1] = parseInt(triEls[i].getAttribute('v2'), 10);
     indices[i * 3 + 2] = parseInt(triEls[i].getAttribute('v3'), 10);
+    paintCodes[i] = triEls[i].getAttribute('paint_color') || '';
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
   geo.setIndex(new THREE.BufferAttribute(indices, 1));
-  return geo;
+  return { geometry: geo, paintCodes };
 }
 async function parse3MF(arrayBuffer) {
   const zip = await JSZip.loadAsync(arrayBuffer);
@@ -328,8 +526,8 @@ async function parse3MF(arrayBuffer) {
     const objectEl = doc.querySelector('resources > object[id="' + objectId + '"]');
     if (!objectEl) throw new Error('No se encontró el objeto id="' + objectId + '" en ' + docPath);
 
-    const meshGeo = parse3MFMeshGeometry(objectEl);
-    if (meshGeo) out.push({ geometry: meshGeo, matrix: parentMatrix });
+    const meshResult = parse3MFMeshGeometry(objectEl);
+    if (meshResult) out.push({ geometry: meshResult.geometry, matrix: parentMatrix, paintCodes: meshResult.paintCodes });
 
     const componentsEl = objectEl.querySelector('components');
     if (componentsEl) {
@@ -369,7 +567,8 @@ async function parse3MF(arrayBuffer) {
     const merged = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
     merged.computeBoundingBox();
     const size = new THREE.Vector3(); merged.boundingBox.getSize(size);
-    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z) });
+    const paintCodes = resolved.length === 1 ? resolved[0].paintCodes : resolved.flatMap((r) => r.paintCodes);
+    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z), paintCodes });
   }
   if (!groups.length) throw new Error('No se encontraron mallas dentro del 3MF.');
 
@@ -377,7 +576,7 @@ async function parse3MF(arrayBuffer) {
   if (groups.length > 1) {
     console.warn('3MF con ' + groups.length + ' objetos de nivel superior — se cargó el más grande y se ignoraron ' + (groups.length - 1) + ' más chico(s).');
   }
-  return { geometry: groups[0].geometry, discarded: groups.length - 1 };
+  return { geometry: groups[0].geometry, discarded: groups.length - 1, paintCodes: groups[0].paintCodes };
 }
 
 async function loadFile(file) {
@@ -391,12 +590,14 @@ async function loadFile(file) {
     const buffer = await file.arrayBuffer();
     let geometry;
     let discardedNote = '';
+    let paintCodes = null;
 
     if (ext === 'stl') {
       geometry = new STLLoader().parse(buffer);
     } else {
       const result = await parse3MF(buffer);
       geometry = result.geometry;
+      paintCodes = result.paintCodes || null;
       if (result.discarded > 0) {
         discardedNote = ' (el archivo tenía ' + (result.discarded + 1) + ' objetos — se cargó el más grande y se ignoraron ' + result.discarded + ' más chico(s), probablemente piezas de referencia de otra placa)';
       }
@@ -404,6 +605,12 @@ async function loadFile(file) {
         throw new Error('El 3MF se leyó pero no contiene vértices utilizables.');
       }
     }
+
+    // suelda vértices duplicados/sueltos (típico en STL, donde cada triángulo trae sus propios
+    // vértices aunque coincidan con los del vecino) — sin esto, los cortes booleanos posteriores
+    // pueden dejar la malla mal cerrada en las costuras. No reordena triángulos, así que
+    // paintCodes (uno por triángulo, en el mismo orden) sigue siendo válido después de esto.
+    geometry = mergeVertices(geometry, 1e-5);
 
     geometry.computeVertexNormals();
     geometry.computeBoundingBox();
@@ -414,6 +621,17 @@ async function loadFile(file) {
     geometry.computeBoundingSphere();
 
     state.originalGeometry = geometry;
+    state.paintCodes = paintCodes;
+    // copia editable de los colores por triángulo: el pincel de "ajustar borde" modifica
+    // esta copia, no state.paintCodes — así "Reiniciar bordes" siempre puede volver al original.
+    state.colorGroupOverride = paintCodes ? paintCodes.map(decodePaintColor) : null;
+    state.triCentroids = null;
+    if (state.paintEditMode) {
+      state.paintEditMode = false;
+      document.getElementById('btnPaintEdit').classList.remove('active');
+      document.getElementById('paintEditHint').style.display = 'none';
+      orbit.enabled = true;
+    }
     state.baseName = file.name.replace(/\.(stl|3mf)$/i, '');
     const size = new THREE.Vector3(); geometry.boundingBox.getSize(size);
     state.modelSize = Math.max(size.x, size.y, size.z);
@@ -432,6 +650,7 @@ async function loadFile(file) {
       'Tamaño original: ' + size.x.toFixed(1) + ' × ' + size.y.toFixed(1) + ' × ' + size.z.toFixed(1) + ' mm (alto = eje Z)';
     markStep(2);
     updateGridPreview();
+    updateColorSectionInfo();
     frameCamera();
     setStatus('Modelo cargado' + discardedNote + '. Definí la altura final y presioná "Escalar y dividir".', 'ok');
   } catch (err) {
@@ -449,6 +668,436 @@ function frameCamera() {
   camera.updateProjectionMatrix();
 }
 document.getElementById('btnFrame').addEventListener('click', frameCamera);
+
+// ---------- separar por color (pintado multicolor de Bambu/PrusaSlicer) ----------
+// Cada triángulo puede traer un atributo paint_color en el 3MF. Si es un solo carácter
+// hex, todo el triángulo tiene ese color/extruder — eso se decodifica exacto. Si es un
+// código más largo (el pincel dividió el triángulo en el borde entre dos colores), no
+// tenemos el algoritmo exacto de PrusaSlicer para esos casos — se aproxima usando el
+// último carácter del código como el color "dominante" de ese triángulo.
+function decodePaintColor(code) {
+  if (!code) return 0; // sin atributo = color base (sin pintar)
+  const c = code[code.length - 1];
+  const v = parseInt(c, 16);
+  return Number.isNaN(v) ? 0 : v;
+}
+
+function updateColorSectionInfo() {
+  const section = document.getElementById('colorSection');
+  const codes = state.paintCodes;
+  if (!codes || !codes.length) { section.style.display = 'none'; return; }
+
+  const colorSet = new Set();
+  let paintedCount = 0, exactCount = 0, approxCount = 0;
+  codes.forEach((c) => {
+    if (c) {
+      paintedCount++;
+      if (c.length > 1) approxCount++; else exactCount++;
+    }
+    colorSet.add(decodePaintColor(c));
+  });
+  if (colorSet.size <= 1) { section.style.display = 'none'; return; }
+
+  section.style.display = 'block';
+  document.getElementById('colorInfo').textContent =
+    colorSet.size + ' colores detectados (incluyendo el base sin pintar). ' +
+    paintedCount.toLocaleString('es') + ' de ' + codes.length.toLocaleString('es') + ' triángulos están pintados: ' +
+    exactCount.toLocaleString('es') + ' exactos, ' + approxCount.toLocaleString('es') + ' aproximados en bordes.';
+}
+
+// ---------- modo pincel: "Ajustar borde" ----------
+// Vista previa no-indexada (3 vértices propios por triángulo, en el MISMO orden que
+// state.paintCodes/state.colorGroupOverride) para poder pintar colores por triángulo sin
+// que se mezclen en los bordes, y para que el faceIndex que devuelve el raycaster de three.js
+// coincida 1:1 con el índice de triángulo que usamos en todos lados.
+const paintPreviewGeom = new THREE.BufferGeometry();
+let paintPreviewMesh = null;
+let paintBrushTargetColor = 0;
+let painting = false;
+
+function computeTriCentroids() {
+  const geo = state.originalGeometry;
+  const idx = geo.index, pos = geo.attributes.position;
+  const triCount = idx.count / 3;
+  const arr = new Float32Array(triCount * 3);
+  for (let t = 0; t < triCount; t++) {
+    const a = idx.getX(t * 3), b = idx.getX(t * 3 + 1), c = idx.getX(t * 3 + 2);
+    arr[t * 3] = (pos.getX(a) + pos.getX(b) + pos.getX(c)) / 3;
+    arr[t * 3 + 1] = (pos.getY(a) + pos.getY(b) + pos.getY(c)) / 3;
+    arr[t * 3 + 2] = (pos.getZ(a) + pos.getZ(b) + pos.getZ(c)) / 3;
+  }
+  state.triCentroids = arr;
+}
+function colorForGroup(cIdx) {
+  return new THREE.Color(cIdx === 0 ? 0x8a8f9c : PALETTE[(cIdx - 1 + PALETTE.length * 100) % PALETTE.length]);
+}
+function buildPaintPreview() {
+  const geo = state.originalGeometry;
+  const idx = geo.index, pos = geo.attributes.position;
+  const triCount = idx.count / 3;
+  const positions = new Float32Array(triCount * 9);
+  const colors = new Float32Array(triCount * 9);
+  for (let t = 0; t < triCount; t++) {
+    const col = colorForGroup(state.colorGroupOverride[t]);
+    for (let c = 0; c < 3; c++) {
+      const vi = idx.getX(t * 3 + c);
+      const o = (t * 3 + c) * 3;
+      positions[o] = pos.getX(vi); positions[o + 1] = pos.getY(vi); positions[o + 2] = pos.getZ(vi);
+      colors[o] = col.r; colors[o + 1] = col.g; colors[o + 2] = col.b;
+    }
+  }
+  paintPreviewGeom.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  paintPreviewGeom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  paintPreviewGeom.computeVertexNormals();
+  if (!paintPreviewMesh) {
+    paintPreviewMesh = new THREE.Mesh(paintPreviewGeom, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.5, metalness: 0.05 }));
+  }
+}
+function recolorTriangleInPreview(t) {
+  const col = colorForGroup(state.colorGroupOverride[t]);
+  const colorAttr = paintPreviewGeom.attributes.color;
+  for (let c = 0; c < 3; c++) colorAttr.setXYZ(t * 3 + c, col.r, col.g, col.b);
+}
+
+function paintAt(clientX, clientY, isStart) {
+  if (!paintPreviewMesh) return;
+  const rect = renderer.domElement.getBoundingClientRect();
+  const mouse = new THREE.Vector2(((clientX - rect.left) / rect.width) * 2 - 1, -((clientY - rect.top) / rect.height) * 2 + 1);
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObject(paintPreviewMesh, false);
+  if (!hits.length) return;
+  const hit = hits[0];
+  const t0 = hit.faceIndex;
+  if (isStart) paintBrushTargetColor = state.colorGroupOverride[t0];
+  if (!state.triCentroids) computeTriCentroids();
+  const R = parseFloat(document.getElementById('paintBrushRadius').value) || 10;
+  const R2 = R * R;
+  const p = hit.point;
+  let changed = false;
+  const triCount = state.colorGroupOverride.length;
+  for (let t = 0; t < triCount; t++) {
+    const dx = state.triCentroids[t * 3] - p.x, dy = state.triCentroids[t * 3 + 1] - p.y, dz = state.triCentroids[t * 3 + 2] - p.z;
+    if (dx * dx + dy * dy + dz * dz > R2) continue;
+    if (state.colorGroupOverride[t] === paintBrushTargetColor) continue;
+    state.colorGroupOverride[t] = paintBrushTargetColor;
+    recolorTriangleInPreview(t);
+    changed = true;
+  }
+  if (changed) paintPreviewGeom.attributes.color.needsUpdate = true;
+}
+
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (!state.paintEditMode) return;
+  painting = true;
+  paintAt(e.clientX, e.clientY, true);
+});
+renderer.domElement.addEventListener('pointermove', (e) => {
+  if (!state.paintEditMode || !painting) return;
+  paintAt(e.clientX, e.clientY, false);
+});
+window.addEventListener('pointerup', () => { painting = false; });
+
+document.getElementById('btnPaintEdit').addEventListener('click', (e) => {
+  if (!state.colorGroupOverride) { setStatus('Este modelo no tiene datos de pintado por color.', 'error'); return; }
+  state.paintEditMode = !state.paintEditMode;
+  e.target.classList.toggle('active', state.paintEditMode);
+  orbit.enabled = !state.paintEditMode;
+  document.getElementById('paintEditHint').style.display = state.paintEditMode ? 'block' : 'none';
+  if (state.paintEditMode) {
+    computeTriCentroids();
+    buildPaintPreview();
+    piecesGroup.clear();
+    piecesGroup.add(paintPreviewMesh);
+  } else {
+    rebuildPiecesScene();
+  }
+});
+document.getElementById('btnPaintReset').addEventListener('click', () => {
+  if (!state.paintCodes) return;
+  state.colorGroupOverride = state.paintCodes.map(decodePaintColor);
+  if (state.paintEditMode) buildPaintPreview();
+  setStatus('Bordes reiniciados a los colores originales del archivo.', 'ok');
+});
+document.getElementById('paintBrushRadius').addEventListener('input', (e) => {
+  document.getElementById('paintBrushRadiusVal').textContent = e.target.value + ' mm';
+});
+
+// arma una malla independiente (vértices propios, no compartidos) a partir de una lista
+// de índices de triángulo del geometry original — necesario para que cada pieza tenga su
+// propio bounding box correcto, no el del modelo completo
+function buildCompactGeometryFromTriangles(sourceGeometry, triangleIndices) {
+  const srcPos = sourceGeometry.attributes.position;
+  const srcIdx = sourceGeometry.index;
+  const vertexMap = new Map();
+  const newPositions = [];
+  const newIndices = new Uint32Array(triangleIndices.length * 3);
+  let cursor = 0;
+  for (let k = 0; k < triangleIndices.length; k++) {
+    const t = triangleIndices[k];
+    for (let c = 0; c < 3; c++) {
+      const oldIdx = srcIdx.getX(t * 3 + c);
+      let newIdx = vertexMap.get(oldIdx);
+      if (newIdx === undefined) {
+        newIdx = newPositions.length / 3;
+        newPositions.push(srcPos.getX(oldIdx), srcPos.getY(oldIdx), srcPos.getZ(oldIdx));
+        vertexMap.set(oldIdx, newIdx);
+      }
+      newIndices[cursor++] = newIdx;
+    }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newPositions), 3));
+  g.setIndex(new THREE.BufferAttribute(newIndices, 1));
+  g.computeVertexNormals();
+  return g;
+}
+
+// Un "parche" de color extraído del modelo original es solo un pedazo de cáscara, sin
+// espesor propio: donde se cortó del color vecino queda un borde abierto. Esta función
+// encuentra esos bordes, y para cada uno mete una pared hacia adentro (siguiendo la normal
+// local de cada vértice) hasta "profundidad" mm, y tapa el extremo con una superficie
+// triangulada — así la pieza queda como un cascarón sólido y cerrado, imprimible.
+// Tapa "film de jabón": arma un disco de dos anillos (borde fijo + anillo intermedio + centro,
+// ambos libres) y relaja los vértices libres hacia el promedio de sus vecinos varias veces
+// (operador de Laplace / umbrella). Como el borde real casi nunca es plano en 3D (sigue la
+// curva donde cambia el color sobre la superficie del modelo), el disco relajado se curva para
+// seguir esa forma en vez de quedar un plano rígido — igual que una película de jabón real
+// apoyada en un aro no plano.
+function buildSoapFilmCap(pts3d, iterations) {
+  const n = pts3d.length;
+  const positions = pts3d.map((p) => p.clone());
+  const center = new THREE.Vector3();
+  pts3d.forEach((p) => center.add(p));
+  center.multiplyScalar(1 / n);
+  positions.push(center); // índice n
+  for (let i = 0; i < n; i++) {
+    positions.push(pts3d[i].clone().add(center).multiplyScalar(0.5)); // índice n+1+i, anillo intermedio
+  }
+  const CENTER = n;
+  const ring2 = (i) => n + 1 + ((i % n) + n) % n;
+
+  const faces = [];
+  for (let i = 0; i < n; i++) {
+    const i2 = (i + 1) % n;
+    faces.push([i, i2, ring2(i2)]);
+    faces.push([i, ring2(i2), ring2(i)]);
+    faces.push([ring2(i), ring2(i2), CENTER]);
+  }
+
+  const neighbors = positions.map(() => new Set());
+  faces.forEach(([a, b, c]) => {
+    neighbors[a].add(b); neighbors[a].add(c);
+    neighbors[b].add(a); neighbors[b].add(c);
+    neighbors[c].add(a); neighbors[c].add(b);
+  });
+
+  for (let it = 0; it < iterations; it++) {
+    const next = positions.map((p) => p.clone());
+    for (let vi = n; vi < positions.length; vi++) { // solo relajamos centro + anillo intermedio; el borde (0..n-1) queda fijo
+      const nbrs = Array.from(neighbors[vi]);
+      if (!nbrs.length) continue;
+      const avg = new THREE.Vector3();
+      nbrs.forEach((ni) => avg.add(positions[ni]));
+      avg.multiplyScalar(1 / nbrs.length);
+      next[vi] = avg;
+    }
+    for (let vi = n; vi < positions.length; vi++) positions[vi] = next[vi];
+  }
+
+  return { positions, faces };
+}
+
+function closeOpenBoundaries(geometry, depth, capMethod) {
+  geometry.computeVertexNormals();
+  const pos = geometry.attributes.position;
+  const norm = geometry.attributes.normal;
+  const idx = geometry.index;
+  const triCount = idx.count / 3;
+
+  const directedEdges = new Set();
+  for (let t = 0; t < triCount; t++) {
+    const a = idx.getX(t * 3), b = idx.getX(t * 3 + 1), c = idx.getX(t * 3 + 2);
+    directedEdges.add(a + '_' + b);
+    directedEdges.add(b + '_' + c);
+    directedEdges.add(c + '_' + a);
+  }
+  const boundaryEdges = [];
+  directedEdges.forEach((key) => {
+    const parts = key.split('_');
+    const a = parseInt(parts[0], 10), b = parseInt(parts[1], 10);
+    if (!directedEdges.has(b + '_' + a)) boundaryEdges.push([a, b]);
+  });
+  if (!boundaryEdges.length) return geometry; // ya estaba cerrada, no hace falta nada
+
+  const nextMap = new Map();
+  boundaryEdges.forEach(([a, b]) => nextMap.set(a, b));
+  const visited = new Set();
+  const loops = [];
+  boundaryEdges.forEach(([a]) => {
+    if (visited.has(a)) return;
+    const loop = [];
+    let cur = a, guard = 0;
+    while (cur !== undefined && !visited.has(cur) && guard < boundaryEdges.length + 5) {
+      visited.add(cur);
+      loop.push(cur);
+      cur = nextMap.get(cur);
+      guard++;
+    }
+    if (loop.length >= 3) loops.push(loop);
+  });
+
+  const positions = Array.from(pos.array);
+  const indices = Array.from(idx.array);
+  let vertCount = pos.count;
+
+  loops.forEach((loop) => {
+    const n = loop.length;
+    const innerStart = vertCount;
+    for (let i = 0; i < n; i++) {
+      const vi = loop[i];
+      const nx = norm.getX(vi), ny = norm.getY(vi), nz = norm.getZ(vi);
+      positions.push(pos.getX(vi) - nx * depth, pos.getY(vi) - ny * depth, pos.getZ(vi) - nz * depth);
+    }
+    for (let i = 0; i < n; i++) {
+      const a = loop[i], b = loop[(i + 1) % n];
+      const ai = innerStart + i, bi = innerStart + ((i + 1) % n);
+      indices.push(a, b, bi);
+      indices.push(a, bi, ai);
+    }
+    // tapa del extremo interior: proyecta a un plano local y triangula
+    const innerIdx = Array.from({ length: n }, (_, i) => innerStart + i);
+    const pts3d = innerIdx.map((vi) => new THREE.Vector3(positions[vi * 3], positions[vi * 3 + 1], positions[vi * 3 + 2]));
+    const nrm = new THREE.Vector3();
+    for (let i = 0; i < n; i++) {
+      const p1 = pts3d[i], p2 = pts3d[(i + 1) % n];
+      nrm.x += (p1.y - p2.y) * (p1.z + p2.z);
+      nrm.y += (p1.z - p2.z) * (p1.x + p2.x);
+      nrm.z += (p1.x - p2.x) * (p1.y + p2.y);
+    }
+    if (nrm.lengthSq() < 1e-12) { vertCount += n; return; }
+    nrm.normalize();
+
+    if (capMethod === 'smooth' && n >= 4) {
+      // tapa suavizada: se generan vértices nuevos (centro + anillo intermedio) además
+      // del borde ya existente — hay que mapear los índices locales del disco a índices
+      // globales del array `positions`/`indices` que se está armando.
+      const disk = buildSoapFilmCap(pts3d, 14);
+      const globalIdx = new Array(disk.positions.length);
+      for (let i = 0; i < n; i++) globalIdx[i] = innerIdx[i]; // el borde reutiliza los vértices ya existentes
+      for (let i = n; i < disk.positions.length; i++) {
+        globalIdx[i] = vertCount + (i - n);
+        positions.push(disk.positions[i].x, disk.positions[i].y, disk.positions[i].z);
+      }
+      disk.faces.forEach(([ia, ib, ic]) => { indices.push(globalIdx[ia], globalIdx[ic], globalIdx[ib]); });
+      vertCount += (disk.positions.length - n);
+      return;
+    }
+
+    // tapa plana (rápida): proyecta el borde a su plano promedio y triangula directo
+    const helper = Math.abs(nrm.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+    const u = new THREE.Vector3().crossVectors(helper, nrm).normalize();
+    const v = new THREE.Vector3().crossVectors(nrm, u).normalize();
+    const pts2d = pts3d.map((p) => new THREE.Vector2(p.dot(u), p.dot(v)));
+    const capTris = THREE.ShapeUtils.triangulateShape(pts2d, []);
+    capTris.forEach(([ia, ib, ic]) => { indices.push(innerIdx[ia], innerIdx[ic], innerIdx[ib]); });
+    vertCount += n;
+  });
+
+  const g2 = new THREE.BufferGeometry();
+  g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
+  g2.setIndex(indices);
+  return g2;
+}
+
+// suma con la fórmula del divergente: si da negativo, toda la malla quedó "al revés"
+// (normales para adentro) y hay que invertir el orden de cada triángulo
+function fixOutwardWinding(geometry) {
+  const pos = geometry.attributes.position;
+  const idx = geometry.index;
+  let vol = 0;
+  for (let t = 0; t < idx.count / 3; t++) {
+    const ia = idx.getX(t * 3), ib = idx.getX(t * 3 + 1), ic = idx.getX(t * 3 + 2);
+    const ax = pos.getX(ia), ay = pos.getY(ia), az = pos.getZ(ia);
+    const bx = pos.getX(ib), by = pos.getY(ib), bz = pos.getZ(ib);
+    const cx = pos.getX(ic), cy = pos.getY(ic), cz = pos.getZ(ic);
+    vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
+  }
+  if (vol < 0) {
+    const arr = idx.array;
+    for (let t = 0; t < arr.length; t += 3) { const tmp = arr[t + 1]; arr[t + 1] = arr[t + 2]; arr[t + 2] = tmp; }
+    idx.needsUpdate = true;
+  }
+  geometry.computeVertexNormals();
+}
+
+document.getElementById('wallDepth').addEventListener('input', (e) => {
+  document.getElementById('wallDepthVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
+});
+
+['connectorDiameter', 'connectorDepth', 'connectorSpacing'].forEach((id) => {
+  const el = document.getElementById(id);
+  const valEl = document.getElementById(id + 'Val');
+  el.addEventListener('input', () => { valEl.textContent = parseFloat(el.value).toFixed(id === 'connectorSpacing' ? 0 : 1) + ' mm'; });
+});
+
+document.getElementById('btnColorSeparate').addEventListener('click', () => {
+  if (!state.originalGeometry || !state.paintCodes) return;
+  setStatus('Separando por color…');
+  document.getElementById('btnColorSeparate').disabled = true;
+  setTimeout(runColorSeparate, 30);
+});
+
+function runColorSeparate() {
+  try {
+    const geo = state.originalGeometry;
+    const codes = state.paintCodes;
+    const triCount = geo.index.count / 3;
+    if (codes.length !== triCount) {
+      throw new Error('La cantidad de triángulos no coincide con los datos de color leídos — probá recargar el archivo.');
+    }
+    const wallDepth = parseFloat(document.getElementById('wallDepth').value) || 2.5;
+    const capMethod = document.getElementById('capMethod').value;
+
+    const groupsByColor = new Map();
+    const overrides = state.colorGroupOverride;
+    for (let t = 0; t < triCount; t++) {
+      const colorIdx = overrides ? overrides[t] : decodePaintColor(codes[t]);
+      if (!groupsByColor.has(colorIdx)) groupsByColor.set(colorIdx, []);
+      groupsByColor.get(colorIdx).push(t);
+    }
+
+    const sortedColors = Array.from(groupsByColor.keys()).sort((a, b) => a - b);
+    paletteIdx = 0;
+    const newPieces = sortedColors.map((colorIdx, i) => {
+      const triList = groupsByColor.get(colorIdx);
+      let g = buildCompactGeometryFromTriangles(geo, triList);
+      g = closeOpenBoundaries(g, wallDepth, capMethod);
+      fixOutwardWinding(g);
+      const label = colorIdx === 0 ? 'sin-pintar' : 'color-' + colorIdx.toString(16).toUpperCase();
+      return {
+        id: i + 1, name: label, geometry: g,
+        material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08 }),
+      };
+    });
+
+    state.pieces = newPieces;
+    state.modelSize = Math.max(state.modelSize, 1);
+    rebuildPiecesScene();
+    updatePiecesPanel();
+    updateExportList();
+    document.getElementById('exportSection').style.display = 'block';
+    document.getElementById('btnColorSeparate').disabled = false;
+    markStep(4);
+    frameCamera();
+    const capNote = capMethod === 'smooth' ? 'tapa suavizada (film de jabón)' : 'tapa plana';
+    setStatus('Separado en ' + newPieces.length + ' piezas por color, cada una cerrada con pared de ' + wallDepth.toFixed(1) + ' mm y ' + capNote + '. Los bordes entre colores son una aproximación — revisalas antes de imprimir.', 'ok');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('btnColorSeparate').disabled = false;
+    setStatus('Error al separar por color: ' + err.message, 'error');
+  }
+}
 
 // ---------- render de piezas ----------
 function rebuildPiecesScene() {
@@ -500,6 +1149,7 @@ function updatePiecesPanel() {
     list.appendChild(row);
   });
   document.getElementById('piecesSection').style.display = state.pieces.length ? 'block' : 'none';
+  updateManualCutTargets();
 }
 
 const bedMarginEl = document.getElementById('bedMargin');
@@ -544,14 +1194,132 @@ function updateGridPreview() {
     ' mm → grilla ' + nx + '×' + ny + '×' + nz + ' (hasta ' + (nx * ny * nz) + ' piezas; pueden ser menos si el modelo no es un bloque macizo).';
 }
 
-// ---------- CSG: corte en un eje del mundo (x/y/z) con pines/sockets ----------
+// ---------- CSG: corte por plano arbitrario (punto + normal), con conectores opcionales ----------
 const evaluator = new Evaluator();
 evaluator.attributes = ['position', 'normal'];
 
-function cutGeometryAtAxisPlane(geometry, axis, coord) {
-  const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
-  const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
-  const boxSize = state.modelSize * 6;
+// Base ortonormal (u, v) perpendicular a una normal dada — para ubicar puntos SOBRE
+// el plano de corte usando dos coordenadas locales en vez de x/y/z del mundo.
+function computePlaneBasis(normal) {
+  const n = normal.clone().normalize();
+  const helper = Math.abs(n.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  const u = new THREE.Vector3().crossVectors(helper, n).normalize();
+  const v = new THREE.Vector3().crossVectors(n, u).normalize();
+  return { u, v };
+}
+
+// Test de "punto adentro del sólido": tira un rayo larguísimo desde bien atrás del punto
+// (en la dirección de la normal) hasta el punto, y cuenta cruces con la malla. Cruces impares
+// antes de llegar = el punto está dentro de material sólido en esa posición. Así evitamos
+// plantar postes de conector flotando en el aire en piezas con forma no rectangular (huecos,
+// siluetas irregulares, etc).
+function isPointInsideSolid(raycastMesh, point, normal) {
+  const n = normal.clone().normalize();
+  const REACH = 100000;
+  const rayOrigin = point.clone().addScaledVector(n, -REACH);
+  const raycaster = new THREE.Raycaster(rayOrigin, n, 0, REACH * 2);
+  const hits = raycaster.intersectObject(raycastMesh, false);
+  let count = 0;
+  for (const h of hits) { if (h.distance < REACH - 1e-3) count++; }
+  return (count % 2) === 1;
+}
+
+function connectorCrossGeometry(shape, size, heightAlongAxis) {
+  if (shape === 'prism') return new THREE.BoxGeometry(size, size, heightAlongAxis);
+  const g = new THREE.CylinderGeometry(size / 2, size / 2, heightAlongAxis, 20);
+  g.rotateX(Math.PI / 2); // CylinderGeometry nace con su altura en Y — la pasamos a Z para alinear con "normal" vía el mismo quat que ya usa el corte
+  return g;
+}
+
+// Genera una grilla de pines (que quedan pegados a la pieza A, del lado +normal) y sus
+// sockets correspondientes (agujero tallado en la pieza B, del lado -normal), a lo largo
+// del plano de corte. cfg: { enabled, shape:'cylinder'|'prism', diameter, depth, spacing, clearance }
+function addConnectorsAcrossPlane(geoA, geoB, planePoint, normal, sourceGeometry, cfg) {
+  const n = normal.clone().normalize();
+  const { u, v } = computePlaneBasis(n);
+
+  sourceGeometry.computeBoundingBox();
+  const bb = sourceGeometry.boundingBox;
+  const corners = [
+    [bb.min.x, bb.min.y, bb.min.z], [bb.max.x, bb.min.y, bb.min.z], [bb.min.x, bb.max.y, bb.min.z], [bb.min.x, bb.min.y, bb.max.z],
+    [bb.max.x, bb.max.y, bb.min.z], [bb.max.x, bb.min.y, bb.max.z], [bb.min.x, bb.max.y, bb.max.z], [bb.max.x, bb.max.y, bb.max.z],
+  ].map((c) => new THREE.Vector3(c[0], c[1], c[2]));
+  let uMin = Infinity, uMax = -Infinity, vMin = Infinity, vMax = -Infinity;
+  corners.forEach((c) => {
+    const uu = c.dot(u), vv = c.dot(v);
+    uMin = Math.min(uMin, uu); uMax = Math.max(uMax, uu);
+    vMin = Math.min(vMin, vv); vMax = Math.max(vMax, vv);
+  });
+  const spacing = Math.max(cfg.spacing || 15, 4);
+  const margin = spacing * 0.5;
+  uMin += margin; uMax -= margin; vMin += margin; vMax -= margin;
+  if (uMax <= uMin || vMax <= vMin) return { a: geoA, b: geoB, placed: 0 };
+
+  const nU = Math.max(1, Math.round((uMax - uMin) / spacing));
+  const nV = Math.max(1, Math.round((vMax - vMin) / spacing));
+  const MAX_CONNECTORS = 40; // techo duro: más que esto, el CSG se vuelve lento en el navegador
+
+  let candidates = [];
+  for (let i = 0; i <= nU; i++) {
+    for (let j = 0; j <= nV; j++) {
+      const uu = uMin + (uMax - uMin) * (nU === 0 ? 0.5 : i / nU);
+      const vv = vMin + (vMax - vMin) * (nV === 0 ? 0.5 : j / nV);
+      candidates.push(planePoint.clone().addScaledVector(u, uu).addScaledVector(v, vv));
+    }
+  }
+  if (candidates.length > MAX_CONNECTORS) {
+    const step = Math.ceil(candidates.length / MAX_CONNECTORS);
+    candidates = candidates.filter((_, idx) => idx % step === 0);
+  }
+
+  const raycastMesh = new THREE.Mesh(sourceGeometry);
+  raycastMesh.updateMatrixWorld(true);
+
+  const diameter = Math.max(cfg.diameter || 4, 1.2);
+  const clearance = cfg.clearance != null ? cfg.clearance : 0.15; // holgura por lado para que el macho entre sin forzar
+  const depth = Math.max(cfg.depth || 3, diameter / 2); // cuánto entra el macho dentro de la pieza B
+  const anchor = Math.max(depth * 0.6, diameter / 2); // cuánto se ancla el macho dentro de su propia pieza A
+  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), n);
+
+  let brushA = new Brush(geoA); brushA.updateMatrixWorld(true);
+  let brushB = new Brush(geoB); brushB.updateMatrixWorld(true);
+
+  let placed = 0;
+  for (const p of candidates) {
+    if (!isPointInsideSolid(raycastMesh, p, n)) continue; // descarta postes que caerían en el aire (fuera del sólido)
+    placed++;
+
+    const pegHeight = depth + anchor;
+    const pegCenterS = (anchor - depth) / 2;
+    const pegGeom = connectorCrossGeometry(cfg.shape, diameter, pegHeight);
+    const pegBrush = new Brush(pegGeom);
+    pegBrush.position.copy(p).addScaledVector(n, pegCenterS);
+    pegBrush.quaternion.copy(quat);
+    pegBrush.updateMatrixWorld(true);
+    brushA = evaluator.evaluate(brushA, pegBrush, ADDITION);
+
+    const sockHeight = depth + 0.6;
+    const sockCenterS = -depth / 2;
+    const sockGeom = connectorCrossGeometry(cfg.shape, diameter + clearance * 2, sockHeight);
+    const sockBrush = new Brush(sockGeom);
+    sockBrush.position.copy(p).addScaledVector(n, sockCenterS);
+    sockBrush.quaternion.copy(quat);
+    sockBrush.updateMatrixWorld(true);
+    brushB = evaluator.evaluate(brushB, sockBrush, SUBTRACTION);
+  }
+
+  const geoAOut = mergeVertices(brushA.geometry, 1e-5);
+  const geoBOut = mergeVertices(brushB.geometry, 1e-5);
+  return { a: geoAOut, b: geoBOut, placed };
+}
+
+function cutGeometryAtPlane(geometry, planePoint, normal, connectorCfg) {
+  // la caja de corte se dimensiona según el tamaño de ESTA pieza puntual (no el modelo
+  // original completo) — usar una caja gigante en piezas ya chicas, tras varios cortes,
+  // arrastra imprecisión numérica y puede dejar la malla mal cerrada en la costura
+  geometry.computeBoundingSphere();
+  const pieceRadius = geometry.boundingSphere ? geometry.boundingSphere.radius : state.modelSize;
+  const boxSize = Math.max(pieceRadius * 6, 1);
 
   const modelBrush = new Brush(geometry);
   modelBrush.updateMatrixWorld(true);
@@ -568,12 +1336,28 @@ function cutGeometryAtAxisPlane(geometry, axis, coord) {
   const brushB = evaluator.evaluate(modelBrush, halfBox(-1), INTERSECTION);
   const countA = brushA.geometry.attributes.position.count;
   const countB = brushB.geometry.attributes.position.count;
-  if (countA === 0 && countB === 0) return { a: null, b: null };
-  if (countA === 0) return { a: null, b: geometry };
-  if (countB === 0) return { a: geometry, b: null };
+  if (countA === 0 && countB === 0) return { a: null, b: null, connectorsPlaced: 0 };
+  if (countA === 0) return { a: null, b: geometry, connectorsPlaced: 0 };
+  if (countB === 0) return { a: geometry, b: null, connectorsPlaced: 0 };
 
-  // corte plano simple, sin pines ni sockets — las piezas se pegan después
-  return { a: brushA.geometry, b: brushB.geometry };
+  // Se sueldan los vértices del resultado: el CSG puede dejar vértices duplicados
+  // sin unir justo en la costura del corte, lo que deja la malla mal cerrada ahí.
+  let geoA = mergeVertices(brushA.geometry, 1e-5);
+  let geoB = mergeVertices(brushB.geometry, 1e-5);
+  let connectorsPlaced = 0;
+
+  if (connectorCfg && connectorCfg.enabled) {
+    const result = addConnectorsAcrossPlane(geoA, geoB, planePoint, normal, geometry, connectorCfg);
+    geoA = result.a; geoB = result.b; connectorsPlaced = result.placed;
+  }
+
+  return { a: geoA, b: geoB, connectorsPlaced };
+}
+
+function cutGeometryAtAxisPlane(geometry, axis, coord, connectorCfg) {
+  const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
+  const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
+  return cutGeometryAtPlane(geometry, planePoint, normal, connectorCfg);
 }
 
 function computeCutCoords(min, max, n) {
@@ -581,9 +1365,10 @@ function computeCutCoords(min, max, n) {
   for (let i = 1; i < n; i++) coords.push(min + (max - min) * (i / n));
   return coords;
 }
-async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress) {
+async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress, connectorCfg) {
   if (!coords.length) return geoms;
   let current = geoms;
+  let totalConnectors = 0;
   for (let ci = 0; ci < coords.length; ci++) {
     const coord = coords[ci];
     const next = [];
@@ -596,15 +1381,17 @@ async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress
         next.push(g);
         continue;
       }
-      const { a, b } = cutGeometryAtAxisPlane(g, axis, coord);
+      const { a, b, connectorsPlaced } = cutGeometryAtAxisPlane(g, axis, coord, connectorCfg);
       if (a) next.push(a);
       if (b) next.push(b);
+      totalConnectors += connectorsPlaced || 0;
       if (reportProgress) reportProgress(axisLabel, ci + 1, coords.length, next.length);
       // cede el control al navegador entre cada corte para que la pestaña no se congele
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     current = next;
   }
+  current._connectorsPlaced = (geoms._connectorsPlaced || 0) + totalConnectors;
   return current;
 }
 
@@ -680,10 +1467,14 @@ async function runAutoSlice(heightMM) {
       setStatus('Cortando eje ' + axisLabel + ' (' + ci + '/' + total + ')… ' + count + ' piezas hasta ahora.');
     };
 
+    const connectorCfg = readConnectorConfig();
     let geoms = [geo];
-    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress);
-    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress);
-    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress);
+    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress, connectorCfg);
+    const connAfterX = geoms._connectorsPlaced || 0;
+    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress, connectorCfg);
+    const connAfterY = geoms._connectorsPlaced || 0;
+    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress, connectorCfg);
+    const totalConnectors = geoms._connectorsPlaced || 0;
 
     const finalGeoms = geoms.filter((g) => g && g.attributes.position.count > 0);
     if (!finalGeoms.length) throw new Error('El resultado quedó vacío — revisá la altura ingresada.');
@@ -702,11 +1493,154 @@ async function runAutoSlice(heightMM) {
     document.getElementById('btnAutoSlice').disabled = false;
     markStep(4);
     frameCamera();
-    setStatus('Listo: ' + state.pieces.length + ' pieza(s) (grilla ' + nx + '×' + ny + '×' + nz + ') para ' + heightMM.toFixed(0) + ' mm de alto. Ya podés exportar.', 'ok');
+    const connNote = connectorCfg.enabled ? (' Se plantaron ' + totalConnectors + ' conector(es) macho/hembra en los cortes.') : '';
+    setStatus('Listo: ' + state.pieces.length + ' pieza(s) (grilla ' + nx + '×' + ny + '×' + nz + ') para ' + heightMM.toFixed(0) + ' mm de alto.' + connNote + ' Ya podés exportar.', 'ok');
   } catch (err) {
     console.error(err);
     document.getElementById('btnAutoSlice').disabled = false;
     setStatus('Error al dividir: ' + err.message, 'error');
+  }
+}
+
+// Lee la configuración de conectores desde el panel "Escalar y dividir" (checkbox + campos).
+// Se reutiliza tanto para el auto-corte en grilla como para el corte manual.
+function readConnectorConfig() {
+  const enabled = document.getElementById('connectorsEnabled').checked;
+  return {
+    enabled,
+    shape: document.getElementById('connectorShape').value,
+    diameter: parseFloat(document.getElementById('connectorDiameter').value) || 4,
+    depth: parseFloat(document.getElementById('connectorDepth').value) || 3,
+    spacing: parseFloat(document.getElementById('connectorSpacing').value) || 15,
+    clearance: 0.15,
+  };
+}
+
+// ---------- corte manual: plano interactivo con eje + posición + inclinación ----------
+// Para cada eje "base" (X/Y/Z) la inclinación rota el plano alrededor del siguiente eje
+// en el ciclo X→Y→Z→X, así el usuario tiene un solo slider de tilt y un resultado predecible.
+const TILT_AXIS = { x: 'y', y: 'z', z: 'x' };
+const manualCutState = { axis: 'x', posPct: 50, tiltDeg: 0, targetIdx: 0 };
+
+const planeHelperGeom = new THREE.PlaneGeometry(1, 1);
+const planeHelperMat = new THREE.MeshBasicMaterial({ color: 0x22d3fa, transparent: true, opacity: 0.22, side: THREE.DoubleSide, depthWrite: false });
+const planeHelperMesh = new THREE.Mesh(planeHelperGeom, planeHelperMat);
+const planeHelperEdges = new THREE.LineSegments(new THREE.EdgesGeometry(planeHelperGeom), new THREE.LineBasicMaterial({ color: 0x22d3fa }));
+planeHelperMesh.add(planeHelperEdges);
+planeHelperMesh.visible = false;
+scene.add(planeHelperMesh);
+
+function updateManualCutTargets() {
+  const sel = document.getElementById('manualCutTarget');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  state.pieces.forEach((piece, i) => {
+    const opt = document.createElement('option');
+    opt.value = String(i);
+    opt.textContent = 'Pieza ' + piece.name;
+    sel.appendChild(opt);
+  });
+  if (state.pieces.length) {
+    const keepIdx = prev !== '' && Number(prev) < state.pieces.length ? prev : '0';
+    sel.value = keepIdx;
+    manualCutState.targetIdx = Number(sel.value);
+  }
+  const show = state.pieces.length > 0;
+  document.getElementById('manualCutSection').style.display = show ? 'block' : 'none';
+  updateManualCutHelper();
+}
+
+// Punto sobre el plano + normal (mundo) que representan la configuración actual del gizmo,
+// calculados sobre el bounding box de la pieza elegida.
+function computeManualCutPlane() {
+  const piece = state.pieces[manualCutState.targetIdx];
+  if (!piece) return null;
+  piece.geometry.computeBoundingBox();
+  const bb = piece.geometry.boundingBox;
+  const center = new THREE.Vector3(); bb.getCenter(center);
+  const size = new THREE.Vector3(); bb.getSize(size);
+
+  const axis = manualCutState.axis;
+  const coord = bb.min[axis] + (bb.max[axis] - bb.min[axis]) * (manualCutState.posPct / 100);
+  const planePoint = center.clone(); planePoint[axis] = coord;
+
+  let normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
+  const tiltAxisKey = TILT_AXIS[axis];
+  const tiltAxisVec = new THREE.Vector3(tiltAxisKey === 'x' ? 1 : 0, tiltAxisKey === 'y' ? 1 : 0, tiltAxisKey === 'z' ? 1 : 0);
+  normal.applyAxisAngle(tiltAxisVec, THREE.MathUtils.degToRad(manualCutState.tiltDeg));
+  normal.normalize();
+
+  const helperSize = Math.max(size.x, size.y, size.z, 10) * 1.6;
+  return { planePoint, normal, center, helperSize };
+}
+
+function updateManualCutHelper() {
+  const plane = computeManualCutPlane();
+  if (!plane) { planeHelperMesh.visible = false; return; }
+  planeHelperMesh.visible = true;
+  planeHelperMesh.scale.set(plane.helperSize, plane.helperSize, 1);
+  planeHelperMesh.position.copy(plane.planePoint);
+  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), plane.normal);
+  planeHelperMesh.quaternion.copy(quat);
+}
+
+document.querySelectorAll('#manualCutAxisToggle button').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#manualCutAxisToggle button').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    manualCutState.axis = btn.dataset.axis;
+    updateManualCutHelper();
+  });
+});
+document.getElementById('manualCutTarget').addEventListener('change', (e) => {
+  manualCutState.targetIdx = Number(e.target.value);
+  updateManualCutHelper();
+});
+document.getElementById('manualCutPos').addEventListener('input', (e) => {
+  manualCutState.posPct = Number(e.target.value);
+  document.getElementById('manualCutPosVal').textContent = manualCutState.posPct + ' %';
+  updateManualCutHelper();
+});
+document.getElementById('manualCutTilt').addEventListener('input', (e) => {
+  manualCutState.tiltDeg = Number(e.target.value);
+  document.getElementById('manualCutTiltVal').textContent = manualCutState.tiltDeg + '°';
+  updateManualCutHelper();
+});
+
+document.getElementById('btnManualCut').addEventListener('click', () => {
+  const plane = computeManualCutPlane();
+  const piece = state.pieces[manualCutState.targetIdx];
+  if (!plane || !piece) return;
+  setStatus('Aplicando corte manual…');
+  document.getElementById('btnManualCut').disabled = true;
+  setTimeout(() => runManualCut(piece, plane), 20);
+});
+
+function runManualCut(piece, plane) {
+  try {
+    const connectorCfg = readConnectorConfig();
+    const { a, b, connectorsPlaced } = cutGeometryAtPlane(piece.geometry.clone(), plane.planePoint, plane.normal, connectorCfg);
+    if (!a || !b) {
+      throw new Error('El plano no atraviesa la pieza elegida en esa posición — ajustá el slider de posición o la inclinación.');
+    }
+    const idx = state.pieces.indexOf(piece);
+    const newPieces = [
+      { id: piece.id, name: piece.name + 'a', geometry: a, material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08 }) },
+      { id: piece.id, name: piece.name + 'b', geometry: b, material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08 }) },
+    ];
+    state.pieces.splice(idx, 1, ...newPieces);
+    rebuildPiecesScene();
+    updatePiecesPanel();
+    updateExportList();
+    document.getElementById('exportSection').style.display = 'block';
+    document.getElementById('btnManualCut').disabled = false;
+    markStep(4);
+    const connNote = connectorCfg.enabled ? (' Se plantaron ' + connectorsPlaced + ' conector(es).') : '';
+    setStatus('Corte manual aplicado: pieza "' + piece.name + '" dividida en "' + newPieces[0].name + '" y "' + newPieces[1].name + '".' + connNote, 'ok');
+  } catch (err) {
+    console.error(err);
+    document.getElementById('btnManualCut').disabled = false;
+    setStatus('Error en el corte manual: ' + err.message, 'error');
   }
 }
 
@@ -808,6 +1742,73 @@ function uuid4() {
     return v.toString(16);
   });
 }
+
+// Arma un único .3mf ESTÁNDAR (spec core de 3MF, sin nada propietario de Bambu)
+// con todas las piezas como objetos separados. No intenta asignar placas —
+// eso lo hace el "Organizar automático" nativo de Bambu Studio al abrir el
+// archivo, que sí sabe crear placas nuevas cuando hacen falta.
+function buildAllInOne3MF(pieces, bed) {
+  const gap = 20;
+  let objectsXml = '', buildItemsXml = '';
+
+  pieces.forEach((piece, i) => {
+    const objId = i + 1;
+    const g = piece.geometry.clone();
+    g.computeBoundingBox();
+    const bb = g.boundingBox;
+    const cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, minZ = bb.min.z;
+    g.translate(-cx, -cy, -minZ); // geometría centrada en su propio origen, apoyada en Z=0
+
+    const pos = g.attributes.position, idx = g.index;
+    const vParts = [];
+    for (let k = 0; k < pos.count; k++) vParts.push('<vertex x="' + pos.getX(k).toFixed(4) + '" y="' + pos.getY(k).toFixed(4) + '" z="' + pos.getZ(k).toFixed(4) + '"/>');
+    const tParts = [];
+    if (idx) { for (let k = 0; k < idx.count; k += 3) tParts.push('<triangle v1="' + idx.getX(k) + '" v2="' + idx.getX(k + 1) + '" v3="' + idx.getX(k + 2) + '"/>'); }
+    else { for (let k = 0; k < pos.count; k += 3) tParts.push('<triangle v1="' + k + '" v2="' + (k + 1) + '" v3="' + (k + 2) + '"/>'); }
+
+    objectsXml += '<object id="' + objId + '" type="model">\n<mesh>\n<vertices>' +
+      vParts.join('') + '</vertices>\n<triangles>' + tParts.join('') + '</triangles>\n</mesh>\n</object>\n';
+
+    // posición inicial aproximada en fila — no importa mucho, "Organizar automático" las reacomoda igual
+    const size = new THREE.Vector3(); bb.getSize(size);
+    const col = i % 6, row = Math.floor(i / 6);
+    const worldX = col * (Math.max(size.x, 40) + gap);
+    const worldY = row * (bed.y * 2); // filas bien separadas para que no se superpongan antes de organizar
+    buildItemsXml += '<item objectid="' + objId + '" transform="1 0 0 0 1 0 0 0 1 ' + worldX + ' ' + worldY + ' 0" printable="1"/>\n';
+  });
+
+  const modelXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n' +
+    '<metadata name="Application">Printaplab3D-CortadorSTL</metadata>\n' +
+    '<resources>\n' + objectsXml + '</resources>\n' +
+    '<build>\n' + buildItemsXml + '</build>\n' +
+    '</model>';
+
+  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n' +
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n' +
+    '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>\n</Types>';
+
+  const relsXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n' +
+    '<Relationship Target="/3D/3dmodel.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>';
+
+  const zip = new JSZip();
+  zip.file('[Content_Types].xml', contentTypesXml);
+  zip.file('_rels/.rels', relsXml);
+  zip.file('3D/3dmodel.model', modelXml);
+  return zip;
+}
+
+document.getElementById('btnAllInOne3mf').addEventListener('click', async () => {
+  if (!state.pieces.length) return;
+  setStatus('Armando el archivo con todas las piezas…');
+  const bed = readBedConfig();
+  const zip = buildAllInOne3MF(state.pieces, bed);
+  const blob = await zip.generateAsync({ type: 'blob' });
+  downloadBlob(blob, state.baseName + '_todas-las-piezas.3mf');
+  setStatus('Descargado. Abrilo en Bambu Studio y presioná "Organizar automático" (tecla A) para repartir las ' + state.pieces.length + ' piezas en placas.', 'ok');
+});
 
 // Arma un único .3mf con varias placas, siguiendo la estructura real de un
 // proyecto exportado desde Bambu Studio: cada pieza es un <object> propio,
