@@ -201,6 +201,7 @@ import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
 import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
 import { Brush, Evaluator, ADDITION, SUBTRACTION } from 'three-bvh-csg';
 
@@ -289,6 +290,7 @@ const state = {
 };
 
 const evaluator = new Evaluator();
+evaluator.useGroups = false; // evita bugs de three-bvh-csg al mezclar materiales/groups entre brushes
 
 // ---------------------------------------------------------------------
 // Loading models
@@ -323,18 +325,27 @@ function loadFile(file){
         const geometry = new STLLoader().parse(ev.target.result);
         addModelGeometry(geometry, file.name);
       } else if (name.endsWith('.3mf')) {
-        const loader = new ThreeMFLoader();
-        const group = loader.parse(ev.target.result);
-        // aplanar el group a una sola geometría
-        let merged = null;
+        let group;
+        try {
+          group = new ThreeMFLoader().parse(ev.target.result);
+        } catch (parseErr){
+          console.error(parseErr);
+          throw new Error('Este .3mf no se pudo interpretar (estructura no soportada por el cargador — multi-objeto, componentes, extensiones de color, etc). Probá exportándolo como .stl y cargalo así.');
+        }
+        const geoms = [];
         group.traverse((child) => {
-          if (child.isMesh) {
-            const g = child.geometry.clone();
+          if (child.isMesh && child.geometry && child.geometry.attributes && child.geometry.attributes.position){
+            const g = child.geometry.clone().toNonIndexed();
             g.applyMatrix4(child.matrixWorld);
-            merged = merged ? mergeTwoGeometries(merged, g) : g;
+            // dejamos solo "position" para que el merge no falle por atributos distintos entre piezas del 3mf
+            const clean = new THREE.BufferGeometry();
+            clean.setAttribute('position', g.attributes.position.clone());
+            geoms.push(clean);
           }
         });
-        if (!merged) throw new Error('El 3MF no contiene mallas legibles.');
+        if (!geoms.length) throw new Error('El 3MF no contiene mallas legibles (puede tener solo componentes/ensamblados que este cargador no resuelve). Probá con .stl.');
+        const merged = geoms.length > 1 ? mergeGeometries(geoms, false) : geoms[0];
+        if (!merged) throw new Error('No se pudieron combinar las piezas del 3MF en una sola malla.');
         addModelGeometry(merged, file.name);
       } else {
         throw new Error('Formato no soportado. Usá .stl o .3mf');
@@ -347,14 +358,6 @@ function loadFile(file){
   };
   if (name.endsWith('.stl')) reader.readAsArrayBuffer(file);
   else reader.readAsArrayBuffer(file);
-}
-
-function mergeTwoGeometries(a, b){
-  // fallback simple: usamos BufferGeometryUtils si está disponible, si no devolvemos "a"
-  try {
-    // import dinámico liviano
-    return a; // simplificado: para 3MF multi-objeto se recomienda exportar a un solo cuerpo antes de cargar
-  } catch { return a; }
 }
 
 function addModelGeometry(geometry, sourceName){
@@ -616,24 +619,39 @@ function makeHalfSpaceBrush(plane, size, keepPositiveSide){
 
 document.getElementById('btnCut').onclick = () => {
   if (!state.mesh || !state.plane){ log('Ajustá el plano antes de cortar.', 'err'); return; }
+  const btn = document.getElementById('btnCut');
+  btn.disabled = true;
   try {
+    log('Cortando… preparando geometría base');
     const size = new THREE.Box3().setFromObject(state.mesh).getSize(new THREE.Vector3()).length() * 4;
+    if (!isFinite(size) || size <= 0) throw new Error('No se pudo calcular el tamaño del modelo (bounding box inválida).');
 
-    const original = new Brush(state.mesh.geometry.clone());
+    const baseGeo = state.mesh.geometry.clone();
+    if (!baseGeo.index) baseGeo.setIndex(null); // asegurar formato consistente, three-bvh-csg acepta no-indexado
+    const original = new Brush(baseGeo, new THREE.MeshStandardMaterial());
     original.updateMatrixWorld(true);
 
+    log('Generando cortadores (half-space boxes)');
     const cutterPos = makeHalfSpaceBrush(state.plane, size, true);   // lado + normal (para restar y quedarnos con el lado -)
     const cutterNeg = makeHalfSpaceBrush(state.plane, size, false);  // lado - normal (para restar y quedarnos con el lado +)
 
+    log('Evaluando resta A (lado negativo)');
     const resultA = evaluator.evaluate(original, cutterPos, SUBTRACTION); // se queda con el lado negativo
+    log('Evaluando resta B (lado positivo)');
     const resultB = evaluator.evaluate(original, cutterNeg, SUBTRACTION); // se queda con el lado positivo
 
+    const trisA = resultA.geometry.attributes.position.count / 3;
+    const trisB = resultB.geometry.attributes.position.count / 3;
+    if (!trisA || !trisB) throw new Error('El corte dio una pieza vacía — mové el plano para que atraviese el modelo.');
+
     finalizePieces(resultA.geometry, resultB.geometry);
-    log('Corte realizado. Pieza A y Pieza B generadas.', 'ok');
-    setButtons({ connector: true, expA: true, expB: true, expZip: true });
+    log(`Corte realizado. Pieza A (${trisA} tris) y Pieza B (${trisB} tris) generadas.`, 'ok');
+    setButtons({ connector: true, expA: true, expB: true, expZip: true, cut: true });
   } catch (err){
     console.error(err);
-    log('Error al cortar: ' + err.message, 'err');
+    log('Error al cortar: ' + (err && err.message ? err.message : err), 'err');
+    log('Tip: abrí la consola del navegador (F12) para ver el detalle técnico completo.', 'err');
+    setButtons({ cut: true });
   }
 };
 
