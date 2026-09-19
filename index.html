@@ -1,1683 +1,790 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Auto-divisor STL para impresión — Printaplab3D Tools</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800&family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Paint Cut — Corte por Pintado con Pines/Sockets</title>
 <style>
-  /* ============================================================
-     SISTEMA DE DISEÑO — "instrumento de precisión"
-     Paleta: casi-negro azulado + ámbar (acción/calor de boquilla)
-     + cian (medición/datos), como el HUD de un slicer o una
-     mesa de CNC. Tipografía: Rajdhani (técnica, angular) para
-     títulos, IBM Plex Sans para cuerpo, IBM Plex Mono para todo
-     dato numérico. Firma visual: esquinas cortadas (clip-path) en
-     paneles/botones y marcos tipo visor en las esquinas del
-     viewport 3D, como una cámara de medición.
-     ============================================================ */
   :root{
-    --bg-void:#080b18; --bg-panel:#0c1024; --bg-panel-2:#11162c;
-    --line:#1e2547; --line-bright:#323d75;
-    --text:#dde3f5; --text-dim:#6a72a3;
-    --accent:#ffa53d; --accent-dim:#8a5c1f; --accent-glow:rgba(255,165,61,.4);
-    --accent2:#22d3fa; --accent2-dim:#0f6e80; --accent2-glow:rgba(34,211,250,.32);
-    --accent3:#8b6ff5; --accent3-glow:rgba(139,111,245,.35);
-    --danger:#ff3b5c; --radius:3px;
-    --notch:10px;
-    --font-display:'Rajdhani',sans-serif;
-    --font-hero:'Orbitron',sans-serif;
-    --font-body:'IBM Plex Sans',system-ui,sans-serif;
-    --font-mono:'IBM Plex Mono','JetBrains Mono',monospace;
+    --bg: #0b0f14;
+    --panel: #121822;
+    --panel-2: #182231;
+    --border: #232f42;
+    --text: #e8edf5;
+    --text-dim: #8b98ad;
+    --accent: #ff8a2b;   /* naranja, como el patch pintado del video */
+    --accent-2: #3fc7ff; /* celeste para acciones secundarias */
+    --danger: #ff5c5c;
+    --ok: #35d68a;
+    --radius: 10px;
   }
-  *{box-sizing:border-box;}
-  html,body{margin:0;height:100%;background:var(--bg-void);color:var(--text);
-    font-family:var(--font-body);overflow:hidden;}
-  #app{display:grid;grid-template-columns:1fr 350px;grid-template-rows:56px 1fr;height:100vh;
-    position:relative;
-    background-image:
-      linear-gradient(var(--line) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line) 1px, transparent 1px);
-    background-size:28px 28px; background-position:-1px -1px; background-color:var(--bg-void);}
-  #app::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;
-    background-image:
-      radial-gradient(1.5px 1.5px at 15% 22%, var(--accent2-glow) 0%, transparent 60%),
-      radial-gradient(1.5px 1.5px at 68% 65%, var(--accent3-glow) 0%, transparent 60%),
-      radial-gradient(1.5px 1.5px at 40% 85%, var(--accent2-glow) 0%, transparent 60%),
-      radial-gradient(1.5px 1.5px at 85% 30%, var(--accent3-glow) 0%, transparent 60%),
-      radial-gradient(1.5px 1.5px at 25% 60%, var(--accent2-glow) 0%, transparent 60%);
-    animation:twinkle 5s ease-in-out infinite;}
-  @keyframes twinkle{0%,100%{opacity:.5;}50%{opacity:1;}}
-  @media (prefers-reduced-motion:reduce){ #app::before{animation:none;opacity:.75;} }
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; height:100%; background:var(--bg); color:var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif; overflow:hidden; }
 
-  header{grid-column:1/3;display:flex;align-items:center;gap:14px;padding:0 18px;
-    background:var(--bg-panel);border-bottom:1px solid var(--line-bright);position:relative;z-index:1;
-    animation:slideDown .5s ease-out both;}
-  @keyframes slideDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
-  header::after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;
-    background:linear-gradient(90deg, var(--accent) 0%, transparent 18%, transparent 82%, var(--accent2) 100%);opacity:.7;}
-  header .logo{font-family:var(--font-hero);font-weight:700;font-size:17px;letter-spacing:.03em;
-    display:flex;align-items:center;gap:9px;text-transform:uppercase;
-    background:linear-gradient(90deg, var(--accent2) 0%, var(--accent3) 50%, var(--accent2) 100%);
-    background-size:200% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-    animation:shimmer 6s linear infinite;}
-  @keyframes shimmer{0%{background-position:0% center;}100%{background-position:200% center;}}
-  header .logo .dot{width:9px;height:9px;background:var(--accent);
-    box-shadow:0 0 10px 2px var(--accent-glow);animation:blink 2.4s ease-in-out infinite;-webkit-text-fill-color:var(--accent);}
-  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.35;}}
-  @media (prefers-reduced-motion:reduce){
-    header .logo .dot{animation:none;}
-    header .logo{animation:none;}
-    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+  #app{ position:relative; width:100vw; height:100vh; }
+  #viewport{ position:absolute; inset:0; }
+  canvas{ display:block; touch-action:none; }
+
+  /* ---------- Top bar ---------- */
+  #topbar{
+    position:absolute; top:0; left:0; right:0; height:52px;
+    display:flex; align-items:center; gap:14px; padding:0 16px;
+    background:linear-gradient(180deg, rgba(11,15,20,.95), rgba(11,15,20,.55));
+    border-bottom:1px solid var(--border); z-index:20; backdrop-filter: blur(4px);
   }
-  header .steps{display:flex;gap:0;margin-left:8px;font-size:12px;color:var(--text-dim);
-    font-family:var(--font-mono);}
-  header .step{padding:6px 12px;border-right:1px solid var(--line);display:flex;gap:7px;align-items:center;}
-  header .step:last-child{border-right:none;}
-  header .step .n{color:var(--accent2);}
-  header .step.done .n{color:var(--accent);}
-  header .filename{margin-left:auto;font-family:var(--font-mono);font-size:12px;color:var(--text-dim);
-    padding:4px 10px;border:1px solid var(--line);background:var(--bg-void);}
+  #topbar .brand{ font-weight:700; letter-spacing:.3px; font-size:15px; }
+  #topbar .brand span{ color:var(--accent); }
+  #topbar .sep{ width:1px; height:22px; background:var(--border); }
+  #topbar .status{ font-size:12.5px; color:var(--text-dim); flex:1; }
+  .btn{
+    appearance:none; border:1px solid var(--border); background:var(--panel-2); color:var(--text);
+    padding:7px 12px; border-radius:8px; font-size:12.5px; cursor:pointer; white-space:nowrap;
+    display:inline-flex; align-items:center; gap:6px; transition:.15s border-color, .15s background;
+  }
+  .btn:hover{ border-color:var(--accent); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#1a0f00; font-weight:700; }
+  .btn.primary:hover{ filter:brightness(1.08); }
+  .btn.secondary{ background:var(--accent-2); border-color:var(--accent-2); color:#00202b; font-weight:700; }
+  .btn:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn.small{ padding:5px 9px; font-size:11.5px; }
+  input[type=file]{ display:none; }
 
-  #viewport{position:relative;z-index:1;background:
-    radial-gradient(ellipse at 50% 30%, #10161c 0%, var(--bg-void) 72%);
-    margin:10px 0 10px 10px;border:1px solid var(--line-bright);}
-  #viewport canvas{display:block;}
-  /* marcos tipo visor de cámara en las cuatro esquinas del viewport */
-  #viewport::before, #viewport::after,
-  #viewportFrame span:nth-child(1), #viewportFrame span:nth-child(2){content:'';}
-  #viewportFrame{position:absolute;inset:0;pointer-events:none;z-index:3;}
-  #viewportFrame i{position:absolute;width:22px;height:22px;border-color:var(--accent2);opacity:.85;
-    animation:hudPulse 3.2s ease-in-out infinite;}
-  #viewportFrame i.tr{animation-delay:.4s;} #viewportFrame i.bl{animation-delay:.8s;} #viewportFrame i.br{animation-delay:1.2s;}
-  @keyframes hudPulse{0%,100%{opacity:.55;filter:drop-shadow(0 0 0 transparent);}50%{opacity:1;filter:drop-shadow(0 0 4px var(--accent2-glow));}}
-  #viewportFrame i.tl{top:10px;left:10px;border-top:2px solid;border-left:2px solid;}
-  #viewportFrame i.tr{top:10px;right:10px;border-top:2px solid;border-right:2px solid;}
-  #viewportFrame i.bl{bottom:10px;left:10px;border-bottom:2px solid;border-left:2px solid;}
-  #viewportFrame i.br{bottom:10px;right:10px;border-bottom:2px solid;border-right:2px solid;}
-  #viewportTag{position:absolute;top:14px;left:44px;font-family:var(--font-mono);font-size:10.5px;
-    letter-spacing:.08em;color:var(--accent2);opacity:.8;text-transform:uppercase;z-index:3;pointer-events:none;}
+  /* ---------- Side panel ---------- */
+  #panel{
+    position:absolute; top:52px; right:0; bottom:0; width:300px;
+    background:var(--panel); border-left:1px solid var(--border);
+    overflow-y:auto; z-index:15; padding:14px 14px 30px;
+  }
+  #panel::-webkit-scrollbar{ width:8px; }
+  #panel::-webkit-scrollbar-thumb{ background:var(--border); border-radius:4px; }
 
-  #dropHint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
-    justify-content:center;gap:10px;pointer-events:none;text-align:center;}
-  #dropHint .big{font-family:var(--font-display);font-weight:600;font-size:24px;color:var(--text);
-    text-transform:uppercase;letter-spacing:.03em;}
-  #dropHint .small{font-size:13px;color:var(--text-dim);max-width:320px;font-family:var(--font-mono);}
-  #dropHint.hidden{display:none;}
+  .section{ margin-bottom:16px; border:1px solid var(--border); border-radius:var(--radius);
+    background:var(--panel-2); overflow:hidden; }
+  .section > .head{
+    display:flex; align-items:center; gap:8px; padding:9px 12px; font-size:12px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.5px; color:var(--text-dim); border-bottom:1px solid var(--border);
+  }
+  .section > .head .num{
+    width:18px; height:18px; border-radius:50%; background:var(--accent); color:#1a0f00;
+    font-size:11px; display:flex; align-items:center; justify-content:center; font-weight:800;
+  }
+  .section .body{ padding:11px 12px; display:flex; flex-direction:column; gap:9px; }
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .row label{ font-size:12px; color:var(--text-dim); }
+  .row .val{ font-size:11.5px; color:var(--accent); font-variant-numeric: tabular-nums; }
+  input[type=range]{ width:100%; accent-color:var(--accent); }
+  .stack{ display:flex; gap:6px; }
+  .stack .btn{ flex:1; justify-content:center; }
+  .hint{ font-size:11px; color:var(--text-dim); line-height:1.4; }
+  .pill{ display:inline-block; font-size:10.5px; padding:2px 7px; border-radius:20px; border:1px solid var(--border); color:var(--text-dim); }
+  .pill.on{ border-color:var(--ok); color:var(--ok); }
 
-  #errorBanner{position:absolute;top:14px;left:50%;transform:translateX(-50%);
-    max-width:min(560px, 90%);background:#2a0e14;border:1px solid var(--danger);color:#ffb3c0;
-    padding:12px 16px;font-size:13px;line-height:1.5;display:none;z-index:5;
-    clip-path:polygon(10px 0,100% 0,100% 100%,0 100%,0 10px);}
-  #errorBanner.show{display:block;}
+  #log{
+    font-family: ui-monospace, Menlo, Consolas, monospace; font-size:11px; color:var(--text-dim);
+    max-height:110px; overflow-y:auto; line-height:1.5; white-space:pre-wrap;
+  }
+  #log .err{ color:var(--danger); }
+  #log .ok{ color:var(--ok); }
 
-  #viewportBar{position:absolute;bottom:14px;left:14px;display:flex;gap:8px;z-index:4;}
-  #viewportBar button{background:var(--bg-panel);border:1px solid var(--line-bright);color:var(--text);
-    padding:7px 11px;font-size:11.5px;cursor:pointer;font-family:var(--font-mono);
-    text-transform:uppercase;letter-spacing:.04em;}
-  #viewportBar button.active{border-color:var(--accent2);color:var(--accent2);box-shadow:0 0 8px var(--accent2-glow) inset;}
-  #viewportBar button:hover{border-color:var(--text-dim);}
+  #dropHint{
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:10px; color:var(--text-dim); pointer-events:none; z-index:5;
+  }
+  #dropHint b{ color:var(--text); font-size:16px; }
 
-  aside{background:var(--bg-panel);border-left:1px solid var(--line-bright);overflow-y:auto;
-    position:relative;z-index:1;
-    display:flex;flex-direction:column;}
-  .panelSection{padding:16px 18px;border-bottom:1px solid var(--line);position:relative;
-    animation:fadeInUp .5s ease-out both;}
-  .panelSection:nth-of-type(1){animation-delay:.05s;}
-  .panelSection:nth-of-type(2){animation-delay:.1s;}
-  .panelSection:nth-of-type(3){animation-delay:.15s;}
-  .panelSection:nth-of-type(4){animation-delay:.2s;}
-  .panelSection:nth-of-type(5){animation-delay:.25s;}
-  .panelSection:nth-of-type(6){animation-delay:.3s;}
-  .panelSection:nth-of-type(7){animation-delay:.35s;}
-  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-  .panelSection::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:transparent;}
-  .panelSection h3{margin:0 0 12px;font-family:var(--font-display);font-size:13.5px;
-    letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);font-weight:700;
-    display:flex;align-items:center;gap:9px;}
-  .panelSection h3::before{content:'';width:3px;align-self:stretch;background:linear-gradient(var(--accent2), var(--accent3));flex-shrink:0;}
-  .field{margin-bottom:12px;}
-  .field label{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-dim);
-    margin-bottom:6px;font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.03em;}
-  .field label .val{font-family:var(--font-mono);color:var(--accent2);}
-  .row2{display:grid;grid-template-columns:1fr 90px;gap:8px;}
-  .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+  #brushCursor{
+    position:absolute; pointer-events:none; border:2px solid var(--accent); border-radius:50%;
+    z-index:16; display:none; box-shadow:0 0 0 1px rgba(0,0,0,.4) inset;
+  }
 
-  input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;
-    background:linear-gradient(90deg, var(--accent) 0%, var(--line-bright) 0%);
-    background-color:var(--line-bright);outline:none;cursor:pointer;}
-  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;
-    background:var(--bg-void);border:2px solid var(--accent);border-radius:50%;
-    box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
-  input[type=range]::-moz-range-thumb{width:12px;height:12px;background:var(--bg-void);
-    border:2px solid var(--accent);border-radius:50%;box-shadow:0 0 8px var(--accent-glow);cursor:pointer;}
-
-  input[type=number],select{width:100%;background:var(--bg-void);border:1px solid var(--line-bright);color:var(--text);
-    padding:9px 10px;font-size:13px;font-family:var(--font-mono);}
-  input[type=number]:focus,select:focus{outline:none;border-color:var(--accent2);}
-  input[type=file]{display:none;}
-
-  .fileBtn,.actionBtn{display:block;width:100%;padding:12px;border:1px solid var(--line-bright);
-    background:var(--bg-panel-2);color:var(--text);font-family:var(--font-display);
-    font-size:14px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;
-    cursor:pointer;text-align:center;transition:transform .15s ease, border-color .15s ease, color .15s ease, box-shadow .15s ease;
-    clip-path:polygon(var(--notch) 0,100% 0,100% 100%,0 100%,0 var(--notch));}
-  .fileBtn:hover,.actionBtn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
-  .fileBtn:active,.actionBtn:active:not(:disabled){transform:translateY(0);}
-  .actionBtn.primary{background:linear-gradient(135deg, #ffd27a 0%, var(--accent) 55%, #ff8a3d 100%);
-    background-size:160% 160%;
-    border-color:var(--accent);color:#231000;animation:breatheGlow 3s ease-in-out infinite;}
-  .actionBtn.primary:hover:not(:disabled){background-position:70% 30%;color:#231000;transform:translateY(-1px);}
-  @keyframes breatheGlow{0%,100%{box-shadow:0 0 16px -4px var(--accent-glow);}50%{box-shadow:0 0 28px -2px var(--accent-glow);}}
-  .actionBtn:disabled{opacity:.32;cursor:not-allowed;box-shadow:none;animation:none;}
-  .btnRow{display:flex;gap:8px;}
-  .btnRow button{flex:1;}
-  .modeToggle{display:flex;border:1px solid var(--line-bright);overflow:hidden;}
-  .modeToggle button{flex:1;padding:8px;background:var(--bg-panel-2);border:none;color:var(--text-dim);
-    font-size:11.5px;cursor:pointer;font-family:var(--font-mono);text-transform:uppercase;}
-  .modeToggle button.active{background:var(--accent2-dim);color:#fff;}
-  .hint{font-size:11.5px;color:var(--text-dim);line-height:1.55;margin-top:7px;font-family:var(--font-body);}
-  #status{padding:10px 18px;font-size:12px;color:var(--text-dim);border-top:1px solid var(--line-bright);
-    min-height:16px;font-family:var(--font-mono);background:var(--bg-void);}
-  #status.error{color:var(--danger);}
-  #status.ok{color:var(--accent2);}
-  #modelSizeInfo,#gridPreview{font-size:11px;color:var(--text-dim);margin-top:8px;line-height:1.6;
-    font-family:var(--font-mono);border-left:2px solid var(--line-bright);padding-left:8px;}
-
-  .pieceRow{display:flex;align-items:center;gap:9px;padding:8px 10px;margin-bottom:6px;
-    border:1px solid var(--line-bright);background:var(--bg-panel-2);font-size:12px;font-family:var(--font-mono);
-    animation:fadeInUp .3s ease-out both;transition:border-color .15s ease, transform .15s ease;}
-  .pieceRow:hover{border-color:var(--accent2);transform:translateX(2px);}
-  .chipDot{width:9px;height:9px;flex-shrink:0;box-shadow:0 0 6px currentColor;}
-
-  .exportRow2{display:flex;align-items:center;gap:8px;padding:7px 4px;margin-bottom:2px;
-    border-bottom:1px dashed var(--line);animation:fadeInUp .3s ease-out both;}
-  .exportRow2 .lbl{margin-right:auto;font-size:12px;font-family:var(--font-mono);}
-  .miniBtn{padding:6px 12px;border:1px solid var(--line-bright);background:var(--bg-panel-2);
-    color:var(--text);font-size:10.5px;cursor:pointer;font-family:var(--font-mono);text-transform:uppercase;
-    transition:border-color .15s ease, color .15s ease, transform .15s ease;}
-  .miniBtn:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-1px);}
-  .bundleBtn{display:block;width:100%;padding:10px;margin-top:10px;border:1px solid var(--line-bright);
-    background:var(--bg-panel-2);color:var(--text);font-size:12px;font-weight:600;cursor:pointer;
-    font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.02em;
-    transition:border-color .15s ease, color .15s ease, transform .15s ease;}
-  .bundleBtn:hover{border-color:var(--accent2);color:var(--accent2);transform:translateY(-1px);}
+  @media (max-width: 720px){
+    #panel{ width:100%; top:auto; bottom:0; height:46vh; border-left:none; border-top:1px solid var(--border); }
+    #viewport{ bottom:46vh; }
+  }
 </style>
 </head>
 <body>
 <div id="app">
-  <header>
-    <div class="logo"><span class="dot"></span>AUTO-DIVISOR STL</div>
-    <div class="steps">
-      <div class="step" id="step1"><span class="n">01</span> Cargar</div>
-      <div class="step" id="step2"><span class="n">02</span> Altura / impresora</div>
-      <div class="step" id="step3"><span class="n">03</span> Dividir</div>
-      <div class="step" id="step4"><span class="n">04</span> Exportar</div>
-    </div>
-    <div class="filename" id="filenameLabel"></div>
-  </header>
-
-  <div id="viewport">
-    <div id="viewportFrame"><i class="tl"></i><i class="tr"></i><i class="bl"></i><i class="br"></i></div>
-    <div id="viewportTag" style="pointer-events:none;">VISOR // ESCALA 1:1</div>
-    <div id="dropHint">
-      <div class="big">Soltá un archivo .stl o .3mf acá</div>
-      <div class="small">o usá el botón "Cargar modelo" del panel derecho</div>
-    </div>
-    <div id="errorBanner"></div>
-    <div id="viewportBar">
-      <button id="btnFrame">Encuadrar</button>
-      <button id="btnExplode">Separar vista</button>
-      <button id="btnWire">Wireframe</button>
-    </div>
+  <div id="topbar">
+    <div class="brand">Paint<span>Cut</span></div>
+    <div class="sep"></div>
+    <button class="btn primary" id="btnLoad">Cargar STL / 3MF</button>
+    <input type="file" id="fileInput" accept=".stl,.3mf" />
+    <div class="status" id="statusText">Cargá un modelo para empezar.</div>
+    <button class="btn small" id="btnReset">Reiniciar escena</button>
   </div>
 
-  <aside>
-    <div class="panelSection">
-      <h3>Modelo</h3>
-      <button class="fileBtn" id="fileBtnLabel">Cargar modelo (.stl / .3mf)</button>
-      <input type="file" id="fileInput" accept=".stl,.3mf">
-      <div class="hint">Se asume que el modelo ya está orientado con el eje Z hacia arriba (tal como se ve al cargarlo).</div>
-      <div id="modelSizeInfo"></div>
-    </div>
+  <div id="viewport">
+    <div id="dropHint"><b>Arrastrá un .STL o .3MF acá</b><span>o usá "Cargar STL / 3MF" arriba</span></div>
+  </div>
+  <div id="brushCursor"></div>
 
-    <div class="panelSection" id="colorSection" style="display:none;">
-      <h3>Separar por color</h3>
-      <div id="colorInfo" class="hint"></div>
-      <div class="field" style="margin-top:10px;">
-        <label>Profundidad de pared interior <span class="val" id="wallDepthVal">2.5 mm</span></label>
-        <input type="range" id="wallDepth" min="0.6" max="8" step="0.1" value="2.5">
+  <div id="panel">
+
+    <div class="section">
+      <div class="head"><span class="num">1</span> Pintar zona de corte</div>
+      <div class="body">
+        <div class="stack">
+          <button class="btn primary small" id="btnPaintMode">🖌 Activar pincel</button>
+          <button class="btn small" id="btnClearPaint">Limpiar</button>
+        </div>
+        <div class="row"><label>Tamaño de pincel</label><span class="val" id="brushSizeVal">14 mm</span></div>
+        <input type="range" id="brushSize" min="2" max="60" value="14" step="1" />
+        <div class="hint">Pintá una franja o anillo alrededor de la zona por donde querés cortar la pieza (ej: alrededor del cuello, de un brazo, etc). Con eso se calcula el plano de corte que mejor se ajusta.</div>
+        <div class="row"><span class="pill" id="paintPill">0 vértices pintados</span></div>
       </div>
-      <button class="actionBtn primary" id="btnColorSeparate">Separar por color</button>
-      <div class="hint">Cada pieza queda cerrada de verdad: en el borde con el color vecino, se mete una pared hacia adentro (la profundidad de arriba) y se tapa, así queda un cascarón sólido e imprimible, no una cáscara abierta. Los triángulos con un solo color se separan exactos; los que caen justo en el borde entre dos colores (una minoría) usan una aproximación.</div>
     </div>
 
-    <div class="panelSection">
-      <h3>Altura final</h3>
-      <div class="row2">
-        <input type="number" id="targetHeight" placeholder="ej: 100" min="1" step="1">
-        <select id="heightUnit">
-          <option value="mm" selected>mm</option>
-          <option value="cm">cm</option>
-          <option value="m">m</option>
-        </select>
+    <div class="section">
+      <div class="head"><span class="num">2</span> Plano de corte</div>
+      <div class="body">
+        <button class="btn secondary" id="btnFitPlane" disabled>Ajustar plano a lo pintado</button>
+        <div class="stack">
+          <button class="btn small" id="btnGizmoMove" disabled>↔ Mover</button>
+          <button class="btn small" id="btnGizmoRotate" disabled>↻ Rotar</button>
+        </div>
+        <div class="hint">Después del ajuste automático podés afinar el plano a mano con el gizmo (arrastrar / rotar) antes de cortar.</div>
+        <button class="btn primary" id="btnCut" disabled>✂ Cortar modelo</button>
       </div>
-      <div class="hint">El modelo se escala proporcionalmente para que su altura (eje Z) quede en esta medida.</div>
     </div>
 
-    <div class="panelSection">
-      <h3>Impresora (cama de impresión)</h3>
-      <div class="row3">
-        <div class="field"><label>Ancho X</label><input type="number" id="bedX" value="256"></div>
-        <div class="field"><label>Fondo Y</label><input type="number" id="bedY" value="256"></div>
-        <div class="field"><label>Alto Z</label><input type="number" id="bedZ" value="256"></div>
+    <div class="section">
+      <div class="head"><span class="num">3</span> Pin / Socket de alineación</div>
+      <div class="body">
+        <div class="row"><label>Diámetro del pin</label><span class="val" id="pinDiaVal">6.0 mm</span></div>
+        <input type="range" id="pinDia" min="2" max="20" value="6" step="0.5" />
+        <div class="row"><label>Largo del pin</label><span class="val" id="pinLenVal">6.0 mm</span></div>
+        <input type="range" id="pinLen" min="2" max="25" value="6" step="0.5" />
+        <div class="row"><label>Holgura del socket</label><span class="val" id="pinTolVal">0.20 mm</span></div>
+        <input type="range" id="pinTol" min="0" max="1" value="0.2" step="0.05" />
+        <button class="btn secondary" id="btnConnector" disabled>+ Generar pin/socket en el corte</button>
+        <div class="hint">El pin se agrega en la pieza A y el hueco (socket) se resta en la pieza B, centrado en la zona pintada.</div>
       </div>
-      <div class="field">
-        <label>Margen de seguridad <span class="val" id="bedMarginVal">6 mm</span></label>
-        <input type="range" id="bedMargin" min="0" max="20" step="1" value="6">
+    </div>
+
+    <div class="section">
+      <div class="head"><span class="num">4</span> Exportar</div>
+      <div class="body">
+        <div class="stack">
+          <button class="btn small" id="btnExpA" disabled>Pieza A .stl</button>
+          <button class="btn small" id="btnExpB" disabled>Pieza B .stl</button>
+        </div>
+        <button class="btn primary" id="btnExpZip" disabled>⬇ Descargar ambas (.zip)</button>
       </div>
-      <div class="hint">Valores por defecto: Bambu Lab A1 (256×256×256 mm). Cambialos si usás otra impresora.</div>
-      <div id="gridPreview"></div>
     </div>
 
-    <div class="panelSection">
-      <h3>Ajustes de conector</h3>
-      <div class="field">
-        <label>Forma</label>
-        <select id="connShape">
-          <option value="circle" selected>Cilíndrica (clavija)</option>
-          <option value="square">Prisma cuadrado</option>
-        </select>
-      </div>
-      <div class="row2">
-        <div class="field"><label>Diámetro / lado <span class="val" id="connSizeVal">6 mm</span></label>
-          <input type="range" id="connSize" min="2" max="14" step="0.5" value="6"></div>
-        <div class="field"><label>Profundidad <span class="val" id="connDepthVal">3 mm</span></label>
-          <input type="range" id="connDepth" min="1" max="8" step="0.5" value="3"></div>
-      </div>
-      <div class="field">
-        <label>Holgura <span class="val" id="connClearanceVal">0.15 mm</span></label>
-        <input type="range" id="connClearance" min="0" max="0.5" step="0.05" value="0.15">
-      </div>
-      <div class="hint">Esta forma y tamaño se usan cuando coloques conectores a mano después de dividir (paso más abajo, "Conectores"). Podés cambiarlos entre un conector y otro.</div>
+    <div class="section">
+      <div class="head">Registro</div>
+      <div class="body"><div id="log">Listo.</div></div>
     </div>
 
-    <div class="panelSection">
-      <button class="actionBtn primary" id="btnAutoSlice" disabled>Escalar y dividir</button>
-      <div class="hint">Corta automáticamente en X/Y/Z las veces que haga falta para que cada pieza entre en la cama definida arriba. Cortes planos simples — los conectores se agregan después, a mano, sobre las piezas ya cortadas.</div>
-    </div>
-
-    <div class="panelSection" id="piecesSection" style="display:none;">
-      <h3>Piezas resultantes</h3>
-      <div id="piecesList"></div>
-    </div>
-
-    <div class="panelSection" id="connectorsSection" style="display:none;">
-      <h3>Conectores</h3>
-      <button class="actionBtn" id="btnPlaceConn">Colocar conector</button>
-      <div class="hint">Con el modo activo, pasá el mouse sobre una costura entre dos piezas: se ve en vivo dónde quedaría (verde = entra bien, rojo = no entra ahí). Hacé clic para confirmarlo. Podés seguir rotando la vista con clic y arrastre normalmente; solo un clic corto sobre una costura coloca un conector.</div>
-      <div id="connectorsList" style="margin-top:10px;"></div>
-      <div class="hint" id="connCountLabel">Todavía no marcaste ningún conector.</div>
-      <button class="bundleBtn" id="btnApplyConnectors" disabled style="margin-top:8px;">Aplicar conectores a las piezas</button>
-      <div class="hint">Recién al aplicar se cortan de verdad las clavijas y encastres en las piezas (antes solo son marcas de vista previa).</div>
-    </div>
-
-    <div class="panelSection" id="exportSection" style="display:none;">
-      <h3>Exportar</h3>
-      <div id="exportList"></div>
-      <button class="bundleBtn" id="btnZipStl">Descargar todas en STL (.zip)</button>
-      <button class="bundleBtn" id="btnAllInOne3mf" style="border-color:var(--accent2);">✓ Recomendado — todas las piezas en 1 archivo (.3mf)</button>
-      <div class="hint">Un solo .3mf con todas las piezas. Al abrirlo en Bambu Studio, presioná <b>"Organizar automático"</b> (ícono de la barra superior, o la tecla <b>A</b>): Bambu reparte las piezas en tantas placas como hagan falta, centradas y sin salirse — usa el algoritmo propio de Bambu Studio, no una imitación mía, así que es confiable.</div>
-      <button class="bundleBtn" id="btnZip3mf">Un .3mf por placa, ya centrado (.zip)</button>
-      <div class="hint">Alternativa sin depender de "Organizar": cada .3mf del zip es una placa completa lista, para abrir una por una.</div>
-      <button class="bundleBtn" id="btnMultiPlate3mf" style="border-color:var(--danger); opacity:0.75;">⚠ Experimental — proyecto multi-placa en 1 archivo</button>
-      <div class="hint">Probado en Bambu Studio real: no separó las placas correctamente (las juntó todas en una sola y se salieron de los bordes). El formato multi-placa de Bambu es propio y no está documentado — dejo el botón por si querés seguir probando, pero usá las opciones de arriba.</div>
-    </div>
-
-    <div style="flex:1;"></div>
-    <div id="status"></div>
-  </aside>
+  </div>
 </div>
 
 <script type="importmap">
 {
   "imports": {
-    "three": "https://esm.sh/three@0.161.0",
-    "three/addons/": "https://esm.sh/three@0.161.0/examples/jsm/",
-    "three-bvh-csg": "https://esm.sh/three-bvh-csg@0.0.16?deps=three@0.161.0",
-    "jszip": "https://esm.sh/jszip@3.10.1"
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+    "three-mesh-bvh": "https://esm.sh/three-mesh-bvh@0.7.0?external=three",
+    "three-bvh-csg": "https://esm.sh/three-bvh-csg@0.0.16?external=three,three-mesh-bvh"
   }
 }
 </script>
+<script src="https://unpkg.com/jszip@3.10.1/dist/jszip.min.js"></script>
+
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { TransformControls } from 'three/addons/controls/TransformControls.js';
 import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometryUtils.js';
 import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { Brush, Evaluator, INTERSECTION, ADDITION, SUBTRACTION } from 'three-bvh-csg';
-import JSZip from 'jszip';
+import { ThreeMFLoader } from 'three/addons/loaders/3MFLoader.js';
+import { computeBoundsTree, disposeBoundsTree, acceleratedRaycast } from 'three-mesh-bvh';
+import { Brush, Evaluator, ADDITION, SUBTRACTION } from 'three-bvh-csg';
 
-// ---------- estado ----------
-const state = {
-  originalGeometry: null,
-  modelSize: 100,
-  exploded: false,
-  wireframe: false,
-  baseName: 'modelo',
-  pieces: [], // { id, name, geometry, material, mesh }
-  pendingConnectors: [], // { id, marker, axis, coord, u, v, pieceBId, pieceAId, shape, size, depth, clearance }
-  nextConnectorId: 1,
-  placementMode: false,
-};
+// tell three how to build/raycast BVH-accelerated geometry
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-const PALETTE = [0xff7a29, 0x29c7ff, 0x8a4fff, 0x4fd17a, 0xffd24f, 0xff4f88, 0x4fc3ff, 0xd6ff4f];
-let paletteIdx = 0;
-function nextColor() { const c = PALETTE[paletteIdx % PALETTE.length]; paletteIdx++; return c; }
+// ---------------------------------------------------------------------
+// Logging helpers
+// ---------------------------------------------------------------------
+const logEl = document.getElementById('log');
+const statusEl = document.getElementById('statusText');
+function log(msg, kind){
+  const line = document.createElement('div');
+  if (kind) line.className = kind;
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function setStatus(msg){ statusEl.textContent = msg; }
 
-// ---------- escena ----------
-const viewportEl = document.getElementById('viewport');
+// ---------------------------------------------------------------------
+// Scene setup
+// ---------------------------------------------------------------------
+const viewport = document.getElementById('viewport');
+const dropHint = document.getElementById('dropHint');
+
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 5000);
-camera.up.set(0, 0, 1); // el modelo usa Z como "arriba" (altura), no Y — hay que avisarle a la cámara antes de crear los controles
+scene.background = new THREE.Color(0x0b0f14);
+
+const camera = new THREE.PerspectiveCamera(45, viewport.clientWidth / viewport.clientHeight, 0.1, 5000);
 camera.position.set(120, 100, 160);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-viewportEl.appendChild(renderer.domElement);
+renderer.setSize(viewport.clientWidth, viewport.clientHeight);
+viewport.appendChild(renderer.domElement);
 
-const orbit = new OrbitControls(camera, renderer.domElement);
-orbit.enableDamping = true;
-orbit.dampingFactor = 0.08;
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
 
-scene.add(new THREE.HemisphereLight(0x8fa3b8, 0x070b0e, 1.1));
-const dir1 = new THREE.DirectionalLight(0xffffff, 1.4);
-dir1.position.set(80, 120, 60);
+const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x1a1208, 1.05);
+scene.add(hemi);
+const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
+dir1.position.set(120, 200, 150);
 scene.add(dir1);
-const dir2 = new THREE.DirectionalLight(0x00c8e0, 0.45);
-dir2.position.set(-100, -40, -80);
+const dir2 = new THREE.DirectionalLight(0x88aaff, 0.4);
+dir2.position.set(-150, -80, -120);
 scene.add(dir2);
 
-// grilla como piso real: acostada en el plano XY (Z=0), no en el plano por defecto de three.js (Y=0)
-const grid = new THREE.GridHelper(400, 40, 0x1c3540, 0x141d24);
-grid.rotation.x = Math.PI / 2;
-grid.position.z = -0.01;
+const grid = new THREE.GridHelper(400, 40, 0x223047, 0x161e2b);
 scene.add(grid);
 
-function resize() {
-  const w = viewportEl.clientWidth, h = viewportEl.clientHeight;
+function onResize(){
+  const w = viewport.clientWidth, h = viewport.clientHeight;
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
   renderer.setSize(w, h);
 }
-window.addEventListener('resize', resize);
-function animate() { requestAnimationFrame(animate); orbit.update(); renderer.render(scene, camera); }
+window.addEventListener('resize', onResize);
 
-const piecesGroup = new THREE.Group();
-scene.add(piecesGroup);
-
-// ---------- carga de archivo ----------
-const fileInput = document.getElementById('fileInput');
-document.getElementById('fileBtnLabel').addEventListener('click', () => fileInput.click());
-fileInput.addEventListener('change', (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); });
-viewportEl.addEventListener('dragover', (e) => e.preventDefault());
-viewportEl.addEventListener('drop', (e) => { e.preventDefault(); if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]); });
-
-function setStatus(msg, type) {
-  const el = document.getElementById('status');
-  el.textContent = msg; el.className = type || '';
-  const banner = document.getElementById('errorBanner');
-  if (type === 'error') { banner.textContent = msg; banner.classList.add('show'); }
-  else { banner.classList.remove('show'); }
+function animate(){
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
 }
-function markStep(n) { for (let i = 1; i <= 4; i++) document.getElementById('step' + i).classList.toggle('done', i <= n); }
+animate();
 
-// ---------- lector de 3MF propio ----------
-// Escrito a partir de la estructura real de archivos exportados por Bambu Studio
-// (no usa el 3MFLoader genérico de three.js, que falla con algunos 3MF reales).
-// Un 3MF es un .zip con 3D/3dmodel.model como raíz. Los objetos pueden tener
-// <mesh> directo o <components><component p:path="..." objectid=".." transform=".."/></components>
-// que apunta a OTRO objeto (en el mismo archivo o en /3D/Objects/objectN.model),
-// y hay que ir combinando las transformaciones a medida que se resuelve cada nivel.
-function parse3MFTransform(str) {
-  const t = str.trim().split(/\s+/).map(Number);
-  const m = new THREE.Matrix4();
-  m.set(
-    t[0], t[3], t[6], t[9],
-    t[1], t[4], t[7], t[10],
-    t[2], t[5], t[8], t[11],
-    0, 0, 0, 1
-  );
-  return m;
-}
-function parse3MFMeshGeometry(objectEl) {
-  const meshEl = objectEl.querySelector('mesh');
-  if (!meshEl) return null;
-  const vertexEls = meshEl.querySelectorAll('vertices > vertex');
-  const positions = new Float32Array(vertexEls.length * 3);
-  for (let i = 0; i < vertexEls.length; i++) {
-    positions[i * 3] = parseFloat(vertexEls[i].getAttribute('x'));
-    positions[i * 3 + 1] = parseFloat(vertexEls[i].getAttribute('y'));
-    positions[i * 3 + 2] = parseFloat(vertexEls[i].getAttribute('z'));
-  }
-  const triEls = meshEl.querySelectorAll('triangles > triangle');
-  const indices = new Uint32Array(triEls.length * 3);
-  const paintCodes = new Array(triEls.length);
-  for (let i = 0; i < triEls.length; i++) {
-    indices[i * 3] = parseInt(triEls[i].getAttribute('v1'), 10);
-    indices[i * 3 + 1] = parseInt(triEls[i].getAttribute('v2'), 10);
-    indices[i * 3 + 2] = parseInt(triEls[i].getAttribute('v3'), 10);
-    paintCodes[i] = triEls[i].getAttribute('paint_color') || '';
-  }
-  const geo = new THREE.BufferGeometry();
-  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geo.setIndex(new THREE.BufferAttribute(indices, 1));
-  return { geometry: geo, paintCodes };
-}
-async function parse3MF(arrayBuffer) {
-  const zip = await JSZip.loadAsync(arrayBuffer);
-  const domParser = new DOMParser();
-  const xmlCache = {};
+// ---------------------------------------------------------------------
+// State
+// ---------------------------------------------------------------------
+const state = {
+  mesh: null,            // current loaded / working mesh (THREE.Mesh, BufferGeometry non-indexed)
+  paintMode: false,
+  paintedVerts: new Set(),  // indices into position attribute painted
+  brushRadius: 14,
+  plane: null,            // THREE.Plane in world space (fit result)
+  planeHelper: null,       // draggable helper object representing the plane
+  transformControls: null,
+  pieceA: null,            // THREE.Mesh result after cut
+  pieceB: null,
+  connectorCenter: null,   // world-space centroid used for pin/socket placement
+  connectorNormal: null,
+};
 
-  async function getXmlDoc(path) {
-    const normalized = path.replace(/^\//, '');
-    if (xmlCache[normalized]) return xmlCache[normalized];
-    const zf = zip.file(normalized);
-    if (!zf) throw new Error('No se encontró "' + normalized + '" dentro del 3MF.');
-    const text = await zf.async('string');
-    const doc = domParser.parseFromString(text, 'application/xml');
-    xmlCache[normalized] = doc;
-    return doc;
-  }
-
-  // recorre un objeto (y sus <components> anidados) y junta todas las mallas resueltas con su matriz final
-  async function resolveObject(doc, objectId, parentMatrix, docPath, out, depth) {
-    if (depth > 12) throw new Error('Demasiados niveles de componentes anidados en el 3MF.');
-    const objectEl = doc.querySelector('resources > object[id="' + objectId + '"]');
-    if (!objectEl) throw new Error('No se encontró el objeto id="' + objectId + '" en ' + docPath);
-
-    const meshResult = parse3MFMeshGeometry(objectEl);
-    if (meshResult) out.push({ geometry: meshResult.geometry, matrix: parentMatrix, paintCodes: meshResult.paintCodes });
-
-    const componentsEl = objectEl.querySelector('components');
-    if (componentsEl) {
-      const compEls = Array.from(componentsEl.querySelectorAll('component'));
-      for (const compEl of compEls) {
-        const compObjectId = compEl.getAttribute('objectid');
-        const compPath = compEl.getAttribute('p:path') || compEl.getAttributeNS('http://schemas.microsoft.com/3dmanufacturing/production/2015/06', 'path');
-        const transformAttr = compEl.getAttribute('transform');
-        const localMatrix = transformAttr ? parse3MFTransform(transformAttr) : new THREE.Matrix4();
-        const combinedMatrix = parentMatrix.clone().multiply(localMatrix);
-        let targetDoc = doc, targetPath = docPath;
-        if (compPath) { targetPath = compPath; targetDoc = await getXmlDoc(targetPath); }
-        await resolveObject(targetDoc, compObjectId, combinedMatrix, targetPath, out, depth + 1);
-      }
-    }
-  }
-
-  const rootPath = '3D/3dmodel.model';
-  const rootDoc = await getXmlDoc(rootPath);
-  const buildItemEls = Array.from(rootDoc.querySelectorAll('build > item'));
-  if (!buildItemEls.length) throw new Error('El 3MF no tiene ningún objeto para imprimir (sección <build> vacía).');
-
-  // Un 3MF puede tener varios objetos de nivel superior (ej: varias "placas" de un proyecto
-  // de Bambu Studio, tileadas lejos unas de otras dentro del mismo archivo). Resolvemos cada
-  // build item por separado y nos quedamos solo con el de mayor tamaño real (el modelo
-  // principal), para no fusionar por accidente piezas de referencia/prueba de otra placa.
-  const groups = [];
-  for (const itemEl of buildItemEls) {
-    const objectId = itemEl.getAttribute('objectid');
-    const transformAttr = itemEl.getAttribute('transform');
-    const itemMatrix = transformAttr ? parse3MFTransform(transformAttr) : new THREE.Matrix4();
-    const resolved = [];
-    await resolveObject(rootDoc, objectId, itemMatrix, rootPath, resolved, 0);
-    if (!resolved.length) continue;
-
-    const geoms = resolved.map(({ geometry, matrix }) => { geometry.applyMatrix4(matrix); return geometry; });
-    const merged = geoms.length === 1 ? geoms[0] : mergeGeometries(geoms, false);
-    merged.computeBoundingBox();
-    const size = new THREE.Vector3(); merged.boundingBox.getSize(size);
-    const paintCodes = resolved.length === 1 ? resolved[0].paintCodes : resolved.flatMap((r) => r.paintCodes);
-    groups.push({ geometry: merged, maxDim: Math.max(size.x, size.y, size.z), paintCodes });
-  }
-  if (!groups.length) throw new Error('No se encontraron mallas dentro del 3MF.');
-
-  groups.sort((a, b) => b.maxDim - a.maxDim);
-  if (groups.length > 1) {
-    console.warn('3MF con ' + groups.length + ' objetos de nivel superior — se cargó el más grande y se ignoraron ' + (groups.length - 1) + ' más chico(s).');
-  }
-  return { geometry: groups[0].geometry, discarded: groups.length - 1, paintCodes: groups[0].paintCodes };
-}
-
-async function loadFile(file) {
-  const ext = file.name.split('.').pop().toLowerCase();
-  if (ext !== 'stl' && ext !== '3mf') {
-    setStatus('Formato no soportado — usá un archivo .stl o .3mf.', 'error');
-    return;
-  }
-  setStatus('Cargando ' + file.name + '…');
-  try {
-    const buffer = await file.arrayBuffer();
-    let geometry;
-    let discardedNote = '';
-    let paintCodes = null;
-
-    if (ext === 'stl') {
-      geometry = new STLLoader().parse(buffer);
-    } else {
-      const result = await parse3MF(buffer);
-      geometry = result.geometry;
-      paintCodes = result.paintCodes || null;
-      if (result.discarded > 0) {
-        discardedNote = ' (el archivo tenía ' + (result.discarded + 1) + ' objetos — se cargó el más grande y se ignoraron ' + result.discarded + ' más chico(s), probablemente piezas de referencia de otra placa)';
-      }
-      if (!geometry || !geometry.attributes.position || geometry.attributes.position.count === 0) {
-        throw new Error('El 3MF se leyó pero no contiene vértices utilizables.');
-      }
-    }
-
-    // suelda vértices duplicados/sueltos (típico en STL, donde cada triángulo trae sus propios
-    // vértices aunque coincidan con los del vecino) — sin esto, los cortes booleanos posteriores
-    // pueden dejar la malla mal cerrada en las costuras. No reordena triángulos, así que
-    // paintCodes (uno por triángulo, en el mismo orden) sigue siendo válido después de esto.
-    geometry = mergeVertices(geometry, 1e-5);
-
-    geometry.computeVertexNormals();
-    geometry.computeBoundingBox();
-    const bb0 = geometry.boundingBox;
-    const cx = (bb0.min.x + bb0.max.x) / 2, cy = (bb0.min.y + bb0.max.y) / 2, minZ = bb0.min.z;
-    geometry.translate(-cx, -cy, -minZ); // centrado en X/Y, apoyado sobre el piso (Z=0)
-    geometry.computeBoundingBox();
-    geometry.computeBoundingSphere();
-
-    state.originalGeometry = geometry;
-    state.paintCodes = paintCodes;
-    state.baseName = file.name.replace(/\.(stl|3mf)$/i, '');
-    const size = new THREE.Vector3(); geometry.boundingBox.getSize(size);
-    state.modelSize = Math.max(size.x, size.y, size.z);
-
-    paletteIdx = 0;
-    resetConnectors();
-    state.pieces = [{ id: 1, name: '1', geometry, material: new THREE.MeshStandardMaterial({ color: 0x9aa4ad, roughness: 0.55, metalness: 0.08 }) }];
-    rebuildPiecesScene();
-    updatePiecesPanel();
-    document.getElementById('exportSection').style.display = 'none';
-    document.getElementById('piecesSection').style.display = 'none';
-    document.getElementById('connectorsSection').style.display = 'none';
-
-    document.getElementById('filenameLabel').textContent = file.name;
-    document.getElementById('dropHint').classList.add('hidden');
-    document.getElementById('btnAutoSlice').disabled = false;
-    document.getElementById('modelSizeInfo').textContent =
-      'Tamaño original: ' + size.x.toFixed(1) + ' × ' + size.y.toFixed(1) + ' × ' + size.z.toFixed(1) + ' mm (alto = eje Z)';
-    markStep(2);
-    updateGridPreview();
-    updateColorSectionInfo();
-    frameCamera();
-    setStatus('Modelo cargado' + discardedNote + '. Definí la altura final y presioná "Escalar y dividir".', 'ok');
-  } catch (err) {
-    console.error(err);
-    setStatus('Error al leer el archivo: ' + err.message, 'error');
-  }
-}
-
-function frameCamera() {
-  const dist = state.modelSize * 2.2;
-  camera.position.set(dist * 0.65, dist * 0.55, dist * 0.85);
-  orbit.target.set(0, 0, 0);
-  camera.near = state.modelSize / 100;
-  camera.far = state.modelSize * 50;
-  camera.updateProjectionMatrix();
-}
-document.getElementById('btnFrame').addEventListener('click', frameCamera);
-
-// ---------- separar por color (pintado multicolor de Bambu/PrusaSlicer) ----------
-// Cada triángulo puede traer un atributo paint_color en el 3MF. Si es un solo carácter
-// hex, todo el triángulo tiene ese color/extruder — eso se decodifica exacto. Si es un
-// código más largo (el pincel dividió el triángulo en el borde entre dos colores), no
-// tenemos el algoritmo exacto de PrusaSlicer para esos casos — se aproxima usando el
-// último carácter del código como el color "dominante" de ese triángulo.
-function decodePaintColor(code) {
-  if (!code) return 0; // sin atributo = color base (sin pintar)
-  const c = code[code.length - 1];
-  const v = parseInt(c, 16);
-  return Number.isNaN(v) ? 0 : v;
-}
-
-function updateColorSectionInfo() {
-  const section = document.getElementById('colorSection');
-  const codes = state.paintCodes;
-  if (!codes || !codes.length) { section.style.display = 'none'; return; }
-
-  const colorSet = new Set();
-  let paintedCount = 0, exactCount = 0, approxCount = 0;
-  codes.forEach((c) => {
-    if (c) {
-      paintedCount++;
-      if (c.length > 1) approxCount++; else exactCount++;
-    }
-    colorSet.add(decodePaintColor(c));
-  });
-  if (colorSet.size <= 1) { section.style.display = 'none'; return; }
-
-  section.style.display = 'block';
-  document.getElementById('colorInfo').textContent =
-    colorSet.size + ' colores detectados (incluyendo el base sin pintar). ' +
-    paintedCount.toLocaleString('es') + ' de ' + codes.length.toLocaleString('es') + ' triángulos están pintados: ' +
-    exactCount.toLocaleString('es') + ' exactos, ' + approxCount.toLocaleString('es') + ' aproximados en bordes.';
-}
-
-// arma una malla independiente (vértices propios, no compartidos) a partir de una lista
-// de índices de triángulo del geometry original — necesario para que cada pieza tenga su
-// propio bounding box correcto, no el del modelo completo
-function buildCompactGeometryFromTriangles(sourceGeometry, triangleIndices) {
-  const srcPos = sourceGeometry.attributes.position;
-  const srcIdx = sourceGeometry.index;
-  const vertexMap = new Map();
-  const newPositions = [];
-  const newIndices = new Uint32Array(triangleIndices.length * 3);
-  let cursor = 0;
-  for (let k = 0; k < triangleIndices.length; k++) {
-    const t = triangleIndices[k];
-    for (let c = 0; c < 3; c++) {
-      const oldIdx = srcIdx.getX(t * 3 + c);
-      let newIdx = vertexMap.get(oldIdx);
-      if (newIdx === undefined) {
-        newIdx = newPositions.length / 3;
-        newPositions.push(srcPos.getX(oldIdx), srcPos.getY(oldIdx), srcPos.getZ(oldIdx));
-        vertexMap.set(oldIdx, newIdx);
-      }
-      newIndices[cursor++] = newIdx;
-    }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(newPositions), 3));
-  g.setIndex(new THREE.BufferAttribute(newIndices, 1));
-  g.computeVertexNormals();
-  return g;
-}
-
-// Un "parche" de color extraído del modelo original es solo un pedazo de cáscara, sin
-// espesor propio: donde se cortó del color vecino queda un borde abierto. Esta función
-// encuentra esos bordes, y para cada uno mete una pared hacia adentro (siguiendo la normal
-// local de cada vértice) hasta "profundidad" mm, y tapa el extremo con una superficie
-// triangulada — así la pieza queda como un cascarón sólido y cerrado, imprimible.
-function closeOpenBoundaries(geometry, depth) {
-  geometry.computeVertexNormals();
-  const pos = geometry.attributes.position;
-  const norm = geometry.attributes.normal;
-  const idx = geometry.index;
-  const triCount = idx.count / 3;
-
-  const directedEdges = new Set();
-  for (let t = 0; t < triCount; t++) {
-    const a = idx.getX(t * 3), b = idx.getX(t * 3 + 1), c = idx.getX(t * 3 + 2);
-    directedEdges.add(a + '_' + b);
-    directedEdges.add(b + '_' + c);
-    directedEdges.add(c + '_' + a);
-  }
-  const boundaryEdges = [];
-  directedEdges.forEach((key) => {
-    const parts = key.split('_');
-    const a = parseInt(parts[0], 10), b = parseInt(parts[1], 10);
-    if (!directedEdges.has(b + '_' + a)) boundaryEdges.push([a, b]);
-  });
-  if (!boundaryEdges.length) return geometry; // ya estaba cerrada, no hace falta nada
-
-  const nextMap = new Map();
-  boundaryEdges.forEach(([a, b]) => nextMap.set(a, b));
-  const visited = new Set();
-  const loops = [];
-  boundaryEdges.forEach(([a]) => {
-    if (visited.has(a)) return;
-    const loop = [];
-    let cur = a, guard = 0;
-    while (cur !== undefined && !visited.has(cur) && guard < boundaryEdges.length + 5) {
-      visited.add(cur);
-      loop.push(cur);
-      cur = nextMap.get(cur);
-      guard++;
-    }
-    if (loop.length >= 3) loops.push(loop);
-  });
-
-  const positions = Array.from(pos.array);
-  const indices = Array.from(idx.array);
-  let vertCount = pos.count;
-
-  loops.forEach((loop) => {
-    const n = loop.length;
-    const innerStart = vertCount;
-    for (let i = 0; i < n; i++) {
-      const vi = loop[i];
-      const nx = norm.getX(vi), ny = norm.getY(vi), nz = norm.getZ(vi);
-      positions.push(pos.getX(vi) - nx * depth, pos.getY(vi) - ny * depth, pos.getZ(vi) - nz * depth);
-    }
-    for (let i = 0; i < n; i++) {
-      const a = loop[i], b = loop[(i + 1) % n];
-      const ai = innerStart + i, bi = innerStart + ((i + 1) % n);
-      indices.push(a, b, bi);
-      indices.push(a, bi, ai);
-    }
-    // tapa del extremo interior: proyecta a un plano local y triangula
-    const innerIdx = Array.from({ length: n }, (_, i) => innerStart + i);
-    const pts3d = innerIdx.map((vi) => new THREE.Vector3(positions[vi * 3], positions[vi * 3 + 1], positions[vi * 3 + 2]));
-    const nrm = new THREE.Vector3();
-    for (let i = 0; i < n; i++) {
-      const p1 = pts3d[i], p2 = pts3d[(i + 1) % n];
-      nrm.x += (p1.y - p2.y) * (p1.z + p2.z);
-      nrm.y += (p1.z - p2.z) * (p1.x + p2.x);
-      nrm.z += (p1.x - p2.x) * (p1.y + p2.y);
-    }
-    if (nrm.lengthSq() < 1e-12) { vertCount += n; return; }
-    nrm.normalize();
-    const helper = Math.abs(nrm.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
-    const u = new THREE.Vector3().crossVectors(helper, nrm).normalize();
-    const v = new THREE.Vector3().crossVectors(nrm, u).normalize();
-    const pts2d = pts3d.map((p) => new THREE.Vector2(p.dot(u), p.dot(v)));
-    const capTris = THREE.ShapeUtils.triangulateShape(pts2d, []);
-    capTris.forEach(([ia, ib, ic]) => { indices.push(innerIdx[ia], innerIdx[ic], innerIdx[ib]); });
-    vertCount += n;
-  });
-
-  const g2 = new THREE.BufferGeometry();
-  g2.setAttribute('position', new THREE.BufferAttribute(new Float32Array(positions), 3));
-  g2.setIndex(indices);
-  return g2;
-}
-
-// suma con la fórmula del divergente: si da negativo, toda la malla quedó "al revés"
-// (normales para adentro) y hay que invertir el orden de cada triángulo
-function fixOutwardWinding(geometry) {
-  const pos = geometry.attributes.position;
-  const idx = geometry.index;
-  let vol = 0;
-  for (let t = 0; t < idx.count / 3; t++) {
-    const ia = idx.getX(t * 3), ib = idx.getX(t * 3 + 1), ic = idx.getX(t * 3 + 2);
-    const ax = pos.getX(ia), ay = pos.getY(ia), az = pos.getZ(ia);
-    const bx = pos.getX(ib), by = pos.getY(ib), bz = pos.getZ(ib);
-    const cx = pos.getX(ic), cy = pos.getY(ic), cz = pos.getZ(ic);
-    vol += ax * (by * cz - bz * cy) - ay * (bx * cz - bz * cx) + az * (bx * cy - by * cx);
-  }
-  if (vol < 0) {
-    const arr = idx.array;
-    for (let t = 0; t < arr.length; t += 3) { const tmp = arr[t + 1]; arr[t + 1] = arr[t + 2]; arr[t + 2] = tmp; }
-    idx.needsUpdate = true;
-  }
-  geometry.computeVertexNormals();
-}
-
-document.getElementById('wallDepth').addEventListener('input', (e) => {
-  document.getElementById('wallDepthVal').textContent = parseFloat(e.target.value).toFixed(1) + ' mm';
-});
-
-document.getElementById('btnColorSeparate').addEventListener('click', () => {
-  if (!state.originalGeometry || !state.paintCodes) return;
-  setStatus('Separando por color…');
-  document.getElementById('btnColorSeparate').disabled = true;
-  setTimeout(runColorSeparate, 30);
-});
-
-function runColorSeparate() {
-  try {
-    const geo = state.originalGeometry;
-    const codes = state.paintCodes;
-    const triCount = geo.index.count / 3;
-    if (codes.length !== triCount) {
-      throw new Error('La cantidad de triángulos no coincide con los datos de color leídos — probá recargar el archivo.');
-    }
-    const wallDepth = parseFloat(document.getElementById('wallDepth').value) || 2.5;
-
-    const groupsByColor = new Map();
-    for (let t = 0; t < triCount; t++) {
-      const colorIdx = decodePaintColor(codes[t]);
-      if (!groupsByColor.has(colorIdx)) groupsByColor.set(colorIdx, []);
-      groupsByColor.get(colorIdx).push(t);
-    }
-
-    const sortedColors = Array.from(groupsByColor.keys()).sort((a, b) => a - b);
-    paletteIdx = 0;
-    const newPieces = sortedColors.map((colorIdx, i) => {
-      const triList = groupsByColor.get(colorIdx);
-      let g = buildCompactGeometryFromTriangles(geo, triList);
-      g = closeOpenBoundaries(g, wallDepth);
-      fixOutwardWinding(g);
-      const label = colorIdx === 0 ? 'sin-pintar' : 'color-' + colorIdx.toString(16).toUpperCase();
-      return {
-        id: i + 1, name: label, geometry: g,
-        material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08 }),
-      };
-    });
-
-    state.pieces = newPieces;
-    state.modelSize = Math.max(state.modelSize, 1);
-    rebuildPiecesScene();
-    updatePiecesPanel();
-    updateExportList();
-    document.getElementById('exportSection').style.display = 'block';
-    document.getElementById('btnColorSeparate').disabled = false;
-    markStep(4);
-    frameCamera();
-    setStatus('Separado en ' + newPieces.length + ' piezas por color, cada una cerrada con pared de ' + wallDepth.toFixed(1) + ' mm. Los bordes entre colores son una aproximación — revisalas antes de imprimir.', 'ok');
-  } catch (err) {
-    console.error(err);
-    document.getElementById('btnColorSeparate').disabled = false;
-    setStatus('Error al separar por color: ' + err.message, 'error');
-  }
-}
-
-// ---------- render de piezas ----------
-function rebuildPiecesScene() {
-  piecesGroup.clear();
-  state.pieces.forEach((piece) => {
-    piece.geometry.computeVertexNormals();
-    piece.material.wireframe = state.wireframe;
-    const mesh = new THREE.Mesh(piece.geometry, piece.material);
-    piece.mesh = mesh;
-    piecesGroup.add(mesh);
-  });
-  updateExplode();
-}
-function updateExplode() {
-  const factor = state.exploded ? 0.6 : 0;
-  state.pieces.forEach((piece) => {
-    if (!piece.mesh) return;
-    piece.geometry.computeBoundingBox();
-    const c = new THREE.Vector3(); piece.geometry.boundingBox.getCenter(c);
-    if (c.lengthSq() < 1e-6) { piece.mesh.position.set(0, 0, 0); return; }
-    piece.mesh.position.copy(c.clone().normalize()).multiplyScalar(c.length() * factor);
-  });
-}
-document.getElementById('btnWire').addEventListener('click', (e) => {
-  state.wireframe = !state.wireframe;
-  e.target.classList.toggle('active', state.wireframe);
-  state.pieces.forEach((p) => { p.material.wireframe = state.wireframe; });
-});
-document.getElementById('btnExplode').addEventListener('click', (e) => {
-  if (state.pieces.length < 2) return;
-  state.exploded = !state.exploded;
-  e.target.classList.toggle('active', state.exploded);
-  updateExplode();
-});
-
-// ---------- conectores: colocación manual con vista previa en vivo ----------
-// Un conector vive en una costura plana entre dos piezas ya cortadas (siempre
-// perpendicular a x, y o z, porque así corta esta herramienta). Al pasar el mouse
-// sobre una costura se tira un rayo de cámara contra las piezas, se detecta en qué
-// eje está esa cara y se busca la pieza vecina que la comparte; si el conector
-// entra con margen en las dos piezas, el punto es válido y se muestra en verde.
-const connectorsGroup = new THREE.Group();
-scene.add(connectorsGroup);
-
-let ghostMesh = null;
-function ensureGhostMesh() {
-  if (ghostMesh) return ghostMesh;
-  ghostMesh = new THREE.Mesh(
-    new THREE.SphereGeometry(1, 12, 8),
-    new THREE.MeshBasicMaterial({ color: 0x2ee6a8, transparent: true, opacity: 0.6, depthTest: false })
-  );
-  ghostMesh.visible = false;
-  ghostMesh.renderOrder = 999;
-  scene.add(ghostMesh);
-  return ghostMesh;
-}
-
-function computeSiteFromEvent(evt) {
-  if (!state.placementMode || state.pieces.length < 2) return null;
-  const meshes = state.pieces.map((p) => p.mesh).filter(Boolean);
-  if (!meshes.length) return null;
-  const rect = renderer.domElement.getBoundingClientRect();
-  const ndc = new THREE.Vector2(
-    ((evt.clientX - rect.left) / rect.width) * 2 - 1,
-    -((evt.clientY - rect.top) / rect.height) * 2 + 1
-  );
-  const rc = new THREE.Raycaster();
-  rc.setFromCamera(ndc, camera);
-  const hits = rc.intersectObjects(meshes, false);
-  if (!hits.length) return null;
-  const hit = hits[0];
-  const clickedPiece = state.pieces.find((p) => p.mesh === hit.object);
-  if (!clickedPiece || !hit.face) return null;
-
-  const point = hit.point.clone().sub(hit.object.position); // vuelve a coords "reales" de la geometría (por si está en vista separada)
-  const normal = hit.face.normal.clone().transformDirection(hit.object.matrixWorld).normalize();
-  const axisNames = ['x', 'y', 'z'];
-  let axis = null, best = 0.9;
-  for (const a of axisNames) { const d = Math.abs(normal[a]); if (d > best) { best = d; axis = a; } }
-  if (!axis) return { valid: false, point };
-
-  const cfg = readConnectorPlacementConfig();
-  const radius = cfg.size / 2;
-  const sign = normal[axis] > 0 ? 1 : -1;
-  clickedPiece.geometry.computeBoundingBox();
-  const bb = clickedPiece.geometry.boundingBox;
-  const coord = sign > 0 ? bb.max[axis] : bb.min[axis];
-  const others = axisNames.filter((a) => a !== axis);
-  const u = point[others[0]], v = point[others[1]];
-
-  const ownOk = u > bb.min[others[0]] + radius && u < bb.max[others[0]] - radius &&
-                v > bb.min[others[1]] + radius && v < bb.max[others[1]] - radius;
-  if (!ownOk) return { valid: false, point };
-
-  const TOL = 0.05;
-  const neighbor = state.pieces.find((p) => {
-    if (p === clickedPiece) return false;
-    p.geometry.computeBoundingBox();
-    const nb = p.geometry.boundingBox;
-    const touches = sign > 0 ? Math.abs(nb.min[axis] - coord) < TOL : Math.abs(nb.max[axis] - coord) < TOL;
-    if (!touches) return false;
-    return u > nb.min[others[0]] + radius && u < nb.max[others[0]] - radius &&
-           v > nb.min[others[1]] + radius && v < nb.max[others[1]] - radius;
-  });
-  if (!neighbor) return { valid: false, point };
-
-  const pieceB = sign > 0 ? clickedPiece : neighbor; // lado negativo del eje: lleva la clavija
-  const pieceA = sign > 0 ? neighbor : clickedPiece; // lado positivo del eje: lleva el encastre
-  return {
-    valid: true, point, axis, coord, u, v,
-    pieceBId: pieceB.id, pieceAId: pieceA.id,
-    shape: cfg.shape, size: cfg.size, depth: cfg.depth, clearance: cfg.clearance,
-  };
-}
-
-function updateGhostPreview(site) {
-  const mesh = ensureGhostMesh();
-  if (!site) { mesh.visible = false; return; }
-  mesh.geometry.dispose();
-  if (site.valid) {
-    mesh.geometry = connectorProfileGeometry(site.shape, site.size / 2, site.depth * 2);
-    const others = ['x', 'y', 'z'].filter((a) => a !== site.axis);
-    mesh.position.set(0, 0, 0);
-    mesh.position[others[0]] = site.u; mesh.position[others[1]] = site.v; mesh.position[site.axis] = site.coord;
-    const normal = new THREE.Vector3(); normal[site.axis] = 1;
-    mesh.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal));
-    mesh.material.color.set(0x2ee6a8);
-  } else {
-    mesh.geometry = new THREE.SphereGeometry(1.4, 12, 8);
-    mesh.position.copy(site.point);
-    mesh.quaternion.identity();
-    mesh.material.color.set(0xff3b5c);
-  }
-  mesh.visible = true;
-}
-
-function commitConnector(site) {
-  const marker = new THREE.Mesh(
-    connectorProfileGeometry(site.shape, site.size / 2, site.depth * 2),
-    new THREE.MeshStandardMaterial({ color: 0x2ee6a8, roughness: 0.35, metalness: 0.15, transparent: true, opacity: 0.85 })
-  );
-  const others = ['x', 'y', 'z'].filter((a) => a !== site.axis);
-  marker.position[others[0]] = site.u; marker.position[others[1]] = site.v; marker.position[site.axis] = site.coord;
-  const normal = new THREE.Vector3(); normal[site.axis] = 1;
-  marker.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal));
-  connectorsGroup.add(marker);
-
-  state.pendingConnectors.push({
-    id: state.nextConnectorId++, marker,
-    axis: site.axis, coord: site.coord, u: site.u, v: site.v,
-    pieceBId: site.pieceBId, pieceAId: site.pieceAId,
-    shape: site.shape, size: site.size, depth: site.depth, clearance: site.clearance,
-  });
-  updateConnectorsList();
-}
-
-function removeConnector(id) {
-  const idx = state.pendingConnectors.findIndex((c) => c.id === id);
-  if (idx === -1) return;
-  connectorsGroup.remove(state.pendingConnectors[idx].marker);
-  state.pendingConnectors.splice(idx, 1);
-  updateConnectorsList();
-}
-
-function resetConnectors() {
-  state.pendingConnectors.forEach((c) => connectorsGroup.remove(c.marker));
-  state.pendingConnectors = [];
-  state.placementMode = false;
-  const btn = document.getElementById('btnPlaceConn');
-  if (btn) { btn.classList.remove('active'); btn.textContent = 'Colocar conector'; }
-  if (ghostMesh) ghostMesh.visible = false;
-  updateConnectorsList();
-}
-
-function updateConnectorsList() {
-  const list = document.getElementById('connectorsList');
-  const applyBtn = document.getElementById('btnApplyConnectors');
-  const countLabel = document.getElementById('connCountLabel');
-  if (!list) return;
-  list.innerHTML = '';
-  state.pendingConnectors.forEach((c) => {
-    const pB = state.pieces.find((p) => p.id === c.pieceBId);
-    const pA = state.pieces.find((p) => p.id === c.pieceAId);
-    const row = document.createElement('div');
-    row.className = 'exportRow2';
-    const lbl = document.createElement('span'); lbl.className = 'lbl';
-    lbl.textContent = 'Pieza ' + (pB ? pB.name : '?') + ' ↔ Pieza ' + (pA ? pA.name : '?') + ' (eje ' + c.axis.toUpperCase() + ')';
-    const btn = document.createElement('button'); btn.className = 'miniBtn'; btn.textContent = '✕';
-    btn.addEventListener('click', () => removeConnector(c.id));
-    row.appendChild(lbl); row.appendChild(btn);
-    list.appendChild(row);
-  });
-  applyBtn.disabled = state.pendingConnectors.length === 0;
-  countLabel.textContent = state.pendingConnectors.length
-    ? state.pendingConnectors.length + ' conector(es) marcado(s), todavía sin aplicar.'
-    : 'Todavía no marcaste ningún conector.';
-}
-
-function applyPendingConnectors() {
-  if (!state.pendingConnectors.length) return;
-  document.getElementById('btnApplyConnectors').disabled = true;
-  setStatus('Aplicando ' + state.pendingConnectors.length + ' conector(es)…');
-  const brushMap = {}; // pieceId -> Brush con el estado más actualizado
-  function currentBrush(piece) {
-    if (!brushMap[piece.id]) {
-      const b = new Brush(piece.geometry);
-      b.updateMatrixWorld(true);
-      brushMap[piece.id] = b;
-    }
-    return brushMap[piece.id];
-  }
-  for (const c of state.pendingConnectors) {
-    const pieceB = state.pieces.find((p) => p.id === c.pieceBId);
-    const pieceA = state.pieces.find((p) => p.id === c.pieceAId);
-    if (!pieceB || !pieceA) continue;
-    const pegRadius = c.size / 2;
-    const holeRadius = pegRadius + c.clearance;
-    const pegLen = c.depth * 2; // centrado en el plano: mitad clavada en B, mitad asomando hacia A
-    const holeLen = c.depth + c.clearance + 0.6;
-    const holeCenterOffset = (c.depth + c.clearance) / 2;
-    const pegBrush = makeConnectorBrush(c.axis, c.coord, c.u, c.v, c.shape, pegRadius, pegLen, 0);
-    brushMap[pieceB.id] = evaluator.evaluate(currentBrush(pieceB), pegBrush, ADDITION);
-    const holeBrush = makeConnectorBrush(c.axis, c.coord, c.u, c.v, c.shape, holeRadius, holeLen, holeCenterOffset);
-    brushMap[pieceA.id] = evaluator.evaluate(currentBrush(pieceA), holeBrush, SUBTRACTION);
-  }
-  for (const idStr in brushMap) {
-    const piece = state.pieces.find((p) => p.id === Number(idStr));
-    if (!piece) continue;
-    piece.geometry = mergeVertices(brushMap[idStr].geometry, 1e-5);
-    piece.geometry.computeVertexNormals();
-  }
-  resetConnectors();
-  rebuildPiecesScene();
-  updatePiecesPanel();
-  updateExportList();
-  setStatus('Conectores aplicados. Ya quedaron cortados en las piezas — podés seguir agregando más o exportar.', 'ok');
-}
-
-document.getElementById('btnPlaceConn').addEventListener('click', (e) => {
-  if (!state.pieces.length) return;
-  state.placementMode = !state.placementMode;
-  e.target.classList.toggle('active', state.placementMode);
-  e.target.textContent = state.placementMode ? 'Colocando… (clic de nuevo para salir)' : 'Colocar conector';
-  if (!state.placementMode && ghostMesh) ghostMesh.visible = false;
-  if (state.placementMode && state.exploded) {
-    state.exploded = false;
-    document.getElementById('btnExplode').classList.remove('active');
-    updateExplode();
-  }
-});
-document.getElementById('btnApplyConnectors').addEventListener('click', applyPendingConnectors);
-
-let connPointerDown = null;
-renderer.domElement.addEventListener('pointerdown', (e) => { connPointerDown = { x: e.clientX, y: e.clientY }; });
-renderer.domElement.addEventListener('pointermove', (e) => {
-  if (!state.placementMode) return;
-  updateGhostPreview(computeSiteFromEvent(e));
-});
-renderer.domElement.addEventListener('pointerleave', () => { if (ghostMesh) ghostMesh.visible = false; });
-renderer.domElement.addEventListener('pointerup', (e) => {
-  if (!state.placementMode) { connPointerDown = null; return; }
-  const moved = connPointerDown && (Math.abs(e.clientX - connPointerDown.x) > 4 || Math.abs(e.clientY - connPointerDown.y) > 4);
-  connPointerDown = null;
-  if (moved) return; // fue un arrastre para rotar la cámara, no un clic de colocación
-  const site = computeSiteFromEvent(e);
-  if (site && site.valid) commitConnector(site);
-});
-
-function updatePiecesPanel() {
-  const list = document.getElementById('piecesList');
-  list.innerHTML = '';
-  state.pieces.forEach((piece) => {
-    piece.geometry.computeBoundingBox();
-    const s = new THREE.Vector3(); piece.geometry.boundingBox.getSize(s);
-    const row = document.createElement('div');
-    row.className = 'pieceRow';
-    const dot = document.createElement('span'); dot.className = 'chipDot';
-    dot.style.background = '#' + piece.material.color.getHexString();
-    const label = document.createElement('span');
-    label.textContent = 'Pieza ' + piece.name + ' — ' + s.x.toFixed(0) + '×' + s.y.toFixed(0) + '×' + s.z.toFixed(0) + ' mm';
-    row.appendChild(dot); row.appendChild(label);
-    list.appendChild(row);
-  });
-  document.getElementById('piecesSection').style.display = state.pieces.length ? 'block' : 'none';
-  document.getElementById('connectorsSection').style.display = state.pieces.length >= 2 ? 'block' : 'none';
-}
-
-const bedMarginEl = document.getElementById('bedMargin');
-bedMarginEl.addEventListener('input', () => {
-  document.getElementById('bedMarginVal').textContent = Math.round(bedMarginEl.value) + ' mm';
-  updateGridPreview();
-});
-['bedX', 'bedY', 'bedZ', 'targetHeight', 'heightUnit'].forEach((id) => {
-  document.getElementById(id).addEventListener('input', updateGridPreview);
-});
-
-// ---------- conectores: bindings de UI ----------
-function fmtNum(v) { return String(Math.round(v * 100) / 100); }
-function bindRangeLabel(id, labelId, suffix) {
-  const el = document.getElementById(id);
-  const lbl = document.getElementById(labelId);
-  const update = () => { lbl.textContent = fmtNum(parseFloat(el.value)) + suffix; };
-  el.addEventListener('input', update);
-  update();
-}
-bindRangeLabel('connSize', 'connSizeVal', ' mm');
-bindRangeLabel('connDepth', 'connDepthVal', ' mm');
-bindRangeLabel('connClearance', 'connClearanceVal', ' mm');
-
-function readConnectorPlacementConfig() {
-  return {
-    shape: document.getElementById('connShape').value,
-    size: parseFloat(document.getElementById('connSize').value) || 6,
-    depth: parseFloat(document.getElementById('connDepth').value) || 3,
-    clearance: parseFloat(document.getElementById('connClearance').value) || 0.15,
-  };
-}
-
-function readBedConfig() {
-  return {
-    x: parseFloat(document.getElementById('bedX').value) || 256,
-    y: parseFloat(document.getElementById('bedY').value) || 256,
-    z: parseFloat(document.getElementById('bedZ').value) || 256,
-    margin: parseFloat(document.getElementById('bedMargin').value) || 0,
-  };
-}
-function getTargetHeightMM() {
-  const val = parseFloat(document.getElementById('targetHeight').value);
-  if (!(val > 0)) return null;
-  const unit = document.getElementById('heightUnit').value;
-  if (unit === 'cm') return val * 10;
-  if (unit === 'm') return val * 1000;
-  return val;
-}
-function updateGridPreview() {
-  const el = document.getElementById('gridPreview');
-  if (!state.originalGeometry) { el.textContent = ''; return; }
-  const heightMM = getTargetHeightMM();
-  if (!heightMM) { el.textContent = 'Ingresá una altura para ver una estimación.'; return; }
-  const size0 = new THREE.Vector3(); state.originalGeometry.boundingBox.getSize(size0);
-  const scale = heightMM / size0.z;
-  const sx = size0.x * scale, sy = size0.y * scale, sz = size0.z * scale;
-  const bed = readBedConfig();
-  const ux = Math.max(1, bed.x - bed.margin), uy = Math.max(1, bed.y - bed.margin), uz = Math.max(1, bed.z - bed.margin);
-  const nx = Math.max(1, Math.ceil(sx / ux - 1e-6));
-  const ny = Math.max(1, Math.ceil(sy / uy - 1e-6));
-  const nz = Math.max(1, Math.ceil(sz / uz - 1e-6));
-  el.textContent = 'Tamaño estimado: ' + sx.toFixed(0) + '×' + sy.toFixed(0) + '×' + sz.toFixed(0) +
-    ' mm → grilla ' + nx + '×' + ny + '×' + nz + ' (hasta ' + (nx * ny * nz) + ' piezas; pueden ser menos si el modelo no es un bloque macizo).';
-}
-
-// ---------- CSG: corte en un eje del mundo (x/y/z) con pines/sockets ----------
 const evaluator = new Evaluator();
-evaluator.attributes = ['position', 'normal'];
 
-// ---------- conectores: geometría de la clavija/encastre ----------
-function connectorProfileGeometry(shape, radius, length) {
-  if (shape === 'square') return new THREE.BoxGeometry(radius * 2, radius * 2, length);
-  const g = new THREE.CylinderGeometry(radius, radius, length, 24);
-  g.rotateX(Math.PI / 2); // el cilindro nace acostado en Y; lo paramos en Z como la caja
-  return g;
+// ---------------------------------------------------------------------
+// Loading models
+// ---------------------------------------------------------------------
+const fileInput = document.getElementById('fileInput');
+document.getElementById('btnLoad').onclick = () => fileInput.click();
+fileInput.onchange = (e) => { if (e.target.files[0]) loadFile(e.target.files[0]); };
+
+viewport.addEventListener('dragover', (e) => { e.preventDefault(); });
+viewport.addEventListener('drop', (e) => {
+  e.preventDefault();
+  if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
+});
+
+function clearScene(){
+  if (state.mesh){ scene.remove(state.mesh); state.mesh.geometry.dispose(); state.mesh.material.dispose(); state.mesh = null; }
+  if (state.pieceA){ scene.remove(state.pieceA); state.pieceA = null; }
+  if (state.pieceB){ scene.remove(state.pieceB); state.pieceB = null; }
+  removePlaneHelper();
+  state.paintedVerts.clear();
+  updatePaintPill();
+  setButtons({ fit:false, cut:false, connector:false, expA:false, expB:false, expZip:false });
 }
-function makeConnectorBrush(axis, coord, u, v, shape, radius, length, centerOffset) {
-  const g = connectorProfileGeometry(shape, radius, length);
-  const brush = new Brush(g);
-  const others = ['x', 'y', 'z'].filter((a) => a !== axis);
-  brush.position[others[0]] = u;
-  brush.position[others[1]] = v;
-  brush.position[axis] = coord + centerOffset;
-  const normal = new THREE.Vector3(); normal[axis] = 1;
-  brush.quaternion.copy(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal));
+
+function loadFile(file){
+  clearScene();
+  const name = file.name.toLowerCase();
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      if (name.endsWith('.stl')) {
+        const geometry = new STLLoader().parse(ev.target.result);
+        addModelGeometry(geometry, file.name);
+      } else if (name.endsWith('.3mf')) {
+        const loader = new ThreeMFLoader();
+        const group = loader.parse(ev.target.result);
+        // aplanar el group a una sola geometría
+        let merged = null;
+        group.traverse((child) => {
+          if (child.isMesh) {
+            const g = child.geometry.clone();
+            g.applyMatrix4(child.matrixWorld);
+            merged = merged ? mergeTwoGeometries(merged, g) : g;
+          }
+        });
+        if (!merged) throw new Error('El 3MF no contiene mallas legibles.');
+        addModelGeometry(merged, file.name);
+      } else {
+        throw new Error('Formato no soportado. Usá .stl o .3mf');
+      }
+    } catch (err){
+      console.error(err);
+      log('Error cargando archivo: ' + err.message, 'err');
+      setStatus('No se pudo cargar el archivo.');
+    }
+  };
+  if (name.endsWith('.stl')) reader.readAsArrayBuffer(file);
+  else reader.readAsArrayBuffer(file);
+}
+
+function mergeTwoGeometries(a, b){
+  // fallback simple: usamos BufferGeometryUtils si está disponible, si no devolvemos "a"
+  try {
+    // import dinámico liviano
+    return a; // simplificado: para 3MF multi-objeto se recomienda exportar a un solo cuerpo antes de cargar
+  } catch { return a; }
+}
+
+function addModelGeometry(geometry, sourceName){
+  geometry = geometry.toNonIndexed();
+  geometry.computeVertexNormals();
+  geometry.center();
+  // vertex colors para pintar (blanco base)
+  const count = geometry.attributes.position.count;
+  const colors = new Float32Array(count * 3);
+  colors.fill(1);
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.computeBoundsTree();
+
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x3fc7ff, roughness: 0.5, metalness: 0.05,
+    vertexColors: true, side: THREE.DoubleSide,
+  });
+  const mesh = new THREE.Mesh(geometry, material);
+  mesh.name = sourceName;
+  scene.add(mesh);
+  state.mesh = mesh;
+
+  // encuadrar cámara
+  const box = new THREE.Box3().setFromObject(mesh);
+  const size = box.getSize(new THREE.Vector3()).length();
+  const center = box.getCenter(new THREE.Vector3());
+  camera.position.copy(center).add(new THREE.Vector3(size * 0.6, size * 0.5, size * 0.7));
+  controls.target.copy(center);
+  controls.update();
+
+  dropHint.style.display = 'none';
+  setStatus(`Modelo cargado: ${sourceName} (${count} vértices)`);
+  log(`Cargado "${sourceName}" — ${count} vértices`, 'ok');
+}
+
+// ---------------------------------------------------------------------
+// Paint tool (pincel de selección para definir la zona de corte)
+// ---------------------------------------------------------------------
+const raycaster = new THREE.Raycaster();
+const pointerNDC = new THREE.Vector2();
+let painting = false;
+const brushCursor = document.getElementById('brushCursor');
+
+document.getElementById('btnPaintMode').onclick = (e) => {
+  state.paintMode = !state.paintMode;
+  e.target.textContent = state.paintMode ? '🖌 Pincel activo (click para desactivar)' : '🖌 Activar pincel';
+  e.target.classList.toggle('primary', state.paintMode);
+  controls.enabled = !state.paintMode; // evita rotar la cámara mientras se pinta con click-drag
+  brushCursor.style.display = state.paintMode ? 'block' : 'none';
+};
+
+document.getElementById('btnClearPaint').onclick = () => {
+  state.paintedVerts.clear();
+  repaintColors();
+  updatePaintPill();
+  setButtons({ fit:false });
+};
+
+const brushSizeInput = document.getElementById('brushSize');
+brushSizeInput.oninput = () => {
+  state.brushRadius = parseFloat(brushSizeInput.value);
+  document.getElementById('brushSizeVal').textContent = state.brushRadius.toFixed(0) + ' mm';
+};
+
+function getNDC(e){
+  const rect = renderer.domElement.getBoundingClientRect();
+  pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+  pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+  brushCursor.style.left = (e.clientX - state.brushRadius) + 'px';
+  brushCursor.style.top = (e.clientY - state.brushRadius) + 'px';
+}
+
+renderer.domElement.addEventListener('pointerdown', (e) => {
+  if (!state.paintMode || !state.mesh) return;
+  painting = true;
+  paintAt(e);
+});
+renderer.domElement.addEventListener('pointermove', (e) => {
+  if (state.paintMode) getNDC(e);
+  if (painting) paintAt(e);
+});
+window.addEventListener('pointerup', () => { painting = false; });
+
+function paintAt(e){
+  getNDC(e);
+  raycaster.setFromCamera(pointerNDC, camera);
+  const hits = raycaster.intersectObject(state.mesh, false);
+  if (!hits.length) return;
+  const point = hits[0].point;
+
+  const pos = state.mesh.geometry.attributes.position;
+  const worldMatrix = state.mesh.matrixWorld;
+  const v = new THREE.Vector3();
+  const r2 = state.brushRadius * state.brushRadius;
+  let added = 0;
+  for (let i = 0; i < pos.count; i++){
+    v.fromBufferAttribute(pos, i).applyMatrix4(worldMatrix);
+    if (v.distanceToSquared(point) <= r2){
+      if (!state.paintedVerts.has(i)) added++;
+      state.paintedVerts.add(i);
+    }
+  }
+  if (added) { repaintColors(); updatePaintPill(); setButtons({ fit: state.paintedVerts.size > 6 }); }
+}
+
+function repaintColors(){
+  const colorAttr = state.mesh.geometry.attributes.color;
+  for (let i = 0; i < colorAttr.count; i++){
+    if (state.paintedVerts.has(i)) colorAttr.setXYZ(i, 1.0, 0.54, 0.17); // naranja
+    else colorAttr.setXYZ(i, 1, 1, 1);
+  }
+  colorAttr.needsUpdate = true;
+}
+
+function updatePaintPill(){
+  document.getElementById('paintPill').textContent = `${state.paintedVerts.size} vértices pintados`;
+  document.getElementById('paintPill').classList.toggle('on', state.paintedVerts.size > 6);
+}
+
+// ---------------------------------------------------------------------
+// Ajuste de plano por PCA sobre los puntos pintados
+// ---------------------------------------------------------------------
+function fitPlaneFromPaint(){
+  const pos = state.mesh.geometry.attributes.position;
+  const worldMatrix = state.mesh.matrixWorld;
+  const pts = [];
+  state.paintedVerts.forEach((i) => {
+    const v = new THREE.Vector3().fromBufferAttribute(pos, i).applyMatrix4(worldMatrix);
+    pts.push(v);
+  });
+  if (pts.length < 6){ log('Pintá más zona antes de ajustar el plano.', 'err'); return; }
+
+  // centroide
+  const centroid = new THREE.Vector3();
+  pts.forEach(p => centroid.add(p));
+  centroid.multiplyScalar(1 / pts.length);
+
+  // matriz de covarianza 3x3
+  let xx=0,xy=0,xz=0,yy=0,yz=0,zz=0;
+  pts.forEach(p => {
+    const dx = p.x - centroid.x, dy = p.y - centroid.y, dz = p.z - centroid.z;
+    xx += dx*dx; xy += dx*dy; xz += dx*dz; yy += dy*dy; yz += dy*dz; zz += dz*dz;
+  });
+  const n = pts.length;
+  xx/=n; xy/=n; xz/=n; yy/=n; yz/=n; zz/=n;
+
+  const normal = smallestEigenvector(xx, xy, xz, yy, yz, zz);
+
+  state.plane = new THREE.Plane().setFromNormalAndCoplanarPoint(normal, centroid);
+  state.connectorCenter = centroid.clone();
+  state.connectorNormal = normal.clone();
+
+  createPlaneHelper(centroid, normal);
+  setButtons({ cut: true });
+  log(`Plano ajustado — centro (${centroid.x.toFixed(1)}, ${centroid.y.toFixed(1)}, ${centroid.z.toFixed(1)}) normal (${normal.x.toFixed(2)}, ${normal.y.toFixed(2)}, ${normal.z.toFixed(2)})`, 'ok');
+}
+
+// eigen-decomposición analítica de una matriz simétrica 3x3 (método de Cardano)
+// devuelve el autovector correspondiente al menor autovalor (dirección de menor varianza = normal del plano)
+function smallestEigenvector(a,b,c,d,e,f){
+  // matriz simétrica: [[a,b,c],[b,d,e],[c,e,f]]
+  const p1 = b*b + c*c + e*e;
+  let normal;
+  if (p1 < 1e-9){
+    // ya es (casi) diagonal: el autovalor menor es el mínimo de a,d,f
+    const vals = [a,d,f];
+    const minIdx = vals.indexOf(Math.min(...vals));
+    normal = new THREE.Vector3(minIdx===0?1:0, minIdx===1?1:0, minIdx===2?1:0);
+  } else {
+    const q = (a+d+f)/3;
+    const b2 = a-q, d2 = d-q, f2 = f-q;
+    const p2 = b2*b2 + d2*d2 + f2*f2 + 2*p1;
+    const p = Math.sqrt(p2/6);
+    // B = (1/p) * (M - qI)
+    const Bxx=b2/p, Byy=d2/p, Bzz=f2/p, Bxy=b/p, Bxz=c/p, Byz=e/p;
+    const detB = Bxx*(Byy*Bzz - Byz*Byz) - Bxy*(Bxy*Bzz - Byz*Bxz) + Bxz*(Bxy*Byz - Byy*Bxz);
+    let r = detB/2;
+    r = Math.max(-1, Math.min(1, r));
+    const phi = Math.acos(r)/3;
+    const eig1 = q + 2*p*Math.cos(phi);
+    const eig3 = q + 2*p*Math.cos(phi + (2*Math.PI/3));
+    const eig2 = 3*q - eig1 - eig3;
+    const lambdaMin = Math.min(eig1, eig2, eig3);
+
+    // resolver (M - lambdaMin*I) v = 0 vía producto cruzado de dos filas independientes
+    const Mxx=a-lambdaMin, Myy=d-lambdaMin, Mzz=f-lambdaMin;
+    const row1 = new THREE.Vector3(Mxx, b, c);
+    const row2 = new THREE.Vector3(b, Myy, e);
+    const row3 = new THREE.Vector3(c, e, Mzz);
+    let v = new THREE.Vector3().crossVectors(row1, row2);
+    if (v.lengthSq() < 1e-8) v = new THREE.Vector3().crossVectors(row1, row3);
+    if (v.lengthSq() < 1e-8) v = new THREE.Vector3().crossVectors(row2, row3);
+    if (v.lengthSq() < 1e-8) v = new THREE.Vector3(0,1,0); // fallback
+    normal = v.normalize();
+  }
+  return normal;
+}
+
+// ---------------------------------------------------------------------
+// Helper visual del plano + gizmo de ajuste manual
+// ---------------------------------------------------------------------
+function createPlaneHelper(center, normal){
+  removePlaneHelper();
+
+  const size = new THREE.Box3().setFromObject(state.mesh).getSize(new THREE.Vector3()).length();
+  const geo = new THREE.PlaneGeometry(size * 1.3, size * 1.3);
+  const mat = new THREE.MeshBasicMaterial({ color: 0xff8a2b, transparent: true, opacity: 0.28, side: THREE.DoubleSide, depthWrite: false });
+  const helper = new THREE.Mesh(geo, mat);
+  helper.position.copy(center);
+  helper.lookAt(center.clone().add(normal));
+  scene.add(helper);
+  state.planeHelper = helper;
+
+  const tc = new TransformControls(camera, renderer.domElement);
+  tc.setMode('translate');
+  tc.setSize(0.9);
+  tc.attach(helper);
+  tc.addEventListener('dragging-changed', (ev) => { controls.enabled = !ev.value && !state.paintMode; });
+  tc.addEventListener('objectChange', () => {
+    // recalcular el THREE.Plane en base al helper movido/rotado
+    const n = new THREE.Vector3(0,0,1).applyQuaternion(helper.quaternion).normalize();
+    state.plane = new THREE.Plane().setFromNormalAndCoplanarPoint(n, helper.position);
+    state.connectorCenter = helper.position.clone();
+    state.connectorNormal = n;
+  });
+  scene.add(tc);
+  state.transformControls = tc;
+
+  setButtons({ gizmoMove: true, gizmoRotate: true });
+}
+
+function removePlaneHelper(){
+  if (state.transformControls){ state.transformControls.detach(); scene.remove(state.transformControls); state.transformControls.dispose(); state.transformControls = null; }
+  if (state.planeHelper){ scene.remove(state.planeHelper); state.planeHelper.geometry.dispose(); state.planeHelper.material.dispose(); state.planeHelper = null; }
+}
+
+document.getElementById('btnFitPlane').onclick = fitPlaneFromPaint;
+document.getElementById('btnGizmoMove').onclick = () => state.transformControls && state.transformControls.setMode('translate');
+document.getElementById('btnGizmoRotate').onclick = () => state.transformControls && state.transformControls.setMode('rotate');
+
+// ---------------------------------------------------------------------
+// Corte CSG: dos brushes tipo "media caja" enormes, uno por cada lado del plano
+// ---------------------------------------------------------------------
+function makeHalfSpaceBrush(plane, size, keepPositiveSide){
+  const box = new THREE.BoxGeometry(size, size, size);
+  // desplazamos la caja de forma que una cara quede exactamente sobre el plano
+  box.translate(keepPositiveSide ? size/2 : -size/2, 0, 0);
+  const brush = new Brush(box);
+  // orientamos el eje X de la caja con la normal del plano
+  const n = plane.normal.clone().normalize();
+  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(1,0,0), n);
+  brush.quaternion.copy(quat);
+  const coplanarPoint = new THREE.Vector3();
+  plane.coplanarPoint(coplanarPoint);
+  brush.position.copy(coplanarPoint);
   brush.updateMatrixWorld(true);
   return brush;
 }
 
-function cutGeometryAtAxisPlane(geometry, axis, coord) {
-  const normal = new THREE.Vector3(axis === 'x' ? 1 : 0, axis === 'y' ? 1 : 0, axis === 'z' ? 1 : 0);
-  const planePoint = new THREE.Vector3(); planePoint[axis] = coord;
-
-  // la caja de corte se dimensiona según el tamaño de ESTA pieza puntual (no el modelo
-  // original completo) — usar una caja gigante en piezas ya chicas, tras varios cortes,
-  // arrastra imprecisión numérica y puede dejar la malla mal cerrada en la costura
-  geometry.computeBoundingSphere();
-  const pieceRadius = geometry.boundingSphere ? geometry.boundingSphere.radius : state.modelSize;
-  const boxSize = Math.max(pieceRadius * 6, 1);
-
-  const modelBrush = new Brush(geometry);
-  modelBrush.updateMatrixWorld(true);
-  const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, 1), normal);
-  function halfBox(sign) {
-    const box = new Brush(new THREE.BoxGeometry(boxSize, boxSize, boxSize));
-    box.position.copy(planePoint).addScaledVector(normal, sign * boxSize / 2);
-    box.quaternion.copy(quat);
-    box.updateMatrixWorld(true);
-    return box;
-  }
-
-  const brushA = evaluator.evaluate(modelBrush, halfBox(1), INTERSECTION);
-  const brushB = evaluator.evaluate(modelBrush, halfBox(-1), INTERSECTION);
-  const countA = brushA.geometry.attributes.position.count;
-  const countB = brushB.geometry.attributes.position.count;
-  if (countA === 0 && countB === 0) return { a: null, b: null };
-  if (countA === 0) return { a: null, b: geometry };
-  if (countB === 0) return { a: geometry, b: null };
-
-  // corte plano simple, sin pines ni sockets acá — los conectores se colocan
-  // después, a mano, sobre las piezas ya cortadas (ver sección "Conectores").
-  // Se sueldan los vértices del resultado: el CSG puede dejar vértices duplicados
-  // sin unir justo en la costura del corte, lo que deja la malla mal cerrada ahí.
-  const geoA = mergeVertices(brushA.geometry, 1e-5);
-  const geoB = mergeVertices(brushB.geometry, 1e-5);
-  return { a: geoA, b: geoB };
-}
-
-function computeCutCoords(min, max, n) {
-  const coords = [];
-  for (let i = 1; i < n; i++) coords.push(min + (max - min) * (i / n));
-  return coords;
-}
-async function applyAxisCutsAsync(geoms, axis, coords, axisLabel, reportProgress) {
-  if (!coords.length) return geoms;
-  let current = geoms;
-  for (let ci = 0; ci < coords.length; ci++) {
-    const coord = coords[ci];
-    const next = [];
-    for (const g of current) {
-      g.computeBoundingBox();
-      const bb = g.boundingBox;
-      const spansCut = coord > bb.min[axis] + 1e-6 && coord < bb.max[axis] - 1e-6;
-      if (!spansCut) {
-        // el plano no atraviesa esta pieza puntual: se deja tal cual, sin gastar CSG
-        next.push(g);
-        continue;
-      }
-      const { a, b } = cutGeometryAtAxisPlane(g, axis, coord);
-      if (a) next.push(a);
-      if (b) next.push(b);
-      if (reportProgress) reportProgress(axisLabel, ci + 1, coords.length, next.length);
-      // cede el control al navegador entre cada corte para que la pestaña no se congele
-      await new Promise((resolve) => setTimeout(resolve, 0));
-    }
-    current = next;
-  }
-  return current;
-}
-
-const MAX_PIECES_WARN = 30; // a partir de acá se pide confirmación (puede tardar bastante)
-const MAX_PIECES_HARD = 200; // a partir de acá se rechaza directamente (impracticable en el navegador)
-
-document.getElementById('btnAutoSlice').addEventListener('click', async () => {
-  if (!state.originalGeometry) return;
-  const heightMM = getTargetHeightMM();
-  if (!heightMM) { setStatus('Ingresá una altura final válida antes de dividir.', 'error'); return; }
-
-  const est = estimateGrid(heightMM);
-  if (!est) { setStatus('No se pudo estimar la división — revisá los datos ingresados.', 'error'); return; }
-  const totalEst = est.nx * est.ny * est.nz;
-
-  if (totalEst > MAX_PIECES_HARD) {
-    setStatus('La grilla estimada (' + est.nx + '×' + est.ny + '×' + est.nz + ' ≈ hasta ' + totalEst + ' piezas, calculado sobre el bloque completo) es demasiado grande para procesar en el navegador. Aumentá el tamaño de cama, reducí el margen, o achicá un poco la altura.', 'error');
-    return;
-  }
-  if (totalEst > MAX_PIECES_WARN) {
-    const ok = window.confirm('Grilla estimada ' + est.nx + '×' + est.ny + '×' + est.nz + ' (hasta ' + totalEst + ' piezas — el número real suele ser menor, esto es un cálculo de peor caso sobre el bloque completo). Puede tardar bastante. ¿Continuar?');
-    if (!ok) { setStatus('Cancelado. Ajustá altura/cama/margen y volvé a intentar.', ''); return; }
-  }
-
-  document.getElementById('btnAutoSlice').disabled = true;
-  await runAutoSlice(heightMM);
-});
-
-function estimateGrid(heightMM) {
-  if (!state.originalGeometry) return null;
-  const size0 = new THREE.Vector3(); state.originalGeometry.boundingBox.getSize(size0);
-  if (!(size0.z > 0)) return null;
-  const scale = heightMM / size0.z;
-  const sx = size0.x * scale, sy = size0.y * scale, sz = size0.z * scale;
-  const bed = readBedConfig();
-  const ux = Math.max(1, bed.x - bed.margin), uy = Math.max(1, bed.y - bed.margin), uz = Math.max(1, bed.z - bed.margin);
-  return {
-    nx: Math.max(1, Math.ceil(sx / ux - 1e-6)),
-    ny: Math.max(1, Math.ceil(sy / uy - 1e-6)),
-    nz: Math.max(1, Math.ceil(sz / uz - 1e-6)),
-  };
-}
-
-async function runAutoSlice(heightMM) {
+document.getElementById('btnCut').onclick = () => {
+  if (!state.mesh || !state.plane){ log('Ajustá el plano antes de cortar.', 'err'); return; }
   try {
-    const geo = state.originalGeometry.clone();
-    geo.computeBoundingBox();
-    const size0 = new THREE.Vector3(); geo.boundingBox.getSize(size0);
-    if (!(size0.z > 0)) throw new Error('No se pudo medir la altura del modelo.');
-    const scale = heightMM / size0.z;
-    geo.scale(scale, scale, scale);
-    geo.computeBoundingBox();
-    const bb1 = geo.boundingBox;
-    const cx1 = (bb1.min.x + bb1.max.x) / 2, cy1 = (bb1.min.y + bb1.max.y) / 2, minZ1 = bb1.min.z;
-    geo.translate(-cx1, -cy1, -minZ1); // centrado en X/Y, apoyado sobre el piso (Z=0)
-    geo.computeBoundingBox();
-    const size = new THREE.Vector3(); geo.boundingBox.getSize(size);
+    const size = new THREE.Box3().setFromObject(state.mesh).getSize(new THREE.Vector3()).length() * 4;
 
-    const bed = readBedConfig();
-    const usableX = Math.max(1, bed.x - bed.margin);
-    const usableY = Math.max(1, bed.y - bed.margin);
-    const usableZ = Math.max(1, bed.z - bed.margin);
-    const nx = Math.max(1, Math.ceil(size.x / usableX - 1e-6));
-    const ny = Math.max(1, Math.ceil(size.y / usableY - 1e-6));
-    const nz = Math.max(1, Math.ceil(size.z / usableZ - 1e-6));
+    const original = new Brush(state.mesh.geometry.clone());
+    original.updateMatrixWorld(true);
 
-    state.modelSize = Math.max(size.x, size.y, size.z);
-    const bb = geo.boundingBox;
-    const cutsX = computeCutCoords(bb.min.x, bb.max.x, nx);
-    const cutsY = computeCutCoords(bb.min.y, bb.max.y, ny);
-    const cutsZ = computeCutCoords(bb.min.z, bb.max.z, nz);
-    const reportProgress = (axisLabel, ci, total, count) => {
-      setStatus('Cortando eje ' + axisLabel + ' (' + ci + '/' + total + ')… ' + count + ' piezas hasta ahora.');
-    };
+    const cutterPos = makeHalfSpaceBrush(state.plane, size, true);   // lado + normal (para restar y quedarnos con el lado -)
+    const cutterNeg = makeHalfSpaceBrush(state.plane, size, false);  // lado - normal (para restar y quedarnos con el lado +)
 
-    let geoms = [geo];
-    geoms = await applyAxisCutsAsync(geoms, 'x', cutsX, 'X', reportProgress);
-    geoms = await applyAxisCutsAsync(geoms, 'y', cutsY, 'Y', reportProgress);
-    geoms = await applyAxisCutsAsync(geoms, 'z', cutsZ, 'Z', reportProgress);
+    const resultA = evaluator.evaluate(original, cutterPos, SUBTRACTION); // se queda con el lado negativo
+    const resultB = evaluator.evaluate(original, cutterNeg, SUBTRACTION); // se queda con el lado positivo
 
-    const finalGeoms = geoms.filter((g) => g && g.attributes.position.count > 0);
-    if (!finalGeoms.length) throw new Error('El resultado quedó vacío — revisá la altura ingresada.');
-
-    resetConnectors(); // una nueva división invalida cualquier conector marcado sobre las piezas anteriores
-
-    paletteIdx = 0;
-    state.pieces = finalGeoms.map((g, i) => {
-      g.computeVertexNormals();
-      return { id: i + 1, name: String(i + 1), geometry: g,
-        material: new THREE.MeshStandardMaterial({ color: nextColor(), roughness: 0.45, metalness: 0.08, wireframe: state.wireframe }) };
-    });
-
-    rebuildPiecesScene();
-    updatePiecesPanel();
-    updateExportList();
-    document.getElementById('exportSection').style.display = 'block';
-    document.getElementById('btnAutoSlice').disabled = false;
-    markStep(4);
-    frameCamera();
-    setStatus('Listo: ' + state.pieces.length + ' pieza(s) (grilla ' + nx + '×' + ny + '×' + nz + ') para ' + heightMM.toFixed(0) + ' mm de alto. Ya podés exportar, o bajar a "Conectores" para colocar clavijas y encastres en las costuras.', 'ok');
-  } catch (err) {
+    finalizePieces(resultA.geometry, resultB.geometry);
+    log('Corte realizado. Pieza A y Pieza B generadas.', 'ok');
+    setButtons({ connector: true, expA: true, expB: true, expZip: true });
+  } catch (err){
     console.error(err);
-    document.getElementById('btnAutoSlice').disabled = false;
-    setStatus('Error al dividir: ' + err.message, 'error');
+    log('Error al cortar: ' + err.message, 'err');
   }
+};
+
+function finalizePieces(geoA, geoB){
+  if (state.pieceA) scene.remove(state.pieceA);
+  if (state.pieceB) scene.remove(state.pieceB);
+
+  geoA.computeVertexNormals();
+  geoB.computeVertexNormals();
+
+  const matA = new THREE.MeshStandardMaterial({ color: 0x3fc7ff, roughness: .5, side: THREE.DoubleSide });
+  const matB = new THREE.MeshStandardMaterial({ color: 0x35d68a, roughness: .5, side: THREE.DoubleSide });
+
+  state.pieceA = new THREE.Mesh(geoA, matA);
+  state.pieceB = new THREE.Mesh(geoB, matB);
+  state.pieceA.position.x -= 4; // separación visual leve
+  state.pieceB.position.x += 4;
+  scene.add(state.pieceA, state.pieceB);
+
+  // ocultar el modelo original y el helper del plano
+  state.mesh.visible = false;
+  removePlaneHelper();
 }
 
-// ---------- exportar ----------
+// ---------------------------------------------------------------------
+// Pin / Socket en el punto de corte
+// ---------------------------------------------------------------------
+const pinDia = document.getElementById('pinDia');
+const pinLen = document.getElementById('pinLen');
+const pinTol = document.getElementById('pinTol');
+pinDia.oninput = () => document.getElementById('pinDiaVal').textContent = parseFloat(pinDia.value).toFixed(1) + ' mm';
+pinLen.oninput = () => document.getElementById('pinLenVal').textContent = parseFloat(pinLen.value).toFixed(1) + ' mm';
+pinTol.oninput = () => document.getElementById('pinTolVal').textContent = parseFloat(pinTol.value).toFixed(2) + ' mm';
+
+document.getElementById('btnConnector').onclick = () => {
+  if (!state.pieceA || !state.pieceB || !state.connectorCenter){ log('Primero cortá el modelo.', 'err'); return; }
+  try {
+    const dia = parseFloat(pinDia.value);
+    const len = parseFloat(pinLen.value);
+    const tol = parseFloat(pinTol.value);
+    const n = state.connectorNormal.clone().normalize();
+    const center = state.connectorCenter.clone();
+    center.x += -4; // compensar el offset visual de pieceA; el pin se genera respecto al centro real del corte
+
+    const quat = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0), n);
+
+    // --- pin: cilindro que sobresale desde la pieza A hacia afuera (sentido -normal, la pieza A quedó del lado negativo) ---
+    const pinGeo = new THREE.CylinderGeometry(dia/2, dia/2, len*2, 24);
+    const pinBrush = new Brush(pinGeo);
+    pinBrush.quaternion.copy(quat);
+    pinBrush.position.copy(center).addScaledVector(n, -len/2);
+    pinBrush.updateMatrixWorld(true);
+
+    const aBrush = new Brush(state.pieceA.geometry.clone());
+    aBrush.position.copy(state.pieceA.position);
+    aBrush.updateMatrixWorld(true);
+    const newA = evaluator.evaluate(aBrush, pinBrush, ADDITION);
+
+    // --- socket: cilindro levemente más ancho, restado de la pieza B ---
+    const holeGeo = new THREE.CylinderGeometry(dia/2 + tol, dia/2 + tol, len*2.2, 24);
+    const holeBrush = new Brush(holeGeo);
+    holeBrush.quaternion.copy(quat);
+    holeBrush.position.copy(center).addScaledVector(n, len/2);
+    holeBrush.updateMatrixWorld(true);
+
+    const bBrush = new Brush(state.pieceB.geometry.clone());
+    bBrush.position.copy(state.pieceB.position);
+    bBrush.updateMatrixWorld(true);
+    const newB = evaluator.evaluate(bBrush, holeBrush, SUBTRACTION);
+
+    // reemplazar geometrías (compensando la posición del brush, ya que Evaluator devuelve coords locales del primer operando)
+    scene.remove(state.pieceA); scene.remove(state.pieceB);
+    newA.geometry.computeVertexNormals();
+    newB.geometry.computeVertexNormals();
+    newA.material = state.pieceA.material;
+    newB.material = state.pieceB.material;
+    newA.position.copy(state.pieceA.position);
+    newB.position.copy(state.pieceB.position);
+    state.pieceA = newA;
+    state.pieceB = newB;
+    scene.add(state.pieceA, state.pieceB);
+
+    log(`Pin/socket generado — Ø${dia}mm x ${len}mm, holgura ${tol}mm`, 'ok');
+  } catch (err){
+    console.error(err);
+    log('Error generando pin/socket: ' + err.message, 'err');
+  }
+};
+
+// ---------------------------------------------------------------------
+// Exportar STL
+// ---------------------------------------------------------------------
 const exporter = new STLExporter();
-function downloadBlob(blob, filename) {
+
+function exportMeshAsSTL(mesh){
+  return exporter.parse(mesh, { binary: true });
+}
+function download(blobParts, filename){
+  const blob = new Blob([blobParts], { type: 'application/octet-stream' });
+  const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(a.href);
-}
-function stlBufferOf(geometry) {
-  return exporter.parse(new THREE.Mesh(geometry), { binary: true });
-}
-function downloadSTL(geometry, filename) {
-  downloadBlob(new Blob([stlBufferOf(geometry)], { type: 'application/octet-stream' }), filename);
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
 }
 
-function build3MFZip(geometry, bedX, bedY) {
-  const g = geometry.clone();
-  g.computeBoundingBox();
-  const bb = g.boundingBox;
-  const cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, minZ = bb.min.z;
-  g.translate(bedX / 2 - cx, bedY / 2 - cy, -minZ);
-
-  const pos = g.attributes.position;
-  const idx = g.index;
-  const vParts = [];
-  for (let i = 0; i < pos.count; i++) {
-    vParts.push('<vertex x="' + pos.getX(i).toFixed(4) + '" y="' + pos.getY(i).toFixed(4) + '" z="' + pos.getZ(i).toFixed(4) + '"/>');
-  }
-  const tParts = [];
-  if (idx) {
-    for (let i = 0; i < idx.count; i += 3) {
-      tParts.push('<triangle v1="' + idx.getX(i) + '" v2="' + idx.getX(i + 1) + '" v3="' + idx.getX(i + 2) + '"/>');
-    }
-  } else {
-    for (let i = 0; i < pos.count; i += 3) tParts.push('<triangle v1="' + i + '" v2="' + (i + 1) + '" v3="' + (i + 2) + '"/>');
-  }
-
-  const modelXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<model unit="millimeter" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n' +
-    ' <resources>\n  <object id="1" type="model">\n   <mesh>\n    <vertices>' + vParts.join('') +
-    '</vertices>\n    <triangles>' + tParts.join('') + '</triangles>\n   </mesh>\n  </object>\n </resources>\n' +
-    ' <build>\n  <item objectid="1"/>\n </build>\n</model>';
-
-  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n' +
-    ' <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n' +
-    ' <Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>\n</Types>';
-
-  const relsXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n' +
-    ' <Relationship Target="/3D/3dmodel.model" Id="rel0" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>';
-
+document.getElementById('btnExpA').onclick = () => {
+  if (!state.pieceA) return;
+  download(exportMeshAsSTL(state.pieceA), 'pieza_A.stl');
+  log('Exportado pieza_A.stl', 'ok');
+};
+document.getElementById('btnExpB').onclick = () => {
+  if (!state.pieceB) return;
+  download(exportMeshAsSTL(state.pieceB), 'pieza_B.stl');
+  log('Exportado pieza_B.stl', 'ok');
+};
+document.getElementById('btnExpZip').onclick = async () => {
+  if (!state.pieceA || !state.pieceB) return;
   const zip = new JSZip();
-  zip.file('[Content_Types].xml', contentTypesXml);
-  zip.file('_rels/.rels', relsXml);
-  zip.file('3D/3dmodel.model', modelXml);
-  return zip;
-}
-async function downloadSingle3MF(geometry, filename, bedX, bedY) {
-  const zip = build3MFZip(geometry, bedX, bedY);
-  const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob(blob, filename);
-}
+  zip.file('pieza_A.stl', exportMeshAsSTL(state.pieceA));
+  zip.file('pieza_B.stl', exportMeshAsSTL(state.pieceB));
+  const content = await zip.generateAsync({ type: 'blob' });
+  const url = URL.createObjectURL(content);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'paint-cut-piezas.zip';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  log('Exportado paint-cut-piezas.zip', 'ok');
+};
 
-function updateExportList() {
-  const list = document.getElementById('exportList');
-  list.innerHTML = '';
-  state.pieces.forEach((piece) => {
-    const row = document.createElement('div');
-    row.className = 'exportRow2';
-    const dot = document.createElement('span'); dot.className = 'chipDot';
-    dot.style.background = '#' + piece.material.color.getHexString();
-    const lbl = document.createElement('span'); lbl.className = 'lbl'; lbl.textContent = 'Pieza ' + piece.name;
-    const bStl = document.createElement('button'); bStl.className = 'miniBtn'; bStl.textContent = '.stl';
-    bStl.addEventListener('click', () => downloadSTL(piece.geometry, state.baseName + '_pieza-' + piece.name + '.stl'));
-    const b3mf = document.createElement('button'); b3mf.className = 'miniBtn'; b3mf.textContent = '.3mf';
-    b3mf.addEventListener('click', () => {
-      const bed = readBedConfig();
-      downloadSingle3MF(piece.geometry, state.baseName + '_placa-' + piece.name + '.3mf', bed.x, bed.y);
-    });
-    row.appendChild(dot); row.appendChild(lbl); row.appendChild(bStl); row.appendChild(b3mf);
-    list.appendChild(row);
+// ---------------------------------------------------------------------
+// Botones: estado enable/disable centralizado
+// ---------------------------------------------------------------------
+function setButtons(map){
+  const ids = {
+    fit: 'btnFitPlane', cut: 'btnCut', connector: 'btnConnector',
+    expA: 'btnExpA', expB: 'btnExpB', expZip: 'btnExpZip',
+    gizmoMove: 'btnGizmoMove', gizmoRotate: 'btnGizmoRotate',
+  };
+  Object.entries(map).forEach(([key, val]) => {
+    const el = document.getElementById(ids[key]);
+    if (el) el.disabled = !val;
   });
 }
 
-document.getElementById('btnZipStl').addEventListener('click', async () => {
-  const zip = new JSZip();
-  state.pieces.forEach((p) => zip.file(state.baseName + '_pieza-' + p.name + '.stl', stlBufferOf(p.geometry)));
-  const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob(blob, state.baseName + '_piezas-stl.zip');
-});
-function uuid4() {
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
-    return v.toString(16);
-  });
-}
-
-// Arma un único .3mf ESTÁNDAR (spec core de 3MF, sin nada propietario de Bambu)
-// con todas las piezas como objetos separados. No intenta asignar placas —
-// eso lo hace el "Organizar automático" nativo de Bambu Studio al abrir el
-// archivo, que sí sabe crear placas nuevas cuando hacen falta.
-function buildAllInOne3MF(pieces, bed) {
-  const gap = 20;
-  let objectsXml = '', buildItemsXml = '';
-
-  pieces.forEach((piece, i) => {
-    const objId = i + 1;
-    const g = piece.geometry.clone();
-    g.computeBoundingBox();
-    const bb = g.boundingBox;
-    const cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, minZ = bb.min.z;
-    g.translate(-cx, -cy, -minZ); // geometría centrada en su propio origen, apoyada en Z=0
-
-    const pos = g.attributes.position, idx = g.index;
-    const vParts = [];
-    for (let k = 0; k < pos.count; k++) vParts.push('<vertex x="' + pos.getX(k).toFixed(4) + '" y="' + pos.getY(k).toFixed(4) + '" z="' + pos.getZ(k).toFixed(4) + '"/>');
-    const tParts = [];
-    if (idx) { for (let k = 0; k < idx.count; k += 3) tParts.push('<triangle v1="' + idx.getX(k) + '" v2="' + idx.getX(k + 1) + '" v3="' + idx.getX(k + 2) + '"/>'); }
-    else { for (let k = 0; k < pos.count; k += 3) tParts.push('<triangle v1="' + k + '" v2="' + (k + 1) + '" v3="' + (k + 2) + '"/>'); }
-
-    objectsXml += '<object id="' + objId + '" type="model">\n<mesh>\n<vertices>' +
-      vParts.join('') + '</vertices>\n<triangles>' + tParts.join('') + '</triangles>\n</mesh>\n</object>\n';
-
-    // posición inicial aproximada en fila — no importa mucho, "Organizar automático" las reacomoda igual
-    const size = new THREE.Vector3(); bb.getSize(size);
-    const col = i % 6, row = Math.floor(i / 6);
-    const worldX = col * (Math.max(size.x, 40) + gap);
-    const worldY = row * (bed.y * 2); // filas bien separadas para que no se superpongan antes de organizar
-    buildItemsXml += '<item objectid="' + objId + '" transform="1 0 0 0 1 0 0 0 1 ' + worldX + ' ' + worldY + ' 0" printable="1"/>\n';
-  });
-
-  const modelXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02">\n' +
-    '<metadata name="Application">Printaplab3D-CortadorSTL</metadata>\n' +
-    '<resources>\n' + objectsXml + '</resources>\n' +
-    '<build>\n' + buildItemsXml + '</build>\n' +
-    '</model>';
-
-  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n' +
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n' +
-    '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>\n</Types>';
-
-  const relsXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n' +
-    '<Relationship Target="/3D/3dmodel.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>';
-
-  const zip = new JSZip();
-  zip.file('[Content_Types].xml', contentTypesXml);
-  zip.file('_rels/.rels', relsXml);
-  zip.file('3D/3dmodel.model', modelXml);
-  return zip;
-}
-
-document.getElementById('btnAllInOne3mf').addEventListener('click', async () => {
-  if (!state.pieces.length) return;
-  setStatus('Armando el archivo con todas las piezas…');
-  const bed = readBedConfig();
-  const zip = buildAllInOne3MF(state.pieces, bed);
-  const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob(blob, state.baseName + '_todas-las-piezas.3mf');
-  setStatus('Descargado. Abrilo en Bambu Studio y presioná "Organizar automático" (tecla A) para repartir las ' + state.pieces.length + ' piezas en placas.', 'ok');
-});
-
-// Arma un único .3mf con varias placas, siguiendo la estructura real de un
-// proyecto exportado desde Bambu Studio: cada pieza es un <object> propio,
-// centrado en su placa (bedX/2, bedY/2) y apoyado en Z=0, y Metadata/model_settings.config
-// declara con un bloque <plate> a qué placa pertenece cada objeto — así es como
-// Bambu Studio reparte los objetos en placas separadas al abrir el archivo.
-function buildMultiPlateProject3MF(pieces, bed) {
-  const gap = 50; // separación entre placas dentro del espacio combinado del archivo
-  let objectsXml = '', buildItemsXml = '', plateBlocksXml = '';
-
-  pieces.forEach((piece, i) => {
-    const objId = i + 1;
-    const g = piece.geometry.clone();
-    g.computeBoundingBox();
-    const bb = g.boundingBox;
-    const cx = (bb.min.x + bb.max.x) / 2, cy = (bb.min.y + bb.max.y) / 2, minZ = bb.min.z;
-    g.translate(bed.x / 2 - cx, bed.y / 2 - cy, -minZ); // centrada en su propia placa local
-
-    const pos = g.attributes.position, idx = g.index;
-    const vParts = [];
-    for (let k = 0; k < pos.count; k++) vParts.push('<vertex x="' + pos.getX(k).toFixed(4) + '" y="' + pos.getY(k).toFixed(4) + '" z="' + pos.getZ(k).toFixed(4) + '"/>');
-    const tParts = [];
-    if (idx) { for (let k = 0; k < idx.count; k += 3) tParts.push('<triangle v1="' + idx.getX(k) + '" v2="' + idx.getX(k + 1) + '" v3="' + idx.getX(k + 2) + '"/>'); }
-    else { for (let k = 0; k < pos.count; k += 3) tParts.push('<triangle v1="' + k + '" v2="' + (k + 1) + '" v3="' + (k + 2) + '"/>'); }
-
-    objectsXml += '<object id="' + objId + '" p:UUID="' + uuid4() + '" type="model">\n<mesh>\n<vertices>' +
-      vParts.join('') + '</vertices>\n<triangles>' + tParts.join('') + '</triangles>\n</mesh>\n</object>\n';
-
-    const worldX = i * (bed.x + gap); // "mosaico" para que no se pisen en la vista combinada del archivo
-    buildItemsXml += '<item objectid="' + objId + '" p:UUID="' + uuid4() + '" transform="1 0 0 0 1 0 0 0 1 ' + worldX + ' 0 0" printable="1"/>\n';
-
-    plateBlocksXml += '<plate>\n' +
-      '<metadata key="plater_id" value="' + (i + 1) + '"/>\n' +
-      '<metadata key="plater_name" value="placa-' + piece.name + '"/>\n' +
-      '<metadata key="locked" value="false"/>\n' +
-      '<model_instance>\n<metadata key="object_id" value="' + objId + '"/>\n<metadata key="instance_id" value="0"/>\n</model_instance>\n' +
-      '</plate>\n';
-  });
-
-  const modelXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<model unit="millimeter" xml:lang="en-US" xmlns="http://schemas.microsoft.com/3dmanufacturing/core/2015/02" ' +
-    'xmlns:BambuStudio="http://schemas.bambulab.com/package/2021" ' +
-    'xmlns:p="http://schemas.microsoft.com/3dmanufacturing/production/2015/06" requiredextensions="p">\n' +
-    '<metadata name="Application">Printaplab3D-CortadorSTL</metadata>\n' +
-    '<resources>\n' + objectsXml + '</resources>\n' +
-    '<build p:UUID="' + uuid4() + '">\n' + buildItemsXml + '</build>\n' +
-    '</model>';
-
-  const modelSettingsXml = '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n' + plateBlocksXml + '</config>';
-
-  const contentTypesXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">\n' +
-    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>\n' +
-    '<Default Extension="model" ContentType="application/vnd.ms-package.3dmanufacturing-3dmodel+xml"/>\n</Types>';
-
-  const relsXml = '<?xml version="1.0" encoding="UTF-8"?>\n' +
-    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">\n' +
-    '<Relationship Target="/3D/3dmodel.model" Id="rel-1" Type="http://schemas.microsoft.com/3dmanufacturing/2013/01/3dmodel"/>\n</Relationships>';
-
-  const sliceInfoXml = '<?xml version="1.0" encoding="UTF-8"?>\n<config>\n<header>\n' +
-    '<header_item key="X-BBL-Client-Type" value="slicer"/>\n</header>\n</config>';
-
-  const zip = new JSZip();
-  zip.file('[Content_Types].xml', contentTypesXml);
-  zip.file('_rels/.rels', relsXml);
-  zip.file('3D/3dmodel.model', modelXml);
-  zip.file('Metadata/model_settings.config', modelSettingsXml);
-  zip.file('Metadata/slice_info.config', sliceInfoXml);
-  return zip;
-}
-
-document.getElementById('btnMultiPlate3mf').addEventListener('click', async () => {
-  if (!state.pieces.length) return;
-  setStatus('Armando el proyecto multi-placa…');
-  const bed = readBedConfig();
-  const zip = buildMultiPlateProject3MF(state.pieces, bed);
-  const blob = await zip.generateAsync({ type: 'blob' });
-  downloadBlob(blob, state.baseName + '_multiplaca.3mf');
-  setStatus('Proyecto multi-placa descargado (' + state.pieces.length + ' placas). Abrilo en Bambu Studio y contame cómo se ve.', 'ok');
-});
-
-document.getElementById('btnZip3mf').addEventListener('click', async () => {
-  const bed = readBedConfig();
-  const outer = new JSZip();
-  for (const p of state.pieces) {
-    const inner = build3MFZip(p.geometry, bed.x, bed.y);
-    const blob = await inner.generateAsync({ type: 'blob' });
-    outer.file(state.baseName + '_placa-' + p.name + '.3mf', blob);
-  }
-  const finalBlob = await outer.generateAsync({ type: 'blob' });
-  downloadBlob(finalBlob, state.baseName + '_placas.zip');
-});
-
-// ---------- arranque ----------
-resize();
-markStep(1);
-animate();
+document.getElementById('btnReset').onclick = () => {
+  clearScene();
+  dropHint.style.display = 'flex';
+  setStatus('Cargá un modelo para empezar.');
+  log('Escena reiniciada.');
+};
 </script>
 </body>
 </html>
