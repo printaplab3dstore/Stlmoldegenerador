@@ -1223,6 +1223,78 @@
             background: rgba(248, 250, 252, 0.92);
         }
 
+        /* ── Badge "Nuevo diseño" ── */
+        .new-design-badge {
+            position: relative;
+            z-index: 5;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            margin-top: 24px;
+            margin-bottom: 4px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            padding: 5px 16px 5px 5px;
+            text-decoration: none;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            animation: newBadgePulse 2.5s ease-in-out infinite;
+        }
+
+        .new-design-badge:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 180, 255, 0.5);
+        }
+
+        .new-design-badge img {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--accent-cyan);
+            flex: 0 0 auto;
+            animation: badgeImgPop 2.5s ease-in-out infinite;
+        }
+
+        @keyframes badgeImgPop {
+            0%, 60%, 100% { transform: scale(1); }
+            80% { transform: scale(1.22); }
+        }
+
+        .new-design-badge span {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            white-space: nowrap;
+            text-shadow: 0 0 12px rgba(0, 180, 255, 0.3);
+        }
+
+        @keyframes newBadgePulse {
+            0%, 100% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 0 0 rgba(0, 180, 255, 0.35); }
+            50% { box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25), 0 0 0 8px rgba(0, 180, 255, 0); }
+        }
+
+        @media (max-width: 768px) {
+            .new-design-badge {
+                margin-top: 12px;
+                padding: 4px 12px 4px 4px;
+                gap: 7px;
+            }
+            .new-design-badge img {
+                width: 28px;
+                height: 28px;
+            }
+            .new-design-badge span {
+                font-size: 0.58rem;
+            }
+        }
+
         .nav-brand {
             font-family: 'Orbitron', monospace;
             font-size: 1rem;
@@ -1571,6 +1643,16 @@
     </nav>
 
     <div class="container">
+
+        <a href="https://cults3d.com/es/modelo-3d/variado/piragua-y-tostonera-boricua-el-combo-que-sabe-a-casa"
+           target="_blank"
+           class="new-design-badge"
+           aria-label="Ver nuevo diseño: Piragua y Tostonera Boricua">
+            <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/piraguatostonera.jpg"
+                 alt="Nuevo diseño Piragua y Tostonera Boricua"
+                 loading="lazy">
+            <span>✨ Nuevo diseño</span>
+        </a>
 
         <!-- ===== HERO ===== -->
         <section class="hero-section">
