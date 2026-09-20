@@ -1264,7 +1264,13 @@
             80% { transform: scale(1.45); }
         }
 
-        .new-design-badge span {
+        .new-design-badge .new-design-text {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .new-design-badge .new-design-label {
             font-family: 'Orbitron', monospace;
             font-size: 0.8rem;
             font-weight: 700;
@@ -1273,6 +1279,16 @@
             text-transform: uppercase;
             white-space: nowrap;
             text-shadow: 0 0 12px rgba(0, 180, 255, 0.3);
+        }
+
+        .new-design-badge .new-design-product {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            white-space: normal;
+            max-width: 190px;
+            line-height: 1.25;
         }
 
         @keyframes newBadgePulse {
@@ -1290,8 +1306,12 @@
                 width: 46px;
                 height: 46px;
             }
-            .new-design-badge span {
-                font-size: 0.68rem;
+            .new-design-badge .new-design-label {
+                font-size: 0.66rem;
+            }
+            .new-design-badge .new-design-product {
+                font-size: 0.6rem;
+                max-width: 140px;
             }
         }
 
@@ -1651,7 +1671,10 @@
             <img src="https://raw.githubusercontent.com/printaplab3dstore/Stlmoldegenerador/main/img/piraguatostonera.jpg"
                  alt="Nuevo diseño Piragua y Tostonera Boricua"
                  loading="lazy">
-            <span>✨ Nuevo diseño</span>
+            <span class="new-design-text">
+                <span class="new-design-label">✨ Nuevo diseño</span>
+                <span class="new-design-product">Piragua y Tostonera con Patitas Articuladas</span>
+            </span>
         </a>
 
         <!-- ===== HERO ===== -->
