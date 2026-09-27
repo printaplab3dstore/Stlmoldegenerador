@@ -1,374 +1,357 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Litofanía sobre Mesh — Printaplab3D</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --navy:#0d2438; --coral:#ff6b5b; --yellow:#ffc857; --ocean:#1b7f9e; --jungle:#2f7d5a;
-    --bg:#0d2438; --panel:#123047; --text:#eaf2f6; --muted:#9fb4c2;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;display:flex;flex-direction:column;height:100vh}
-  header{padding:14px 18px;background:var(--navy);border-bottom:2px solid var(--coral)}
-  h1{font-family:'Bebas Neue',sans-serif;letter-spacing:1px;margin:0;font-size:26px;color:var(--yellow)}
-  header p{margin:2px 0 0;color:var(--muted);font-size:13px}
-  main{flex:1;display:flex;overflow:hidden}
-  #viewer{flex:1;position:relative;background:#081722}
-  #viewer canvas{display:block}
-  #panel{width:320px;background:var(--panel);padding:16px;overflow-y:auto;font-size:13px}
-  .grp{margin-bottom:16px;border-bottom:1px solid #1e4560;padding-bottom:14px}
-  .grp h3{font-family:'Space Mono',monospace;color:var(--ocean);font-size:12px;text-transform:uppercase;margin:0 0 8px}
-  label{display:block;margin:8px 0 3px;color:var(--muted)}
-  input[type=file]{width:100%;font-size:12px;color:var(--muted)}
-  input[type=range]{width:100%;accent-color:var(--coral)}
-  input[type=number],select{width:100%;background:#0a1c2c;border:1px solid #234b66;color:var(--text);padding:5px;border-radius:4px}
-  .row{display:flex;gap:8px}
-  .row>div{flex:1}
-  .val{float:right;color:var(--yellow);font-family:'Space Mono',monospace}
-  button{width:100%;padding:10px;border:none;border-radius:6px;font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:1px;cursor:pointer;margin-top:6px}
-  #genBtn{background:var(--coral);color:#fff}
-  #exportBtn{background:var(--jungle);color:#fff}
-  #exportBtn:disabled,#genBtn:disabled{opacity:.4;cursor:not-allowed}
-  #status{font-size:12px;color:var(--muted);min-height:34px;margin-top:8px;line-height:1.4}
-  #imgPreview{width:100%;max-height:80px;object-fit:contain;margin-top:6px;border:1px solid #234b66;border-radius:4px;display:none;background:#000}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Mía & Pikachu 🎵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(135deg, #FFD700 0%, #FFF44F 50%, #87CEEB 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .falling-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .heart-float {
+            position: absolute;
+            font-size: 24px;
+            animation: fall 6s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0.8;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 
+                        0 0 40px rgba(255, 20, 147, 0.15);
+            max-width: 500px;
+            width: 100%;
+            padding: 50px 35px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            border: 3px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .header {
+            margin-bottom: 35px;
+        }
+
+        .pikachu {
+            font-size: 90px;
+            margin-bottom: 25px;
+            animation: bounce 2s infinite, glow 2s infinite;
+            filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.4));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-25px) scale(1.05); }
+        }
+
+        @keyframes glow {
+            0%, 100% { filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.4)); }
+            50% { filter: drop-shadow(0 5px 20px rgba(255, 215, 0, 0.8)); }
+        }
+
+        h1 {
+            background: linear-gradient(135deg, #FFD700, #FBC02D);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 36px;
+            margin-bottom: 15px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            color: #1DB954;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .big-heart {
+            font-size: 60px;
+            display: inline-block;
+            margin: 20px 0;
+            animation: heartbeat 1.2s infinite, pulse 2s infinite;
+            filter: drop-shadow(0 3px 10px rgba(255, 20, 147, 0.5));
+        }
+
+        @keyframes heartbeat {
+            0%, 100% { transform: scale(1); }
+            20% { transform: scale(1.3); }
+            40% { transform: scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .love-message {
+            color: #FF1493;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 20px 0;
+            line-height: 1.6;
+            font-style: italic;
+        }
+
+        .message {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .decoration-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #FFD700, transparent);
+            margin: 25px 0;
+            border-radius: 2px;
+        }
+
+        .spotify-container {
+            margin: 35px 0;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(29, 185, 84, 0.1));
+            border-radius: 20px;
+            border: 2px solid rgba(255, 215, 0, 0.2);
+        }
+
+        .spotify-container iframe {
+            border-radius: 12px;
+            max-width: 100%;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin: 35px 0;
+        }
+
+        .feature {
+            background: linear-gradient(135deg, #FFE082 0%, #FFF9C4 100%);
+            padding: 18px;
+            border-radius: 15px;
+            border: 2px solid #FBC02D;
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+        }
+
+        .feature-icon {
+            font-size: 40px;
+            margin-bottom: 8px;
+            display: inline-block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .feature:nth-child(2) .feature-icon { animation-delay: 0.3s; }
+        .feature:nth-child(3) .feature-icon { animation-delay: 0.6s; }
+        .feature:nth-child(4) .feature-icon { animation-delay: 0.9s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-text {
+            font-size: 13px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .footer {
+            margin-top: 35px;
+            padding-top: 25px;
+            border-top: 3px solid #FFD700;
+            color: #555;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .footer-heart {
+            color: #FF1493;
+            font-size: 16px;
+            margin: 0 4px;
+            display: inline-block;
+            animation: heartbeat 1.2s infinite;
+        }
+
+        .stars {
+            font-size: 12px;
+            letter-spacing: 4px;
+            color: #FFD700;
+            margin: 5px 0;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 35px 25px;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            .pikachu {
+                font-size: 75px;
+            }
+
+            .big-heart {
+                font-size: 50px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .love-message {
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-<header>
-  <h1>LITOFANÍA SOBRE MESH</h1>
-  <p>Cargá tu figura sólida (STL) + una imagen → generá un panel de litofanía que sigue la curva del modelo. Luego lo unís con Boolean/Union en tu slicer.</p>
-</header>
-<main>
-  <div id="viewer"></div>
-  <div id="panel">
-    <div class="grp">
-      <h3>1. Archivos</h3>
-      <label>Modelo sólido (.stl)</label>
-      <input type="file" id="meshFile" accept=".stl">
-      <label>Imagen (bandera, logo, foto)</label>
-      <input type="file" id="imgFile" accept="image/*">
-      <img id="imgPreview">
+    <div class="falling-hearts" id="heartsContainer"></div>
+
+    <div class="container">
+        <div class="header">
+            <div class="pikachu">⚡</div>
+            <h1>¡Hola Mía! 👋</h1>
+            <p class="subtitle">Te amo muchísimo 💛</p>
+            
+            <div class="big-heart">❤️</div>
+            
+            <p class="love-message">
+                Este regalo es para que sepas cuánto te amo.<br>
+                Tu sonrisa ilumina mi vida, mi amor.
+            </p>
+
+            <div class="decoration-line"></div>
+            
+            <p class="message">Aquí está tu canción favorita y tu Pikachu especial, todo con el amor que siento por ti ✨</p>
+        </div>
+
+        <div class="spotify-container">
+            <iframe style="border-radius:12px" 
+                    src="https://open.spotify.com/embed/track/5XrIFnXkTNo4i61p7JypKO?utm_source=generator" 
+                    width="100%" 
+                    height="152" 
+                    frameBorder="0" 
+                    allowfullscreen="" 
+                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                    loading="lazy">
+            </iframe>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon">⚡</div>
+                <div class="feature-text">Pikachu</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎵</div>
+                <div class="feature-text">Tu canción</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">💛</div>
+                <div class="feature-text">Con amor</div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon">🎁</div>
+                <div class="feature-text">Para ti</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <div class="stars">✨ ✨ ✨</div>
+            <p>Escanea tu llavero NFC cuando quieras escuchar tu música 🎧</p>
+            <p style="margin-top: 12px; font-size: 16px;">
+                Te amo <span class="footer-heart">❤️</span> 
+                siempre, mi amor
+            </p>
+        </div>
     </div>
-    <div class="grp">
-      <h3>2. Zona de proyección</h3>
-      <label>Eje de proyección</label>
-      <select id="axis">
-        <option value="Z">Z (desde arriba)</option>
-        <option value="Y">Y (desde el frente)</option>
-        <option value="X">X (desde el costado)</option>
-      </select>
-      <label>Tamaño de ventana <span class="val" id="winScaleVal">60%</span></label>
-      <input type="range" id="winScale" min="10" max="100" value="60">
-      <div class="row">
-        <div>
-          <label>Offset horiz. <span class="val" id="offUVal">0%</span></label>
-          <input type="range" id="offU" min="-50" max="50" value="0">
-        </div>
-        <div>
-          <label>Offset vert. <span class="val" id="offVVal">0%</span></label>
-          <input type="range" id="offV" min="-50" max="50" value="0">
-        </div>
-      </div>
-    </div>
-    <div class="grp">
-      <h3>3. Litofanía</h3>
-      <label>Resolución (puntos por lado) <span class="val" id="resVal">100</span></label>
-      <input type="range" id="gridRes" min="30" max="200" value="100">
-      <div class="row">
-        <div>
-          <label>Grosor mín (mm)</label>
-          <input type="number" id="minT" value="0.6" step="0.1">
-        </div>
-        <div>
-          <label>Grosor máx (mm)</label>
-          <input type="number" id="maxT" value="2.6" step="0.1">
-        </div>
-      </div>
-      <label><input type="checkbox" id="invert" style="width:auto;vertical-align:middle"> Invertir grises</label>
-    </div>
-    <button id="genBtn" disabled>Generar panel</button>
-    <button id="exportBtn" disabled>Exportar STL</button>
-    <div id="status">Cargá el modelo y la imagen para empezar.</div>
-  </div>
-</main>
 
-<script type="importmap">
-{ "imports": {
-  "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-  "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
-} }
-</script>
-<script type="module">
-import * as THREE from 'three';
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { STLLoader } from 'three/addons/loaders/STLLoader.js';
-import { STLExporter } from 'three/addons/exporters/STLExporter.js';
-import { DecalGeometry } from 'three/addons/geometries/DecalGeometry.js';
-
-const $=id=>document.getElementById(id);
-const statusEl=$('status');
-const log=m=>statusEl.textContent=m;
-
-// --- viewer setup ---
-const viewerDiv=$('viewer');
-const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x081722);
-const camera=new THREE.PerspectiveCamera(45, viewerDiv.clientWidth/viewerDiv.clientHeight, 0.1, 5000);
-camera.position.set(120,120,160);
-const renderer=new THREE.WebGLRenderer({antialias:true});
-renderer.setSize(viewerDiv.clientWidth, viewerDiv.clientHeight);
-viewerDiv.appendChild(renderer.domElement);
-const controls=new OrbitControls(camera, renderer.domElement);
-scene.add(new THREE.HemisphereLight(0xffffff,0x223344,1.1));
-const dl=new THREE.DirectionalLight(0xffffff,0.6); dl.position.set(1,2,1); scene.add(dl);
-const grid=new THREE.GridHelper(300,30,0x1e4560,0x142e42); scene.add(grid);
-(function animate(){ requestAnimationFrame(animate); controls.update(); renderer.render(scene,camera); })();
-window.addEventListener('resize',()=>{
-  camera.aspect=viewerDiv.clientWidth/viewerDiv.clientHeight; camera.updateProjectionMatrix();
-  renderer.setSize(viewerDiv.clientWidth, viewerDiv.clientHeight);
-});
-
-let baseMesh=null, baseGeom=null, bbox=null, winBoxHelper=null;
-let imgCanvas=null, imgCtx=null, imgReady=false;
-let panelMesh=null, panelGeomOut=null;
-let decalMesh=null, imgTexture=null;
-
-// --- load STL ---
-$('meshFile').addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const reader=new FileReader();
-  reader.onload=ev=>{
-    const geom=new STLLoader().parse(ev.target.result);
-    geom.center();
-    geom.computeVertexNormals();
-    if(baseMesh) scene.remove(baseMesh);
-    baseGeom=geom;
-    const mat=new THREE.MeshStandardMaterial({color:0x2f7d5a, transparent:true, opacity:0.55, side:THREE.DoubleSide});
-    baseMesh=new THREE.Mesh(geom, mat);
-    scene.add(baseMesh);
-    bbox=new THREE.Box3().setFromObject(baseMesh);
-    const size=bbox.getSize(new THREE.Vector3()); const dist=Math.max(size.x,size.y,size.z)*1.8;
-    camera.position.set(dist,dist,dist); controls.target.set(0,0,0); controls.update();
-    updateWindowHelper();
-    updateDecalPreview();
-    checkReady();
-    log('Modelo cargado: '+size.x.toFixed(1)+' x '+size.y.toFixed(1)+' x '+size.z.toFixed(1)+' mm');
-  };
-  reader.readAsArrayBuffer(f);
-});
-
-// --- load image ---
-$('imgFile').addEventListener('change', e=>{
-  const f=e.target.files[0]; if(!f) return;
-  const url=URL.createObjectURL(f);
-  const img=new Image();
-  img.onload=()=>{
-    imgCanvas=document.createElement('canvas');
-    imgCanvas.width=512; imgCanvas.height=512;
-    imgCtx=imgCanvas.getContext('2d');
-    // cover-fit into square
-    const s=Math.min(img.width/img.height,1)===1? Math.max(img.width,img.height):0;
-    const scale=Math.max(512/img.width,512/img.height);
-    const w=img.width*scale,h=img.height*scale;
-    imgCtx.drawImage(img,(512-w)/2,(512-h)/2,w,h);
-    imgReady=true;
-    imgTexture=new THREE.CanvasTexture(imgCanvas);
-    imgTexture.colorSpace=THREE.SRGBColorSpace;
-    const prev=$('imgPreview'); prev.src=url; prev.style.display='block';
-    checkReady();
-    updateDecalPreview();
-  };
-  img.src=url;
-});
-
-function checkReady(){ $('genBtn').disabled = !(baseMesh && imgReady); }
-
-// --- window helper box ---
-['winScale','offU','offV'].forEach(id=>{
-  $(id).addEventListener('input', ()=>{
-    $('winScaleVal').textContent=$('winScale').value+'%';
-    $('offUVal').textContent=$('offU').value+'%';
-    $('offVVal').textContent=$('offV').value+'%';
-    updateWindowHelper();
-    updateDecalPreview();
-  });
-});
-$('axis').addEventListener('change', ()=>{ updateWindowHelper(); updateDecalPreview(); });
-$('gridRes').addEventListener('input', ()=>{ $('resVal').textContent=$('gridRes').value; });
-
-function axisInfo(){
-  const a=$('axis').value;
-  const map={ Z:{idx:2,u:0,v:1,dir:new THREE.Vector3(0,0,-1)},
-              Y:{idx:1,u:0,v:2,dir:new THREE.Vector3(0,-1,0)},
-              X:{idx:0,u:1,v:2,dir:new THREE.Vector3(-1,0,0)} };
-  return map[a];
-}
-
-function getWindowRect(){
-  if(!bbox) return null;
-  const ai=axisInfo();
-  const min=bbox.min, max=bbox.max;
-  const fullU = max.getComponent(ai.u)-min.getComponent(ai.u);
-  const fullV = max.getComponent(ai.v)-min.getComponent(ai.v);
-  const centerU = (min.getComponent(ai.u)+max.getComponent(ai.u))/2 + (parseFloat($('offU').value)/100)*fullU;
-  const centerV = (min.getComponent(ai.v)+max.getComponent(ai.v))/2 + (parseFloat($('offV').value)/100)*fullV;
-  const scale = parseFloat($('winScale').value)/100;
-  const sizeU = fullU*scale, sizeV = fullV*scale;
-  return {ai, uMin:centerU-sizeU/2, uMax:centerU+sizeU/2, vMin:centerV-sizeV/2, vMax:centerV+sizeV/2};
-}
-
-function updateWindowHelper(){
-  if(!bbox) return;
-  if(winBoxHelper) scene.remove(winBoxHelper);
-  const r=getWindowRect(); const ai=r.ai;
-  const geo=new THREE.BoxGeometry(1,1,1);
-  const edges=new THREE.EdgesGeometry(geo);
-  winBoxHelper=new THREE.LineSegments(edges, new THREE.LineBasicMaterial({color:0xffc857}));
-  const size=new THREE.Vector3(0.5,0.5,0.5);
-  const center=new THREE.Vector3(0,0,0);
-  const axisSize = bbox.max.getComponent(ai.idx)-bbox.min.getComponent(ai.idx);
-  size.setComponent(ai.u, r.uMax-r.uMin);
-  size.setComponent(ai.v, r.vMax-r.vMin);
-  size.setComponent(ai.idx, axisSize*1.05);
-  center.setComponent(ai.u, (r.uMin+r.uMax)/2);
-  center.setComponent(ai.v, (r.vMin+r.vMax)/2);
-  center.setComponent(ai.idx, (bbox.min.getComponent(ai.idx)+bbox.max.getComponent(ai.idx))/2);
-  winBoxHelper.scale.copy(size);
-  winBoxHelper.position.copy(center);
-  scene.add(winBoxHelper);
-}
-
-function updateDecalPreview(){
-  if(decalMesh){ scene.remove(decalMesh); decalMesh.geometry.dispose(); decalMesh=null; }
-  if(!baseMesh || !imgTexture) return;
-  const r=getWindowRect(); const ai=r.ai;
-  const position=new THREE.Vector3();
-  position.setComponent(ai.u,(r.uMin+r.uMax)/2);
-  position.setComponent(ai.v,(r.vMin+r.vMax)/2);
-  position.setComponent(ai.idx, bbox.max.getComponent(ai.idx));
-  const normal=ai.dir.clone().multiplyScalar(-1); // outward, opposite of ray dir
-  const dummy=new THREE.Object3D();
-  dummy.position.copy(position);
-  dummy.up.set(ai.idx===1?1:0, ai.idx===1?0:1, 0); // avoid degenerate lookAt on Y axis
-  dummy.lookAt(position.clone().add(normal));
-  const depth=bbox.getSize(new THREE.Vector3()).getComponent(ai.idx);
-  const size=new THREE.Vector3(r.uMax-r.uMin, r.vMax-r.vMin, depth*1.2);
-  try{
-    const geom=new DecalGeometry(baseMesh, position, dummy.rotation, size);
-    const mat=new THREE.MeshBasicMaterial({map:imgTexture, transparent:true, opacity:0.92, depthTest:true, polygonOffset:true, polygonOffsetFactor:-4});
-    decalMesh=new THREE.Mesh(geom, mat);
-    scene.add(decalMesh);
-  }catch(e){ /* fuera de superficie, ignorar */ }
-}
-
-function sampleGray(u01,v01){
-  // u01,v01 in [0,1], image origin top-left; v flipped so v01=0 -> bottom of window
-  const px=Math.min(511,Math.max(0,Math.floor(u01*512)));
-  const py=Math.min(511,Math.max(0,Math.floor((1-v01)*512)));
-  const d=imgCtx.getImageData(px,py,1,1).data;
-  let g=(0.299*d[0]+0.587*d[1]+0.114*d[2])/255;
-  if($('invert').checked) g=1-g;
-  return g;
-}
-
-$('genBtn').addEventListener('click', generatePanel);
-
-function generatePanel(){
-  log('Generando panel — proyectando rayos sobre el mesh...');
-  setTimeout(()=>{
-    const r=getWindowRect(); const ai=r.ai;
-    const res=parseInt($('gridRes').value);
-    const minT=parseFloat($('minT').value), maxT=parseFloat($('maxT').value);
-    const rc=new THREE.Raycaster();
-    const axisMaxCoord = bbox.max.getComponent(ai.idx);
-    const dir=ai.dir;
-    const origins=[]; const outerPts=[]; const innerPts=[]; let hits=0;
-
-    for(let j=0;j<res;j++){
-      for(let i=0;i<res;i++){
-        const u01=i/(res-1), v01=j/(res-1);
-        const uCoord = r.uMin + u01*(r.uMax-r.uMin);
-        const vCoord = r.vMin + v01*(r.vMax-r.vMin);
-        const origin=new THREE.Vector3();
-        origin.setComponent(ai.u, uCoord);
-        origin.setComponent(ai.v, vCoord);
-        origin.setComponent(ai.idx, axisMaxCoord+5);
-        rc.set(origin, dir);
-        const hitsArr=rc.intersectObject(baseMesh,false);
-        let outer;
-        if(hitsArr.length>0){ outer=hitsArr[0].point.clone(); hits++; }
-        else {
-          // fallback: flat plane at bbox surface so grid stays watertight
-          outer=origin.clone(); outer.setComponent(ai.idx, axisMaxCoord);
+    <script>
+        // Crear corazones flotantes
+        function createFallingHeart() {
+            const heartsContainer = document.getElementById('heartsContainer');
+            const heart = document.createElement('div');
+            heart.className = 'heart-float';
+            heart.textContent = '❤️';
+            
+            const randomX = Math.random() * 100;
+            const randomDelay = Math.random() * 2;
+            const randomDuration = 5 + Math.random() * 4;
+            
+            heart.style.left = randomX + '%';
+            heart.style.animationDelay = randomDelay + 's';
+            heart.style.animationDuration = randomDuration + 's';
+            
+            heartsContainer.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, (randomDuration + randomDelay) * 1000);
         }
-        const g=sampleGray(u01,v01);
-        const thickness = minT + g*(maxT-minT);
-        const inner=outer.clone().addScaledVector(dir, thickness);
-        outerPts.push(outer); innerPts.push(inner);
-      }
-    }
 
-    // build shell geometry: outer grid + inner grid + side walls
-    const positions=[]; const indices=[];
-    const nOuterStart=0;
-    outerPts.forEach(p=>positions.push(p.x,p.y,p.z));
-    const nInnerStart=outerPts.length;
-    innerPts.forEach(p=>positions.push(p.x,p.y,p.z));
+        // Generar corazones cada 0.8 segundos
+        setInterval(createFallingHeart, 800);
 
-    const idx=(gi,gj)=>gj*res+gi;
-    for(let j=0;j<res-1;j++){
-      for(let i=0;i<res-1;i++){
-        const a=nOuterStart+idx(i,j), b=nOuterStart+idx(i+1,j), c=nOuterStart+idx(i+1,j+1), d=nOuterStart+idx(i,j+1);
-        indices.push(a,b,c, a,c,d); // outer, faces outward (+dir*-1 side)
-        const ai_=nInnerStart+idx(i,j), bi=nInnerStart+idx(i+1,j), ci=nInnerStart+idx(i+1,j+1), di=nInnerStart+idx(i,j+1);
-        indices.push(ai_,ci,bi, ai_,di,ci); // inner, reversed winding
-      }
-    }
-    // side walls (4 edges of the grid)
-    function wallStrip(getOuterIdx,getInnerIdx,count,flip){
-      for(let k=0;k<count-1;k++){
-        const o1=getOuterIdx(k), o2=getOuterIdx(k+1);
-        const i1=getInnerIdx(k), i2=getInnerIdx(k+1);
-        if(!flip) indices.push(o1,o2,i2, o1,i2,i1);
-        else indices.push(o1,i2,o2, o1,i1,i2);
-      }
-    }
-    wallStrip(k=>nOuterStart+idx(k,0), k=>nInnerStart+idx(k,0), res, true);
-    wallStrip(k=>nOuterStart+idx(k,res-1), k=>nInnerStart+idx(k,res-1), res, false);
-    wallStrip(k=>nOuterStart+idx(0,k), k=>nInnerStart+idx(0,k), res, false);
-    wallStrip(k=>nOuterStart+idx(res-1,k), k=>nInnerStart+idx(res-1,k), res, true);
-
-    const geom=new THREE.BufferGeometry();
-    geom.setAttribute('position', new THREE.Float32BufferAttribute(positions,3));
-    geom.setIndex(indices);
-    geom.computeVertexNormals();
-
-    if(panelMesh) scene.remove(panelMesh);
-    const mat=new THREE.MeshStandardMaterial({color:0xffc857, side:THREE.DoubleSide});
-    panelMesh=new THREE.Mesh(geom, mat);
-    scene.add(panelMesh);
-    panelGeomOut=geom;
-    $('exportBtn').disabled=false;
-    const hitPct=Math.round(100*hits/(res*res));
-    log('Panel generado ('+res+'x'+res+' pts, '+hitPct+'% sobre superficie real). Ya podés exportarlo.'+
-        (hitPct<90?' ⚠ Achicá la ventana o moví el offset: parte cayó fuera de la silueta del modelo.':''));
-  },30);
-}
-
-$('exportBtn').addEventListener('click', ()=>{
-  if(!panelGeomOut) return;
-  const exporter=new STLExporter();
-  const mesh=new THREE.Mesh(panelGeomOut);
-  const result=exporter.parse(mesh, {binary:true});
-  const blob=new Blob([result], {type:'application/octet-stream'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download='litofania-panel.stl';
-  a.click();
-});
-</script>
+        // Crear algunos corazones iniciales
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createFallingHeart, i * 200);
+        }
+    </script>
 </body>
 </html>
