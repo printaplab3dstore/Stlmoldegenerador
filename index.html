@@ -1,357 +1,455 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎵 Mía & Pikachu 🎵</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', 'Arial', sans-serif;
-            background: linear-gradient(135deg, #FFD700 0%, #FFF44F 50%, #87CEEB 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .falling-hearts {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .heart-float {
-            position: absolute;
-            font-size: 24px;
-            animation: fall 6s linear infinite;
-            opacity: 0.7;
-        }
-
-        @keyframes fall {
-            0% {
-                transform: translateY(-10vh) rotate(0deg);
-                opacity: 0.8;
-            }
-            50% {
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(100vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        .container {
-            background: white;
-            border-radius: 25px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25), 
-                        0 0 40px rgba(255, 20, 147, 0.15);
-            max-width: 500px;
-            width: 100%;
-            padding: 50px 35px;
-            text-align: center;
-            position: relative;
-            z-index: 2;
-            border: 3px solid rgba(255, 215, 0, 0.3);
-        }
-
-        .header {
-            margin-bottom: 35px;
-        }
-
-        .pikachu {
-            font-size: 90px;
-            margin-bottom: 25px;
-            animation: bounce 2s infinite, glow 2s infinite;
-            filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.4));
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-25px) scale(1.05); }
-        }
-
-        @keyframes glow {
-            0%, 100% { filter: drop-shadow(0 5px 15px rgba(255, 215, 0, 0.4)); }
-            50% { filter: drop-shadow(0 5px 20px rgba(255, 215, 0, 0.8)); }
-        }
-
-        h1 {
-            background: linear-gradient(135deg, #FFD700, #FBC02D);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 36px;
-            margin-bottom: 15px;
-            font-weight: 800;
-            letter-spacing: 1px;
-        }
-
-        .subtitle {
-            color: #1DB954;
-            font-size: 20px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            letter-spacing: 0.5px;
-        }
-
-        .big-heart {
-            font-size: 60px;
-            display: inline-block;
-            margin: 20px 0;
-            animation: heartbeat 1.2s infinite, pulse 2s infinite;
-            filter: drop-shadow(0 3px 10px rgba(255, 20, 147, 0.5));
-        }
-
-        @keyframes heartbeat {
-            0%, 100% { transform: scale(1); }
-            20% { transform: scale(1.3); }
-            40% { transform: scale(1); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .love-message {
-            color: #FF1493;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 0;
-            line-height: 1.6;
-            font-style: italic;
-        }
-
-        .message {
-            color: #666;
-            font-size: 14px;
-            margin-bottom: 30px;
-            line-height: 1.5;
-        }
-
-        .decoration-line {
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #FFD700, transparent);
-            margin: 25px 0;
-            border-radius: 2px;
-        }
-
-        .spotify-container {
-            margin: 35px 0;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(29, 185, 84, 0.1));
-            border-radius: 20px;
-            border: 2px solid rgba(255, 215, 0, 0.2);
-        }
-
-        .spotify-container iframe {
-            border-radius: 12px;
-            max-width: 100%;
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin: 35px 0;
-        }
-
-        .feature {
-            background: linear-gradient(135deg, #FFE082 0%, #FFF9C4 100%);
-            padding: 18px;
-            border-radius: 15px;
-            border: 2px solid #FBC02D;
-            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .feature:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
-        }
-
-        .feature-icon {
-            font-size: 40px;
-            margin-bottom: 8px;
-            display: inline-block;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        .feature:nth-child(2) .feature-icon { animation-delay: 0.3s; }
-        .feature:nth-child(3) .feature-icon { animation-delay: 0.6s; }
-        .feature:nth-child(4) .feature-icon { animation-delay: 0.9s; }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .feature-text {
-            font-size: 13px;
-            color: #333;
-            font-weight: bold;
-        }
-
-        .footer {
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 3px solid #FFD700;
-            color: #555;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        .footer-heart {
-            color: #FF1493;
-            font-size: 16px;
-            margin: 0 4px;
-            display: inline-block;
-            animation: heartbeat 1.2s infinite;
-        }
-
-        .stars {
-            font-size: 12px;
-            letter-spacing: 4px;
-            color: #FFD700;
-            margin: 5px 0;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 35px 25px;
-                border-radius: 20px;
-            }
-
-            h1 {
-                font-size: 32px;
-            }
-
-            .pikachu {
-                font-size: 75px;
-            }
-
-            .big-heart {
-                font-size: 50px;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-            }
-
-            .love-message {
-                font-size: 15px;
-            }
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Corte Poligonal 3D</title>
+<style>
+:root{--ink:#0e1624;--panel:#16233a;--line:#2a3c5c;--red:#e0364a;--sky:#5aa9ff;--bone:#f3efe6;--mute:#93a3bd}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--ink);color:var(--bone);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+#app{display:flex;height:100%}
+#view{position:relative;flex:1;min-width:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#hint{position:absolute;left:12px;right:12px;top:12px;pointer-events:none;background:rgba(14,22,36,.85);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+#panel{width:330px;background:var(--panel);border-left:1px solid var(--line);overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:14px}
+h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.2px}
+h2{font-size:13px;margin:0 0 6px;color:var(--mute);font-weight:600}
+.row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+button,label.btn{background:#1f3152;color:var(--bone);border:1px solid var(--line);border-radius:8px;padding:9px 12px;font:inherit;cursor:pointer}
+button:hover,label.btn:hover{border-color:var(--sky)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.go{background:var(--red);border-color:var(--red);font-weight:700}
+button.on{background:var(--sky);color:#0a1220;border-color:var(--sky);font-weight:700}
+button:focus-visible,input:focus-visible,label.btn:focus-within{outline:2px solid var(--sky);outline-offset:2px}
+input[type=range]{width:100%}
+input[type=number]{width:72px;background:var(--ink);color:var(--bone);border:1px solid var(--line);border-radius:6px;padding:6px}
+.f{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:5px 0}
+#list{display:flex;flex-direction:column;gap:5px}
+.pc{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:8px;padding:6px 8px}
+.pc.sel{border-color:var(--sky);background:#1b2c4a}
+.pc .dot{width:12px;height:12px;border-radius:50%;flex:none}
+.pc .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.pc button{padding:3px 7px}
+#st{font-size:13px;color:var(--mute);min-height:2.6em}
+#busy{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:rgba(14,22,36,.6);font-weight:700}
+@media (max-width:760px){
+ #app{flex-direction:column}
+ #view{flex:1 1 55%}
+ #panel{width:100%;flex:1 1 45%;border-left:0;border-top:1px solid var(--line)}
+}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script type="importmap">
+{"imports":{
+"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+"three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/",
+"three-mesh-bvh":"https://cdn.jsdelivr.net/npm/three-mesh-bvh@0.7.6/build/index.module.js",
+"three-bvh-csg":"https://cdn.jsdelivr.net/npm/three-bvh-csg@0.0.16/build/index.module.js"
+}}
+</script>
 </head>
 <body>
-    <div class="falling-hearts" id="heartsContainer"></div>
+<div id="app">
+ <div id="view">
+  <canvas id="cv"></canvas>
+  <div id="hint">Abrí un STL o 3MF para empezar.</div>
+  <div id="busy">Cortando…</div>
+ </div>
+ <aside id="panel">
+  <h1>Corte Poligonal 3D</h1>
 
-    <div class="container">
-        <div class="header">
-            <div class="pikachu">⚡</div>
-            <h1>¡Hola Mía! 👋</h1>
-            <p class="subtitle">Te amo muchísimo 💛</p>
-            
-            <div class="big-heart">❤️</div>
-            
-            <p class="love-message">
-                Este regalo es para que sepas cuánto te amo.<br>
-                Tu sonrisa ilumina mi vida, mi amor.
-            </p>
+  <section>
+   <h2>Modelo</h2>
+   <div class="row">
+    <label class="btn">Abrir STL / 3MF<input id="file" type="file" accept=".stl,.3mf" hidden></label>
+    <button id="demo">Esfera de prueba</button>
+   </div>
+  </section>
 
-            <div class="decoration-line"></div>
-            
-            <p class="message">Aquí está tu canción favorita y tu Pikachu especial, todo con el amor que siento por ti ✨</p>
-        </div>
+  <section>
+   <h2>Corte</h2>
+   <div class="row">
+    <button id="draw">Dibujar contorno</button>
+    <button id="undoPt" disabled>Quitar punto</button>
+   </div>
+   <div class="row" style="margin-top:6px">
+    <button id="cut" class="go" disabled>Cerrar y cortar</button>
+    <button id="cancel" disabled>Cancelar</button>
+   </div>
+   <div class="f" style="margin-top:10px"><span>Profundidad (mm)</span><span id="depthV"></span></div>
+   <input id="depth" type="range" min="0.5" max="50" step="0.5" value="5">
+   <div class="f"><label><input id="through" type="checkbox"> Atravesar todo el modelo</label></div>
+  </section>
 
-        <div class="spotify-container">
-            <iframe style="border-radius:12px" 
-                    src="https://open.spotify.com/embed/track/5XrIFnXkTNo4i61p7JypKO?utm_source=generator" 
-                    width="100%" 
-                    height="152" 
-                    frameBorder="0" 
-                    allowfullscreen="" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
-                    loading="lazy">
-            </iframe>
-        </div>
+  <section>
+   <h2>Pines de unión</h2>
+   <div class="f"><label><input id="pinsOn" type="checkbox" checked> Generar pines y encastres</label></div>
+   <div class="f"><span>Cantidad</span><input id="pinN" type="number" min="1" max="6" step="1" value="2"></div>
+   <div class="f"><span>Radio (mm)</span><input id="pinR" type="number" min="0.5" step="0.25" value="2"></div>
+   <div class="f"><span>Largo (mm)</span><input id="pinL" type="number" min="1" step="0.5" value="6"></div>
+   <div class="f"><span>Holgura (mm)</span><input id="pinC" type="number" min="0" step="0.05" value="0.25"></div>
+  </section>
 
-        <div class="features">
-            <div class="feature">
-                <div class="feature-icon">⚡</div>
-                <div class="feature-text">Pikachu</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🎵</div>
-                <div class="feature-text">Tu canción</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">💛</div>
-                <div class="feature-text">Con amor</div>
-            </div>
-            <div class="feature">
-                <div class="feature-icon">🎁</div>
-                <div class="feature-text">Para ti</div>
-            </div>
-        </div>
+  <section>
+   <h2>Piezas</h2>
+   <div class="f"><span>Separar</span></div>
+   <input id="explode" type="range" min="0" max="1" step="0.01" value="0">
+   <div id="list" style="margin-top:8px"></div>
+   <div class="row" style="margin-top:8px">
+    <button id="undoCut" disabled>Deshacer corte</button>
+    <button id="expSel" disabled>STL de la pieza</button>
+    <button id="expAll" disabled>Todas (ZIP)</button>
+   </div>
+  </section>
 
-        <div class="footer">
-            <div class="stars">✨ ✨ ✨</div>
-            <p>Escanea tu llavero NFC cuando quieras escuchar tu música 🎧</p>
-            <p style="margin-top: 12px; font-size: 16px;">
-                Te amo <span class="footer-heart">❤️</span> 
-                siempre, mi amor
-            </p>
-        </div>
-    </div>
+  <div id="st"></div>
+ </aside>
+</div>
 
-    <script>
-        // Crear corazones flotantes
-        function createFallingHeart() {
-            const heartsContainer = document.getElementById('heartsContainer');
-            const heart = document.createElement('div');
-            heart.className = 'heart-float';
-            heart.textContent = '❤️';
-            
-            const randomX = Math.random() * 100;
-            const randomDelay = Math.random() * 2;
-            const randomDuration = 5 + Math.random() * 4;
-            
-            heart.style.left = randomX + '%';
-            heart.style.animationDelay = randomDelay + 's';
-            heart.style.animationDuration = randomDuration + 's';
-            
-            heartsContainer.appendChild(heart);
-            
-            setTimeout(() => {
-                heart.remove();
-            }, (randomDuration + randomDelay) * 1000);
-        }
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {STLLoader} from 'three/addons/loaders/STLLoader.js';
+import {ThreeMFLoader} from 'three/addons/loaders/3MFLoader.js';
+import {STLExporter} from 'three/addons/exporters/STLExporter.js';
+import {mergeVertices, mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+import {computeBoundsTree, disposeBoundsTree, acceleratedRaycast} from 'three-mesh-bvh';
+import {Brush, Evaluator, SUBTRACTION, INTERSECTION, ADDITION} from 'three-bvh-csg';
 
-        // Generar corazones cada 0.8 segundos
-        setInterval(createFallingHeart, 800);
+THREE.BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
+THREE.BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
+THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
-        // Crear algunos corazones iniciales
-        for (let i = 0; i < 5; i++) {
-            setTimeout(createFallingHeart, i * 200);
-        }
-    </script>
+const $ = id => document.getElementById(id);
+const PAL = ['#e0364a','#5aa9ff','#f3efe6','#2b2b2b','#ffb703','#8ecae6','#c1121f','#1d4e9e'];
+
+// ---------- escena ----------
+const view = $('view'), cv = $('cv');
+const renderer = new THREE.WebGLRenderer({canvas: cv, antialias: true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x1a2233);
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100000);
+camera.position.set(80, 60, 120);
+const controls = new OrbitControls(camera, cv);
+controls.enableDamping = true;
+scene.add(new THREE.HemisphereLight(0xffffff, 0x334466, 1.1));
+const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+scene.add(sun, sun.target);
+const drawG = new THREE.Group(); scene.add(drawG);
+const grid = new THREE.GridHelper(400, 40, 0x3a4d73, 0x24344f); scene.add(grid);
+
+function resize(){
+  const w = view.clientWidth, h = view.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+}
+new ResizeObserver(resize).observe(view); resize();
+renderer.setAnimationLoop(() => {
+  controls.update();
+  sun.position.copy(camera.position);
+  renderer.render(scene, camera);
+});
+
+// ---------- estado ----------
+let pieces = [], selected = null, drawMode = false;
+let pts = [], dir = null;
+let history = [], nPiece = 0, colorIdx = 0, diag = 100;
+const ev = new Evaluator(); ev.attributes = ['position', 'normal']; ev.useGroups = false;
+
+const say = (t, hint) => { $('st').textContent = t || ''; if (hint !== undefined) $('hint').textContent = hint; };
+
+// ---------- geometría ----------
+function posOnly(g){
+  g = g.index ? g.toNonIndexed() : g.clone();
+  for (const k of Object.keys(g.attributes)) if (k !== 'position') g.deleteAttribute(k);
+  return g;
+}
+function prep(g){
+  g = posOnly(g);
+  g = mergeVertices(g, 1e-4);
+  g.computeVertexNormals();
+  g.computeBoundsTree();
+  return g;
+}
+function addPiece(geo, name){
+  geo.computeBoundingBox();
+  const mat = new THREE.MeshStandardMaterial({color: PAL[colorIdx++ % PAL.length], roughness: .55, metalness: .05});
+  const m = new THREE.Mesh(geo, mat);
+  m.userData.name = name || ('Pieza ' + (++nPiece));
+  m.userData.c = geo.boundingBox.getCenter(new THREE.Vector3());
+  scene.add(m); pieces.push(m);
+  return m;
+}
+function clearAll(){
+  pieces.forEach(p => scene.remove(p));
+  pieces = []; history = []; selected = null; nPiece = 0; colorIdx = 0;
+  cancelDraw();
+}
+function loadGeometry(raw, label){
+  clearAll();
+  let g = raw.clone();
+  g.computeBoundingBox();
+  const c = g.boundingBox.getCenter(new THREE.Vector3());
+  g.translate(-c.x, -c.y, -c.z);
+  g = prep(g);
+  g.computeBoundingBox();
+  diag = g.boundingBox.getSize(new THREE.Vector3()).length();
+  const sz = g.boundingBox.getSize(new THREE.Vector3());
+  $('depth').max = Math.ceil(diag); $('depth').value = Math.max(0.5, Math.round(diag * 0.1 * 2) / 2);
+  $('depthV').textContent = $('depth').value;
+  const p = addPiece(g, label || 'Modelo');
+  select(p);
+  grid.position.y = -sz.y / 2;
+  camera.position.set(diag * .8, diag * .6, diag * 1.2);
+  controls.target.set(0, 0, 0); controls.update();
+  $('explode').value = 0;
+  renderList();
+  say(Math.round(sz.x) + ' × ' + Math.round(sz.y) + ' × ' + Math.round(sz.z) + ' mm',
+      'Tocá “Dibujar contorno” y marcá puntos sobre el modelo.');
+}
+
+async function loadFile(f){
+  try{
+    const buf = await f.arrayBuffer();
+    let geo;
+    if (/\.stl$/i.test(f.name)){
+      geo = new STLLoader().parse(buf);
+      geo.rotateX(-Math.PI / 2);                      // Z arriba → Y arriba
+    } else {
+      const grp = new ThreeMFLoader().parse(buf);
+      grp.updateMatrixWorld(true);
+      const list = [];
+      grp.traverse(o => { if (o.isMesh){ const g = posOnly(o.geometry); g.applyMatrix4(o.matrixWorld); list.push(g); } });
+      if (!list.length) throw new Error('El 3MF no tiene mallas.');
+      geo = mergeGeometries(list);
+    }
+    loadGeometry(geo, f.name.replace(/\.[^.]+$/, ''));
+  }catch(e){ say('No se pudo abrir el archivo: ' + e.message); }
+}
+$('file').onchange = e => { if (e.target.files[0]) loadFile(e.target.files[0]); e.target.value = ''; };
+$('demo').onclick = () => loadGeometry(new THREE.SphereGeometry(25, 64, 48), 'Esfera');
+
+// ---------- selección / lista ----------
+function select(p){
+  selected = p;
+  pieces.forEach(m => m.material.emissive.setHex(m === p ? 0x1a2a44 : 0x000000));
+  renderList();
+}
+function renderList(){
+  const L = $('list'); L.innerHTML = '';
+  pieces.forEach(p => {
+    const r = document.createElement('div');
+    r.className = 'pc' + (p === selected ? ' sel' : '');
+    r.innerHTML = '<span class="dot"></span><span class="nm"></span><button title="Mostrar u ocultar">👁</button><button title="Eliminar">🗑</button>';
+    r.children[0].style.background = '#' + p.material.color.getHexString();
+    r.children[1].textContent = p.userData.name;
+    r.children[1].onclick = () => select(p);
+    r.children[2].onclick = () => { p.visible = !p.visible; r.style.opacity = p.visible ? 1 : .45; };
+    r.children[3].onclick = () => { scene.remove(p); pieces = pieces.filter(x => x !== p); if (selected === p) selected = null; history = []; renderList(); upd(); };
+    if (!p.visible) r.style.opacity = .45;
+    L.appendChild(r);
+  });
+  upd();
+}
+function upd(){
+  $('cut').disabled = !(drawMode && pts.length >= 3);
+  $('undoPt').disabled = !pts.length;
+  $('cancel').disabled = !drawMode;
+  $('undoCut').disabled = !history.length;
+  $('expSel').disabled = !selected;
+  $('expAll').disabled = !pieces.length;
+  $('draw').classList.toggle('on', drawMode);
+}
+$('explode').oninput = () => {
+  const k = +$('explode').value * 1.2;
+  pieces.forEach(p => p.position.copy(p.userData.c).multiplyScalar(k));
+};
+
+// ---------- dibujo del contorno ----------
+const ray = new THREE.Raycaster(); ray.firstHitOnly = true;
+const ndc = new THREE.Vector2();
+function pick(e){
+  const r = cv.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(pieces.filter(p => p.visible), false)[0] || null;
+}
+let down = null;
+cv.addEventListener('pointerdown', e => { if (e.isPrimary) down = [e.clientX, e.clientY]; });
+cv.addEventListener('pointerup', e => {
+  if (!down || !e.isPrimary) return;
+  const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]); down = null;
+  if (moved > 6) return;
+  const h = pick(e);
+  if (!drawMode){ if (h) select(h.object); return; }
+  if (!h) return;
+  if (pts.length === 0){
+    select(h.object);
+    dir = camera.getWorldDirection(new THREE.Vector3());
+    controls.enableRotate = false;                      // la vista queda fija
+  } else if (h.object !== selected){
+    say('Todos los puntos tienen que estar sobre la misma pieza.'); return;
+  }
+  pts.push(h.point.clone());
+  refreshDraw();
+});
+
+function refreshDraw(){
+  drawG.clear();
+  if (pts.length){
+    const pg = new THREE.BufferGeometry().setFromPoints(pts);
+    const P = new THREE.Points(pg, new THREE.PointsMaterial({color: 0xffe066, size: 9, sizeAttenuation: false, depthTest: false}));
+    P.renderOrder = 11; drawG.add(P);
+    const lg = new THREE.BufferGeometry().setFromPoints(pts.length > 2 ? [...pts, pts[0]] : pts);
+    const Ln = new THREE.Line(lg, new THREE.LineBasicMaterial({color: 0xffe066, depthTest: false}));
+    Ln.renderOrder = 10; drawG.add(Ln);
+  }
+  if (pts.length >= 3){
+    const d = Math.min(depthVal(), diag * 3);
+    const {geo} = prism(pts, pts[0], dir, d);
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color: 0x5aa9ff, transparent: true, opacity: .22, depthWrite: false}));
+    m.renderOrder = 5; drawG.add(m);
+    say('', pts.length + ' puntos. Tocá “Cerrar y cortar” cuando termines.');
+  } else {
+    say('', 'Marcá al menos 3 puntos. La vista queda fija; podés hacer zoom con dos dedos.');
+  }
+  upd();
+}
+const depthVal = () => $('through').checked ? diag * 10 : +$('depth').value;
+$('depth').oninput = () => { $('depthV').textContent = $('depth').value; if (pts.length >= 3) refreshDraw(); };
+$('through').onchange = () => { if (pts.length >= 3) refreshDraw(); };
+
+$('draw').onclick = () => {
+  if (!selected){ say('Elegí una pieza primero.'); return; }
+  drawMode = true; pts = []; dir = null; drawG.clear();
+  say('', 'Tocá sobre el modelo para marcar el primer punto del contorno.'); upd();
+};
+$('undoPt').onclick = () => {
+  pts.pop();
+  if (!pts.length){ dir = null; controls.enableRotate = true; }
+  refreshDraw();
+};
+function cancelDraw(){
+  drawMode = false; pts = []; dir = null; drawG.clear(); controls.enableRotate = true;
+  upd();
+}
+$('cancel').onclick = () => { cancelDraw(); say('', 'Corte cancelado.'); };
+addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !$('cut').disabled) $('cut').click();
+  if (e.key === 'Escape' && drawMode) $('cancel').click();
+  if (e.key === 'Backspace' && pts.length && e.target.tagName !== 'INPUT') $('undoPt').click();
+});
+
+// ---------- prisma de corte ----------
+function basisFor(d){
+  const up = Math.abs(d.y) > 0.95 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
+  const u = new THREE.Vector3().crossVectors(d, up).normalize();
+  const v = new THREE.Vector3().crossVectors(d, u);
+  return {u, v};
+}
+function prism(points, P0, d, depth){
+  const {u, v} = basisFor(d);
+  const pts2 = points.map(p => { const r = p.clone().sub(P0); return new THREE.Vector2(r.dot(u), r.dot(v)); });
+  const geo = new THREE.ExtrudeGeometry(new THREE.Shape(pts2), {depth: diag + depth, bevelEnabled: false});
+  const m = new THREE.Matrix4().makeBasis(u, v, d);
+  m.setPosition(P0.clone().addScaledVector(d, -diag));
+  geo.applyMatrix4(m);
+  return {geo, u, v, pts2};
+}
+function centroid2(P){
+  let a = 0, x = 0, y = 0;
+  for (let i = 0; i < P.length; i++){
+    const p = P[i], q = P[(i + 1) % P.length], c = p.x * q.y - q.x * p.y;
+    a += c; x += (p.x + q.x) * c; y += (p.y + q.y) * c;
+  }
+  a /= 2;
+  return Math.abs(a) < 1e-9 ? P[0].clone() : new THREE.Vector2(x / (6 * a), y / (6 * a));
+}
+function inside(p, P){
+  let r = false;
+  for (let i = 0, j = P.length - 1; i < P.length; j = i++){
+    if ((P[i].y > p.y) !== (P[j].y > p.y) && p.x < (P[j].x - P[i].x) * (p.y - P[i].y) / (P[j].y - P[i].y) + P[i].x) r = !r;
+  }
+  return r;
+}
+const empty = b => !b.geometry.attributes.position || b.geometry.attributes.position.count === 0;
+
+// ---------- cortar ----------
+$('cut').onclick = () => {
+  $('busy').style.display = 'flex';
+  setTimeout(() => { try{ doCut(); } catch(e){ console.error(e); say('Falló el corte: ' + e.message + '. Probá con un contorno sin cruces.'); } $('busy').style.display = 'none'; }, 30);
+};
+function doCut(){
+  const piece = selected, depth = depthVal(), through = $('through').checked;
+  const toL = p => piece.worldToLocal(p.clone());
+  const P0 = toL(pts[0]), L = pts.map(toL), d = dir.clone();
+  const {geo, u, v, pts2} = prism(L, P0, d, depth);
+  geo.deleteAttribute('uv');
+  const bm = new Brush(piece.geometry); bm.updateMatrixWorld();
+  const bp = new Brush(geo); bp.updateMatrixWorld();
+  let A = ev.evaluate(bm, bp, INTERSECTION);
+  let B = ev.evaluate(bm, bp, SUBTRACTION);
+  if (empty(A) || empty(B)){ say('El contorno no divide el modelo. Probá con más profundidad.'); return; }
+
+  let msg = '';
+  if ($('pinsOn').checked && !through){
+    const n = Math.max(1, Math.min(6, +$('pinN').value | 0)), r = +$('pinR').value, len = +$('pinL').value, clr = +$('pinC').value;
+    const embed = Math.min(len, depth * 0.6);
+    const c2 = centroid2(pts2);
+    let pos = [];
+    if (n === 1) pos.push(c2);
+    else for (let i = 0; i < n; i++) pos.push(c2.clone().lerp(pts2[Math.floor(i * pts2.length / n)], .55));
+    pos = pos.filter(p => inside(p, pts2));
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d);
+    const cyl = (rad, h, c) => {
+      const g = new THREE.CylinderGeometry(rad, rad, h, 32); g.deleteAttribute('uv');
+      const b = new Brush(g); b.quaternion.copy(q); b.position.copy(c); b.updateMatrixWorld(); return b;
+    };
+    pos.forEach(p => {
+      const base = P0.clone().addScaledVector(u, p.x).addScaledVector(v, p.y).addScaledVector(d, depth);
+      A = ev.evaluate(A, cyl(r, len + embed, base.clone().addScaledVector(d, (len - embed) / 2)), ADDITION);
+      B = ev.evaluate(B, cyl(r + clr, len + clr + .5, base.clone().addScaledVector(d, (len + clr - .5) / 2)), SUBTRACTION);
+    });
+    msg = pos.length ? pos.length + ' pin(es) generados.' : 'No entró ningún pin dentro del contorno.';
+  } else if (!through) msg = 'Sin pines.';
+
+  const gA = A.geometry, gB = B.geometry;
+  gA.computeBoundsTree(); gB.computeBoundsTree();
+  scene.remove(piece); pieces = pieces.filter(x => x !== piece);
+  const base = piece.userData.name;
+  const pa = addPiece(gA, base + ' · parte'), pb = addPiece(gB, base + ' · resto');
+  history.push({old: piece, nu: [pa, pb]});
+  cancelDraw(); select(pa);
+  $('explode').oninput();
+  say(msg, 'Listo. Podés seguir cortando cualquier pieza.');
+}
+$('undoCut').onclick = () => {
+  const h = history.pop(); if (!h) return;
+  h.nu.forEach(p => { scene.remove(p); pieces = pieces.filter(x => x !== p); });
+  scene.add(h.old); pieces.push(h.old);
+  select(h.old); $('explode').oninput();
+};
+
+// ---------- exportar ----------
+function stlBlob(mesh){
+  const g = mesh.geometry.clone(); g.rotateX(Math.PI / 2);   // Y arriba → Z arriba
+  const data = new STLExporter().parse(new THREE.Mesh(g), {binary: true});
+  return new Blob([data], {type: 'model/stl'});
+}
+const safe = s => s.replace(/[^\w\-]+/g, '_');
+function save(blob, name){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+$('expSel').onclick = () => selected && save(stlBlob(selected), safe(selected.userData.name) + '.stl');
+$('expAll').onclick = async () => {
+  if (typeof JSZip === 'undefined'){ say('No cargó JSZip. Revisá la conexión.'); return; }
+  const z = new JSZip();
+  for (const [i, p] of pieces.entries()) z.file((i + 1) + '_' + safe(p.userData.name) + '.stl', await stlBlob(p).arrayBuffer());
+  save(await z.generateAsync({type: 'blob'}), 'piezas.zip');
+};
+</script>
 </body>
 </html>
