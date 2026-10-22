@@ -79,6 +79,7 @@ input[type=number]{width:72px;background:var(--ink);color:var(--bone);border:1px
    </div>
    <div class="f" style="margin-top:10px"><span>Hundir centro (mm)</span><span id="depthV">0</span></div>
    <input id="depth" type="range" min="0" max="50" step="0.5" value="0">
+   <div class="f"><label><input id="flat" type="checkbox" checked> Piso plano (corte parejo)</label></div>
   </section>
 
   <section>
@@ -371,6 +372,7 @@ function refreshDraw(){
   }
   upd();
 }
+$('flat').onchange = () => { if (pts.length >= 3) refreshDraw(); };
 $('depth').oninput = () => { $('depthV').textContent = $('depth').value; if (pts.length >= 3) refreshDraw(); };
 
 $('draw').onclick = () => {
@@ -415,6 +417,8 @@ function loopSolid(P0, sink, H, ctr){
   const {u, v} = basisFor(n);
   const pts2 = P.map(p => { const r = p.clone().sub(C); return new THREE.Vector2(r.dot(u), r.dot(v)); });
   const hs = P.map(p => p.clone().sub(C).dot(n));
+  const flat = $('flat').checked;                      // piso plano: ignora las alturas de cada punto
+  if (flat) hs.fill(0);
   for (let i = 0; i < m; i++){
     const a = pts2[i], b = pts2[(i + 1) % m];
     if (a.x * b.y - a.y * b.x <= 1e-9) return {error: 'El contorno se cruza o es muy cóncavo. Probá con puntos más ordenados.'};
@@ -423,7 +427,7 @@ function loopSolid(P0, sink, H, ctr){
   // Las paredes se corren un 1% hacia afuera: si quedan tangentes a la superficie (corte alrededor del modelo)
   // dejan dientes en el borde. Así el borde lo define solo el piso.
   const dl = diag * 0.01;
-  const Q = P.map((p, i) => { const d2 = pts2[i].clone().normalize(); return p.clone().addScaledVector(u, d2.x * dl).addScaledVector(v, d2.y * dl); });
+  const Q = P.map((p, i) => { const d2 = pts2[i].clone().normalize(); const b = flat ? C.clone().addScaledVector(u, pts2[i].x).addScaledVector(v, pts2[i].y) : p; return b.clone().addScaledVector(u, d2.x * dl).addScaledVector(v, d2.y * dl); });
   const T = Q.map(p => p.clone().addScaledVector(n, H));
   const a = [];
   const tri = (p, q, r) => a.push(p.x, p.y, p.z, q.x, q.y, q.z, r.x, r.y, r.z);
