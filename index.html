@@ -325,6 +325,27 @@ const endDrag = () => { dragI = -1; };
 cv.addEventListener('pointerup', endDrag);
 cv.addEventListener('pointercancel', endDrag);
 
+// Entre punto y punto la recta pasa por dentro del modelo y deja "montañitas" en el borde del corte.
+// Se agregan puntos intermedios y se pegan a la superficie, así el contorno la sigue.
+function densify(P, piece){
+  const ctr = piece.localToWorld(piece.userData.c.clone());
+  const step = diag / 70, out = [], rc = new THREE.Raycaster(); rc.firstHitOnly = true;
+  for (let i = 0; i < P.length; i++){
+    const a = P[i], b = P[(i + 1) % P.length];
+    const k = Math.min(40, Math.max(1, Math.ceil(a.distanceTo(b) / step)));
+    for (let j = 0; j < k; j++){
+      const q = a.clone().lerp(b, j / k);
+      if (j > 0){
+        const o = q.clone().sub(ctr).normalize();
+        rc.set(q.clone().addScaledVector(o, diag * 2), o.clone().negate());
+        const h = rc.intersectObject(piece, false)[0];
+        if (h) q.copy(h.point);
+      }
+      out.push(q);
+    }
+  }
+  return out;
+}
 const sinkVal = () => +$('depth').value;
 
 function refreshDraw(){
@@ -338,7 +359,7 @@ function refreshDraw(){
     Ln.renderOrder = 10; drawG.add(Ln);
   }
   if (pts.length >= 3 && selected){
-    const S = loopSolid(pts, sinkVal(), diag * .5, selected.localToWorld(selected.userData.c.clone()));
+    const S = loopSolid(densify(pts, selected), sinkVal(), diag * .5, selected.localToWorld(selected.userData.c.clone()));
     if (S.error) say(S.error);
     else {
       const m = new THREE.Mesh(S.geo, new THREE.MeshBasicMaterial({color: 0x5aa9ff, transparent: true, opacity: .2, depthWrite: false}));
@@ -448,7 +469,7 @@ $('cut').onclick = () => {
 };
 function doCut(){
   const piece = selected, sink = sinkVal();
-  const S = loopSolid(pts.map(p => piece.worldToLocal(p.clone())), sink, diag * 2, piece.userData.c);
+  const S = loopSolid(densify(pts, piece).map(p => piece.worldToLocal(p.clone())), sink, diag * 2, piece.userData.c);
   if (S.error){ say(S.error); return; }
   const {geo, n, u, v, C, pts2, hs} = S;
   const bm = new Brush(piece.geometry); bm.updateMatrixWorld();
