@@ -292,6 +292,39 @@ cv.addEventListener('pointerup', e => {
   refreshDraw();
 });
 
+// mover puntos ya puestos: arrastrar el marcador
+let dragI = -1;
+function nearMarker(e){
+  const r = cv.getBoundingClientRect(), R = e.pointerType === 'touch' ? 26 : 14;
+  let best = -1, bd = R;
+  vis.forEach((p, i) => {
+    const q = p.clone().project(camera);
+    if (q.z > 1) return;
+    const d = Math.hypot(r.left + (q.x * .5 + .5) * r.width - e.clientX, r.top + (-q.y * .5 + .5) * r.height - e.clientY);
+    if (d < bd){ bd = d; best = i; }
+  });
+  return best;
+}
+view.addEventListener('pointerdown', e => {
+  if (!drawMode || !e.isPrimary || e.target !== cv) return;
+  const i = nearMarker(e);
+  if (i < 0) return;
+  dragI = i; down = null;
+  cv.setPointerCapture(e.pointerId);
+  e.stopPropagation();                                   // evita que OrbitControls gire la vista
+}, true);
+cv.addEventListener('pointermove', e => {
+  if (dragI < 0){ cv.style.cursor = drawMode && nearMarker(e) >= 0 ? 'grab' : ''; return; }
+  const h = pick(e);
+  if (!h || h.object !== selected) return;
+  pts[dragI] = h.point.clone();
+  vis[dragI] = h.point.clone().addScaledVector(h.face.normal, diag * 0.004);
+  refreshDraw();
+});
+const endDrag = () => { dragI = -1; };
+cv.addEventListener('pointerup', endDrag);
+cv.addEventListener('pointercancel', endDrag);
+
 const sinkVal = () => +$('depth').value;
 
 function refreshDraw(){
@@ -310,10 +343,10 @@ function refreshDraw(){
     else {
       const m = new THREE.Mesh(S.geo, new THREE.MeshBasicMaterial({color: 0x5aa9ff, transparent: true, opacity: .2, depthWrite: false}));
       m.renderOrder = 5; drawG.add(m);
-      say('', pts.length + ' puntos. Podés girar y seguir marcando, o tocá “Cerrar y cortar”.');
+      say('', pts.length + ' puntos. Arrastrá un punto para moverlo, seguí marcando o tocá “Cerrar y cortar”.');
     }
   } else if (pts.length){
-    say('', 'Seguí marcando. Podés girar el modelo entre punto y punto.');
+    say('', 'Seguí marcando. Podés girar el modelo y arrastrar un punto para moverlo.');
   }
   upd();
 }
