@@ -420,15 +420,19 @@ function loopSolid(P0, sink, H, ctr){
     if (a.x * b.y - a.y * b.x <= 1e-9) return {error: 'El contorno se cruza o es muy cóncavo. Probá con puntos más ordenados.'};
   }
   const Cs = C.clone().addScaledVector(n, -sink), Tc = C.clone().addScaledVector(n, H);
-  const T = P.map(p => p.clone().addScaledVector(n, H));
+  // Las paredes se corren un 1% hacia afuera: si quedan tangentes a la superficie (corte alrededor del modelo)
+  // dejan dientes en el borde. Así el borde lo define solo el piso.
+  const dl = diag * 0.01;
+  const Q = P.map((p, i) => { const d2 = pts2[i].clone().normalize(); return p.clone().addScaledVector(u, d2.x * dl).addScaledVector(v, d2.y * dl); });
+  const T = Q.map(p => p.clone().addScaledVector(n, H));
   const a = [];
   const tri = (p, q, r) => a.push(p.x, p.y, p.z, q.x, q.y, q.z, r.x, r.y, r.z);
   for (let i = 0; i < m; i++){
     const j = (i + 1) % m;
-    tri(Cs, P[j], P[i]);
+    tri(Cs, Q[j], Q[i]);
     tri(Tc, T[i], T[j]);
-    tri(P[i], P[j], T[j]);
-    tri(P[i], T[j], T[i]);
+    tri(Q[i], Q[j], T[j]);
+    tri(Q[i], T[j], T[i]);
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
