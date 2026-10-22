@@ -77,9 +77,8 @@ input[type=number]{width:72px;background:var(--ink);color:var(--bone);border:1px
     <button id="cut" class="go" disabled>Cerrar y cortar</button>
     <button id="cancel" disabled>Cancelar</button>
    </div>
-   <div class="f" style="margin-top:10px"><span>Profundidad (mm)</span><span id="depthV"></span></div>
-   <input id="depth" type="range" min="0.5" max="50" step="0.5" value="5">
-   <div class="f"><label><input id="through" type="checkbox"> Atravesar todo el modelo</label></div>
+   <div class="f" style="margin-top:10px"><span>Hundir centro (mm)</span><span id="depthV">0</span></div>
+   <input id="depth" type="range" min="0" max="50" step="0.5" value="0">
   </section>
 
   <section>
@@ -197,7 +196,7 @@ function loadGeometry(raw, label){
   g.computeBoundingBox();
   diag = g.boundingBox.getSize(new THREE.Vector3()).length();
   const sz = g.boundingBox.getSize(new THREE.Vector3());
-  $('depth').max = Math.ceil(diag); $('depth').value = Math.max(0.5, Math.round(diag * 0.1 * 2) / 2);
+  $('depth').max = Math.ceil(diag / 2); $('depth').value = 0;
   $('depthV').textContent = $('depth').value;
   const p = addPiece(g, label || 'Modelo');
   select(p);
@@ -207,7 +206,7 @@ function loadGeometry(raw, label){
   $('explode').value = 0;
   renderList();
   say(Math.round(sz.x) + ' × ' + Math.round(sz.y) + ' × ' + Math.round(sz.z) + ' mm',
-      'Tocá “Dibujar contorno” y marcá puntos sobre el modelo.');
+      'Tocá “Dibujar contorno” y marcá puntos. Podés girar entre punto y punto.');
 }
 
 async function loadFile(f){
@@ -270,6 +269,7 @@ $('explode').oninput = () => {
 // ---------- dibujo del contorno ----------
 const ray = new THREE.Raycaster(); ray.firstHitOnly = true;
 const ndc = new THREE.Vector2();
+let vis = [];
 function pick(e){
   const r = cv.getBoundingClientRect();
   ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -281,58 +281,52 @@ cv.addEventListener('pointerdown', e => { if (e.isPrimary) down = [e.clientX, e.
 cv.addEventListener('pointerup', e => {
   if (!down || !e.isPrimary) return;
   const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]); down = null;
-  if (moved > 6) return;
+  if (moved > 6) return;                                 // arrastre = girar la vista
   const h = pick(e);
   if (!drawMode){ if (h) select(h.object); return; }
   if (!h) return;
-  if (pts.length === 0){
-    select(h.object);
-    dir = camera.getWorldDirection(new THREE.Vector3());
-    controls.enableRotate = false;                      // la vista queda fija
-  } else if (h.object !== selected){
-    say('Todos los puntos tienen que estar sobre la misma pieza.'); return;
-  }
+  if (pts.length === 0) select(h.object);
+  else if (h.object !== selected){ say('Todos los puntos tienen que estar sobre la misma pieza.'); return; }
   pts.push(h.point.clone());
+  vis.push(h.point.clone().addScaledVector(h.face.normal, diag * 0.004));
   refreshDraw();
 });
+
+const sinkVal = () => +$('depth').value;
 
 function refreshDraw(){
   drawG.clear();
   if (pts.length){
-    const pg = new THREE.BufferGeometry().setFromPoints(pts);
-    const P = new THREE.Points(pg, new THREE.PointsMaterial({color: 0xffe066, size: 9, sizeAttenuation: false, depthTest: false}));
+    const P = new THREE.Points(new THREE.BufferGeometry().setFromPoints(vis),
+      new THREE.PointsMaterial({color: 0xffe066, size: 10, sizeAttenuation: false}));
     P.renderOrder = 11; drawG.add(P);
-    const lg = new THREE.BufferGeometry().setFromPoints(pts.length > 2 ? [...pts, pts[0]] : pts);
-    const Ln = new THREE.Line(lg, new THREE.LineBasicMaterial({color: 0xffe066, depthTest: false}));
+    const Ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints(vis.length > 2 ? [...vis, vis[0]] : vis),
+      new THREE.LineBasicMaterial({color: 0xffe066}));
     Ln.renderOrder = 10; drawG.add(Ln);
   }
-  if (pts.length >= 3){
-    const d = Math.min(depthVal(), diag * 3);
-    const {geo} = prism(pts, pts[0], dir, d);
-    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({color: 0x5aa9ff, transparent: true, opacity: .22, depthWrite: false}));
-    m.renderOrder = 5; drawG.add(m);
-    say('', pts.length + ' puntos. Tocá “Cerrar y cortar” cuando termines.');
-  } else {
-    say('', 'Marcá al menos 3 puntos. La vista queda fija; podés hacer zoom con dos dedos.');
+  if (pts.length >= 3 && selected){
+    const S = loopSolid(pts, sinkVal(), diag * .5, selected.localToWorld(selected.userData.c.clone()));
+    if (S.error) say(S.error);
+    else {
+      const m = new THREE.Mesh(S.geo, new THREE.MeshBasicMaterial({color: 0x5aa9ff, transparent: true, opacity: .2, depthWrite: false}));
+      m.renderOrder = 5; drawG.add(m);
+      say('', pts.length + ' puntos. Podés girar y seguir marcando, o tocá “Cerrar y cortar”.');
+    }
+  } else if (pts.length){
+    say('', 'Seguí marcando. Podés girar el modelo entre punto y punto.');
   }
   upd();
 }
-const depthVal = () => $('through').checked ? diag * 10 : +$('depth').value;
 $('depth').oninput = () => { $('depthV').textContent = $('depth').value; if (pts.length >= 3) refreshDraw(); };
-$('through').onchange = () => { if (pts.length >= 3) refreshDraw(); };
 
 $('draw').onclick = () => {
   if (!selected){ say('Elegí una pieza primero.'); return; }
-  drawMode = true; pts = []; dir = null; drawG.clear();
-  say('', 'Tocá sobre el modelo para marcar el primer punto del contorno.'); upd();
+  drawMode = true; pts = []; vis = []; drawG.clear();
+  say('', 'Tocá sobre el modelo para marcar puntos. Arrastrá para girar y seguir por atrás.'); upd();
 };
-$('undoPt').onclick = () => {
-  pts.pop();
-  if (!pts.length){ dir = null; controls.enableRotate = true; }
-  refreshDraw();
-};
+$('undoPt').onclick = () => { pts.pop(); vis.pop(); refreshDraw(); };
 function cancelDraw(){
-  drawMode = false; pts = []; dir = null; drawG.clear(); controls.enableRotate = true;
+  drawMode = false; pts = []; vis = []; dir = null; drawG.clear();
   upd();
 }
 $('cancel').onclick = () => { cancelDraw(); say('', 'Corte cancelado.'); };
@@ -342,21 +336,50 @@ addEventListener('keydown', e => {
   if (e.key === 'Backspace' && pts.length && e.target.tagName !== 'INPUT') $('undoPt').click();
 });
 
-// ---------- prisma de corte ----------
+// ---------- sólido de corte ----------
+// Piso = abanico desde el centro del contorno hasta cada punto (sigue el contorno 3D).
+// Paredes = suben en la dirección normal del contorno. El sólido encierra "la parte de arriba".
 function basisFor(d){
   const up = Math.abs(d.y) > 0.95 ? new THREE.Vector3(1, 0, 0) : new THREE.Vector3(0, 1, 0);
   const u = new THREE.Vector3().crossVectors(d, up).normalize();
   const v = new THREE.Vector3().crossVectors(d, u);
   return {u, v};
 }
-function prism(points, P0, d, depth){
-  const {u, v} = basisFor(d);
-  const pts2 = points.map(p => { const r = p.clone().sub(P0); return new THREE.Vector2(r.dot(u), r.dot(v)); });
-  const geo = new THREE.ExtrudeGeometry(new THREE.Shape(pts2), {depth: diag + depth, bevelEnabled: false});
-  const m = new THREE.Matrix4().makeBasis(u, v, d);
-  m.setPosition(P0.clone().addScaledVector(d, -diag));
-  geo.applyMatrix4(m);
-  return {geo, u, v, pts2};
+function loopSolid(P0, sink, H, ctr){
+  const P = P0.slice(), m = P.length;
+  const n = new THREE.Vector3();
+  for (let i = 0; i < m; i++){
+    const a = P[i], b = P[(i + 1) % m];
+    n.x += (a.y - b.y) * (a.z + b.z); n.y += (a.z - b.z) * (a.x + b.x); n.z += (a.x - b.x) * (a.y + b.y);
+  }
+  if (n.length() < 1e-9) return {error: 'Los puntos están en línea. Marcá un contorno cerrado.'};
+  n.normalize();
+  const C = new THREE.Vector3(); P.forEach(p => C.add(p)); C.divideScalar(m);
+  const s = n.dot(C.clone().sub(ctr));
+  const flip = Math.abs(s) < diag * 0.05 ? n.y < 0 : s < 0;   // contorno alrededor: "arriba"; parche: hacia afuera
+  if (flip){ n.negate(); P.reverse(); }
+  const {u, v} = basisFor(n);
+  const pts2 = P.map(p => { const r = p.clone().sub(C); return new THREE.Vector2(r.dot(u), r.dot(v)); });
+  const hs = P.map(p => p.clone().sub(C).dot(n));
+  for (let i = 0; i < m; i++){
+    const a = pts2[i], b = pts2[(i + 1) % m];
+    if (a.x * b.y - a.y * b.x <= 1e-9) return {error: 'El contorno se cruza o es muy cóncavo. Probá con puntos más ordenados.'};
+  }
+  const Cs = C.clone().addScaledVector(n, -sink), Tc = C.clone().addScaledVector(n, H);
+  const T = P.map(p => p.clone().addScaledVector(n, H));
+  const a = [];
+  const tri = (p, q, r) => a.push(p.x, p.y, p.z, q.x, q.y, q.z, r.x, r.y, r.z);
+  for (let i = 0; i < m; i++){
+    const j = (i + 1) % m;
+    tri(Cs, P[j], P[i]);
+    tri(Tc, T[i], T[j]);
+    tri(P[i], P[j], T[j]);
+    tri(P[i], T[j], T[i]);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.Float32BufferAttribute(a, 3));
+  geo.computeVertexNormals();
+  return {geo, n, u, v, C, pts2, hs};
 }
 function centroid2(P){
   let a = 0, x = 0, y = 0;
@@ -374,52 +397,69 @@ function inside(p, P){
   }
   return r;
 }
+function floorH(q, pts2, hs, sink){
+  const m = pts2.length;
+  for (let i = 0; i < m; i++){
+    const a = pts2[i], b = pts2[(i + 1) % m], det = a.x * b.y - a.y * b.x;
+    const s = (q.x * b.y - q.y * b.x) / det, t = (a.x * q.y - a.y * q.x) / det;
+    if (s >= -1e-6 && t >= -1e-6 && s + t <= 1 + 1e-6) return -sink * (1 - s - t) + s * hs[i] + t * hs[(i + 1) % m];
+  }
+  return null;
+}
 const empty = b => !b.geometry.attributes.position || b.geometry.attributes.position.count === 0;
 
 // ---------- cortar ----------
 $('cut').onclick = () => {
   $('busy').style.display = 'flex';
-  setTimeout(() => { try{ doCut(); } catch(e){ console.error(e); say('Falló el corte: ' + e.message + '. Probá con un contorno sin cruces.'); } $('busy').style.display = 'none'; }, 30);
+  setTimeout(() => { try{ doCut(); } catch(e){ console.error(e); say('Falló el corte: ' + e.message); } $('busy').style.display = 'none'; }, 30);
 };
 function doCut(){
-  const piece = selected, depth = depthVal(), through = $('through').checked;
-  const toL = p => piece.worldToLocal(p.clone());
-  const P0 = toL(pts[0]), L = pts.map(toL), d = dir.clone();
-  const {geo, u, v, pts2} = prism(L, P0, d, depth);
-  geo.deleteAttribute('uv');
+  const piece = selected, sink = sinkVal();
+  const S = loopSolid(pts.map(p => piece.worldToLocal(p.clone())), sink, diag * 2, piece.userData.c);
+  if (S.error){ say(S.error); return; }
+  const {geo, n, u, v, C, pts2, hs} = S;
   const bm = new Brush(piece.geometry); bm.updateMatrixWorld();
   const bp = new Brush(geo); bp.updateMatrixWorld();
   let A = ev.evaluate(bm, bp, INTERSECTION);
   let B = ev.evaluate(bm, bp, SUBTRACTION);
-  if (empty(A) || empty(B)){ say('El contorno no divide el modelo. Probá con más profundidad.'); return; }
+  if (empty(A) || empty(B)){ say('El contorno no divide el modelo. Probá hundiendo el centro o cambiando los puntos.'); return; }
 
-  let msg = '';
-  if ($('pinsOn').checked && !through){
-    const n = Math.max(1, Math.min(6, +$('pinN').value | 0)), r = +$('pinR').value, len = +$('pinL').value, clr = +$('pinC').value;
-    const embed = Math.min(len, depth * 0.6);
+  let msg = 'Sin pines.';
+  if ($('pinsOn').checked){
+    const k = Math.max(1, Math.min(6, +$('pinN').value | 0)), r = +$('pinR').value, len = +$('pinL').value, clr = +$('pinC').value;
     const c2 = centroid2(pts2);
     let pos = [];
-    if (n === 1) pos.push(c2);
-    else for (let i = 0; i < n; i++) pos.push(c2.clone().lerp(pts2[Math.floor(i * pts2.length / n)], .55));
+    if (k === 1) pos.push(c2);
+    else for (let i = 0; i < k; i++) pos.push(c2.clone().lerp(pts2[Math.floor(i * pts2.length / k)], .55));
     pos = pos.filter(p => inside(p, pts2));
-    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), d);
+    const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), n);
     const cyl = (rad, h, c) => {
       const g = new THREE.CylinderGeometry(rad, rad, h, 32); g.deleteAttribute('uv');
       const b = new Brush(g); b.quaternion.copy(q); b.position.copy(c); b.updateMatrixWorld(); return b;
     };
+    const rc = new THREE.Raycaster(); rc.firstHitOnly = true;
+    let placed = 0;
     pos.forEach(p => {
-      const base = P0.clone().addScaledVector(u, p.x).addScaledVector(v, p.y).addScaledVector(d, depth);
-      A = ev.evaluate(A, cyl(r, len + embed, base.clone().addScaledVector(d, (len - embed) / 2)), ADDITION);
-      B = ev.evaluate(B, cyl(r + clr, len + clr + .5, base.clone().addScaledVector(d, (len + clr - .5) / 2)), SUBTRACTION);
+      const h = floorH(p, pts2, hs, sink);
+      if (h === null) return;
+      const base = C.clone().addScaledVector(u, p.x).addScaledVector(v, p.y).addScaledVector(n, h);
+      piece.material.side = THREE.DoubleSide;                    // espesor disponible sobre el piso
+      rc.set(piece.localToWorld(base.clone().addScaledVector(n, 0.02)), n);
+      const hit = rc.intersectObject(piece, false)[0];
+      piece.material.side = THREE.FrontSide;
+      const embed = hit ? Math.min(len, hit.distance * 0.6) : len * 0.5;
+      A = ev.evaluate(A, cyl(r, len + embed, base.clone().addScaledVector(n, (embed - len) / 2)), ADDITION);
+      B = ev.evaluate(B, cyl(r + clr, len + clr + .5, base.clone().addScaledVector(n, -(len + clr - .5) / 2)), SUBTRACTION);
+      placed++;
     });
-    msg = pos.length ? pos.length + ' pin(es) generados.' : 'No entró ningún pin dentro del contorno.';
-  } else if (!through) msg = 'Sin pines.';
+    msg = placed ? placed + ' pin(es) generados.' : 'No entró ningún pin dentro del contorno.';
+  }
 
   const gA = A.geometry, gB = B.geometry;
   gA.computeBoundsTree(); gB.computeBoundsTree();
   scene.remove(piece); pieces = pieces.filter(x => x !== piece);
   const base = piece.userData.name;
-  const pa = addPiece(gA, base + ' · parte'), pb = addPiece(gB, base + ' · resto');
+  const pa = addPiece(gA, base + ' · arriba'), pb = addPiece(gB, base + ' · resto');
   history.push({old: piece, nu: [pa, pb]});
   cancelDraw(); select(pa);
   $('explode').oninput();
